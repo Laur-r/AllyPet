@@ -9,4 +9,8 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+pool.connect()
+  .then(() => console.log('Pet Service conectado a PostgreSQL correctamente'))
+  .catch((err) => console.error('Error al conectar a PostgreSQL:', err));
+
 module.exports = pool;
