@@ -1,0 +1,282 @@
+/* frontend/src/pages/RegistroDueno.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.rd-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: #faf8fc;
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+.rd-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px 60px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.rd-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.rd-navbar__logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.rd-navbar__name {
+  font-size: 24px;
+  color: #7B2D8B;
+}
+
+.rd-navbar__name strong {
+  font-weight: 900;
+}
+
+.rd-navbar__links {
+  display: flex;
+  gap: 36px;
+}
+
+.rd-navbar__links a {
+  text-decoration: none;
+  color: #2d2d2d;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.rd-navbar__links a:hover {
+  color: #7B2D8B;
+}
+
+/* FONDO */
+.rd-bg {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 80px 20px 80px;
+  overflow: hidden;
+}
+
+.rd-blob {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  height: 340px;
+  background: #f0e6f8;
+  border-radius: 0 0 50% 50%;
+  z-index: 0;
+}
+
+/* CARD */
+.rd-card {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 780px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  overflow: hidden;
+  margin-top: 40px;
+}
+/* IMAGEN SUPERIOR */
+.rd-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.rd-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+}
+
+.rd-card__img-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  background: linear-gradient(to left, rgba(255,255,255,0.1) 40%, transparent);
+}
+
+.rd-card__title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #2d2d2d;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.rd-card__subtitle {
+  font-size: 13px;
+  color: #292828;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* FORMULARIO */
+.rd-form {
+  padding: 24px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rd-form__row {
+  display: flex;
+  gap: 16px;
+}
+
+.rd-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rd-form__group--full {
+  flex: 1 1 100%;
+}
+
+.rd-form__group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+
+.rd-form__group input {
+  padding: 10px 14px;
+  border: 1.5px solid #e0d8f0;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  background: #f7f3ff;
+  color: #2d2d2d;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.rd-form__group input:focus {
+  border-color: #7B2D8B;
+}
+
+.rd-form__group input::placeholder {
+  color: #b0a8c0;
+}
+
+/* INPUT CON OJO */
+.rd-input-eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rd-input-eye input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.rd-input-eye span {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #7B2D8B;
+  display: flex;
+  align-items: center;
+}
+
+/* ERROR */
+.rd-error {
+  font-size: 13px;
+  color: #e53935;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* TÉRMINOS */
+.rd-terminos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d2d2d;
+}
+
+.rd-terminos input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #7B2D8B;
+  cursor: pointer;
+}
+
+/* LINK */
+.rd-link {
+  color: #7B2D8B;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* BOTÓN */
+.rd-btn {
+  width: 100%;
+  padding: 14px;
+  background: #5BC8D4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.rd-btn:hover {
+  background: #38adb9;
+  transform: scale(1.02);
+}
+
+/* LINK LOGIN */
+.rd-login-link {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .rd-navbar { padding: 10px 20px; }
+  .rd-navbar__links { display: none; }
+  .rd-form { padding: 20px; }
+  .rd-form__row { flex-direction: column; gap: 0; }
+  .rd-card__img-wrap { height: 160px; }
+}

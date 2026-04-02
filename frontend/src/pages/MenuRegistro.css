@@ -1,0 +1,205 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --ap-purple: #7B2D8B;
+  --ap-bg: #faf8fc;
+  --ap-text: #2d2d2d;
+  --ap-gray: #6b6b6b;
+  --ap-white: #ffffff;
+  --ap-blob: #f0e6f8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.mr-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: var(--ap-bg);
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+.mr-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 60px;
+  background: var(--ap-white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.mr-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.mr-navbar__logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.mr-navbar__name {
+  font-size: 22px;
+  color: var(--ap-purple);
+}
+
+.mr-navbar__name strong {
+  font-weight: 900;
+}
+
+.mr-navbar__links {
+  display: flex;
+  gap: 36px;
+}
+
+.mr-navbar__links a {
+  text-decoration: none;
+  color: var(--ap-text);
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.mr-navbar__links a:hover {
+  color: var(--ap-purple);
+}
+
+/* HERO */
+.mr-hero {
+  position: relative;
+  text-align: center;
+  padding: 50px 20px 70px;
+  overflow: hidden;
+}
+
+.mr-hero__blob {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  height: 340px;
+  background: var(--ap-blob);
+  border-radius: 0 0 50% 50%;
+  z-index: 0;
+}
+
+.mr-hero__logo {
+  position: relative;
+  z-index: 1;
+  width: 400px;
+  height: 170px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.mr-hero__title {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  color: var(--ap-text);
+  margin-bottom: 12px;
+}
+
+.mr-hero__subtitle {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  color: var(--ap-gray);
+  font-weight: 600;
+}
+
+/* CARDS */
+.mr-cards {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 40px 80px;
+  flex-wrap: wrap;
+}
+
+.mr-card {
+  background: var(--ap-white);
+  border-radius: 20px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.mr-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+}
+
+.mr-card__img-wrap {
+  width: 100%;
+  height: 220px;
+  background: var(--card-color);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.mr-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.mr-card__label {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--card-color);
+  margin: 18px 0 14px;
+  text-align: center;
+}
+
+.mr-card__btn {
+  background: var(--card-color);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 26px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.mr-card__btn:hover {
+  background: var(--card-accent);
+  transform: scale(1.04);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .mr-navbar { padding: 14px 24px; }
+  .mr-navbar__links { gap: 16px; }
+  .mr-cards { gap: 20px; padding: 20px 20px 60px; }
+  .mr-card { width: 180px; }
+  .mr-card__img-wrap { height: 180px; }
+}
+
+@media (max-width: 480px) {
+  .mr-navbar__links { display: none; }
+  .mr-cards { flex-direction: column; align-items: center; }
+  .mr-card { width: 260px; }
+}
