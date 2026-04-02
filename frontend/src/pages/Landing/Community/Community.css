@@ -1,0 +1,222 @@
+
+.community {
+  padding: 96px 6%;
+  background: #ffffff;
+  width: 100%;
+}
+
+.community__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: start;
+}
+
+/* ── Left ── */
+.community__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 2.6vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #1C1030;
+  margin: 0 0 12px;
+}
+
+.community__title-accent {
+  color: #8B35C8;
+}
+
+.community__desc {
+  font-family: var(--font-body);
+  color: #5E4D80;
+  font-size: 0.93rem;
+  line-height: 1.75;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ── Diffs ── */
+.community__diffs {
+  list-style: none;
+  padding: 0;
+  margin: 26px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.community__diff {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.community__diff-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: #EBF7E0;
+  color: #559030;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.community__diff strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: #1C1030;
+  margin-bottom: 2px;
+}
+
+.community__diff span {
+  font-size: 0.8rem;
+  color: #5E4D80;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* ── Reviews ── */
+.community__reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.community__review {
+  background: #ffffff;
+  border: 1.5px solid #EDE5F8;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.community__review:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  border-color: #EAD8FA;
+}
+
+.community__review-top {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 11px;
+}
+
+/* ── Avatar ── */
+.community__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.community__avatar--purple { background: linear-gradient(135deg, #c4b5fd, #7c3aed); }
+.community__avatar--green  { background: linear-gradient(135deg, #6ee7b7, #059669); }
+.community__avatar--pink   { background: linear-gradient(135deg, #fca5a5, #dc2626); }
+
+.community__review-meta strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: #1C1030;
+}
+
+.community__review-meta small {
+  font-size: 0.7rem;
+  color: #5E4D80;
+  font-family: var(--font-body);
+}
+
+.community__review-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.community__stars {
+  color: #F59E0B;
+  font-size: 0.78rem;
+}
+
+.community__badge {
+  background: #EBF7E0;
+  color: #559030;
+  border-radius: 50px;
+  padding: 2px 9px;
+  font-size: 0.63rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+}
+
+.community__review-text {
+  font-size: 0.835rem;
+  color: #5E4D80;
+  line-height: 1.68;
+  font-family: var(--font-body);
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ── Stats ── */
+.community__stats {
+  display: flex;
+  margin-top: 18px;
+  background: #FAF8FF;
+  border-radius: 14px;
+  border: 1px solid #EDE5F8;
+  overflow: hidden;
+}
+
+.community__stat {
+  flex: 1;
+  text-align: center;
+  padding: 20px 12px;
+  border-right: 1px solid #EDE5F8;
+}
+
+.community__stat:last-child {
+  border-right: none;
+}
+
+.community__stat strong {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #8B35C8;
+  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+}
+
+.community__stat small {
+  font-size: 0.72rem;
+  color: #5E4D80;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .community__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .community {
+    padding: 64px 6%;
+  }
+}

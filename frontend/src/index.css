@@ -1,13 +1,51 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@700;800;900&display=swap');
+
+:root {
+  --font-heading: 'Poppins', sans-serif;
+  --font-body:    'Inter', sans-serif;
+
+  --color-purple:       #8B35C8;
+  --color-purple-hover: #A855D4;
+  --color-purple-soft:  #F5EEFF;
+  --color-green:        #6AB33E;
+  --color-green-dark:   #559030;
+  --color-green-soft:   #EBF7E0;
+  --color-pink:         #E0467A;
+  --color-pink-soft:    #FCEEF4;
+  --color-amber:        #F59E0B;
+  --color-dark:         #1C1030;
+  --color-body:         #5E4D80;
+  --color-muted:        #9585B4;
+  --color-border:       #EDE5F8;
+  --color-bg:           #FAF8FF;
+  --color-white:        #ffffff;
+}
+
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--font-body);
 }
 
 body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--color-dark);
+  background: var(--color-white);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
   min-height: 100vh;
+  width: 100%;
 }
+
+h1 { font-family: var(--font-heading); font-weight: 800; }
+h2 { font-family: var(--font-heading); font-weight: 700; }
+h3 { font-family: var(--font-heading); font-weight: 600; }
+
+p  { margin: 0; }
+a  { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }

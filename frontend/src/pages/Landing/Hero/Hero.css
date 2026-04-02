@@ -81,6 +81,7 @@
 
 /* ── Título ── */
 .hero__title {
+  font-family: var(--font-heading);
   font-size: clamp(2.3rem, 3.6vw, 3.4rem);
   font-weight: 800;
   line-height: 1.1;
@@ -94,6 +95,7 @@
 
 /* ── Descripción ── */
 .hero__desc {
+  font-family: var(--font-heading);
   margin-top: 18px;
   font-size: 0.98rem;
   color: #5E4D80;

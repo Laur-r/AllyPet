@@ -1,0 +1,117 @@
+
+.services {
+  padding: 96px 6%;
+  background: #FAF8FF;
+  width: 100%;
+}
+
+/* ── Header ── */
+.services__header {
+  margin-bottom: 52px;
+}
+
+.services__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 2.6vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #1C1030;
+  margin: 0 0 10px;
+}
+
+.services__title-em {
+  font-style: normal;
+  color: #8B35C8;
+}
+
+.services__subtitle {
+  font-family: var(--font-body);
+  color: #5E4D80;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 400px;
+  font-weight: 400;
+}
+
+/* ── Grid ── */
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ── Card ── */
+.services__card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1.5px solid #EDE5F8;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.25s;
+}
+
+.services__card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 40px rgba(139, 53, 200, 0.1);
+  border-color: #EAD8FA;
+}
+
+.services__emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.services__name {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1C1030;
+  margin: 0;
+}
+
+.services__desc {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #5E4D80;
+  line-height: 1.65;
+  flex: 1;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ── Tags ── */
+.services__tag {
+  display: inline-block;
+  font-size: 0.69rem;
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 3px 12px;
+  font-family: var(--font-body);
+  align-self: flex-start;
+}
+
+.services__tag--purple { background: #F5EEFF; color: #8B35C8; }
+.services__tag--green  { background: #EBF7E0; color: #559030; }
+.services__tag--pink   { background: #FCEEF4; color: #E0467A; }
+.services__tag--amber  { background: #FEF3C7; color: #92400E; }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .services__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .services__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services {
+    padding: 64px 6%;
+  }
+}
