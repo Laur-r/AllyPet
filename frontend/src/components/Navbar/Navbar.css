@@ -1,0 +1,194 @@
+/* src/components/Navbar/Navbar.css */
+
+/* ── Variables (deben coincidir con tu index.css o App.css) ── */
+:root {
+  --color-purple:       #8B35C8;
+  --color-purple-hover: #A855D4;
+  --color-green:        #6AB33E;
+  --color-dark:         #1C1030;
+  --color-body:         #5E4D80;
+  --color-border:       #EDE5F8;
+  --color-bg:           #FAF8FF;
+  --color-white:        #ffffff;
+}
+
+/* ── Base ── */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6%;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow 0.3s ease;
+}
+
+.navbar--scrolled {
+  box-shadow: 0 4px 20px rgba(139, 53, 200, 0.08);
+}
+
+/* ── Logo ── */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.navbar__logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navbar__logo-text {
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+}
+
+.navbar__logo-text span {
+  color: var(--color-green);
+}
+
+/* ── Links ── */
+.navbar__links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__links a {
+  color: var(--color-body);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.navbar__links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-purple);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.navbar__links a:hover {
+  color: var(--color-purple);
+}
+
+.navbar__links a:hover::after {
+  width: 100%;
+}
+
+/* ── Botón registro ── */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__register {
+  background: var(--color-purple);
+  color: #fff;
+  border-radius: 50px;        /* pill — igual al diseño */
+  padding: 9px 22px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 3px 12px rgba(139, 53, 200, 0.3);
+  white-space: nowrap;
+}
+
+.navbar__register:hover {
+  background: var(--color-purple-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(139, 53, 200, 0.4);
+}
+
+/* ── Hamburger (mobile) ── */
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.navbar__toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--color-dark);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.navbar__toggle--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar__toggle--open span:nth-child(2) {
+  opacity: 0;
+}
+.navbar__toggle--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__links li a {
+    display: block;
+    padding: 14px 6%;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+  }
+
+  .navbar__links li a::after {
+    display: none;
+  }
+
+  .navbar__toggle {
+    display: flex;
+  }
+
+  .navbar__register {
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+}
