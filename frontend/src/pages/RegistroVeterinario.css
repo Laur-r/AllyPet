@@ -1,0 +1,287 @@
+/* frontend/src/pages/RegistroVeterinario.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.rv-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: #faf8fc;
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+.rv-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 60px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.rv-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.rv-navbar__logo {
+  width: 90px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.rv-navbar__name {
+  font-size: 24px;
+  color: #7B2D8B;
+}
+
+.rv-navbar__name strong {
+  font-weight: 900;
+}
+
+.rv-navbar__links {
+  display: flex;
+  gap: 36px;
+}
+
+.rv-navbar__links a {
+  text-decoration: none;
+  color: #2d2d2d;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.rv-navbar__links a:hover {
+  color: #7B2D8B;
+}
+
+/* FONDO */
+.rv-bg {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 80px 20px 80px;
+  overflow: hidden;
+}
+
+.rv-blob {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  height: 340px;
+  background: #e6f7f8;
+  border-radius: 0 0 50% 50%;
+  z-index: 0;
+}
+
+/* CARD */
+.rv-card {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  overflow: hidden;
+  margin-top: 0.5px;
+}
+
+/* IMAGEN SUPERIOR */
+.rv-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+}
+
+.rv-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.rv-card__img-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  background: linear-gradient(to left, rgba(255,255,255,0.75) 40%, transparent);
+}
+
+.rv-card__title {
+  font-size: 35px;
+  font-weight: 900;
+  color: #2d2d2d;
+  line-height: 1.3;
+  margin-bottom: 9px;
+}
+
+.rv-card__subtitle {
+  font-size: 15px;
+  color: #6b6b6b;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* FORMULARIO */
+.rv-form {
+  padding: 24px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rv-form__row {
+  display: flex;
+  gap: 16px;
+}
+
+.rv-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rv-form__group--full {
+  flex: 1 1 100%;
+}
+
+.rv-form__group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+
+.rv-form__group input,
+.rv-form__group textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #c8eef1;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  background: #f0fbfc;
+  color: #2d2d2d;
+  outline: none;
+  transition: border 0.2s;
+  resize: none;
+}
+
+.rv-form__group input:focus,
+.rv-form__group textarea:focus {
+  border-color: #5BC8D4;
+}
+
+.rv-form__group input::placeholder,
+.rv-form__group textarea::placeholder {
+  color: #a0cdd2;
+}
+
+/* INPUT CON OJO */
+.rv-input-eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rv-input-eye input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.rv-input-eye span {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #5BC8D4;
+  display: flex;
+  align-items: center;
+}
+
+/* ERROR */
+.rv-error {
+  font-size: 13px;
+  color: #e53935;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* TÉRMINOS */
+.rv-terminos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d2d2d;
+}
+
+.rv-terminos input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #5BC8D4;
+  cursor: pointer;
+}
+
+/* LINK */
+.rv-link {
+  color: #5BC8D4;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* BOTÓN */
+.rv-btn {
+  width: 100%;
+  padding: 14px;
+  background: #5BC8D4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.rv-btn:hover {
+  background: #38adb9;
+  transform: scale(1.02);
+}
+
+/* LINK LOGIN */
+.rv-login-link {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .rv-navbar { padding: 10px 20px; }
+  .rv-navbar__links { display: none; }
+  .rv-form { padding: 20px; }
+  .rv-form__row { flex-direction: column; gap: 0; }
+  .rv-card__img-wrap { height: 160px; }
+}

@@ -1,11 +1,21 @@
-import { useState } from 'react';
-import Navbar from './components/Navbar/Navbar';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingPage         from './pages/Landing/LandingPage';
+import MenuRegistro        from './pages/MenuRegistro';
+import RegistroDueno       from './pages/RegistroDueno';
+import RegistroPaseador    from './pages/RegistroPaseador';
+import RegistroVeterinario from './pages/RegistroVeterinario';
 
 function App() {
   return (
-    <>
-      <Navbar />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/"                       element={<LandingPage />} />
+        <Route path="/register"               element={<MenuRegistro />} />
+        <Route path="/register/dueno"         element={<RegistroDueno />} />
+        <Route path="/register/paseador"      element={<RegistroPaseador />} />
+        <Route path="/register/veterinario"   element={<RegistroVeterinario />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
