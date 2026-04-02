@@ -1,0 +1,380 @@
+/* frontend/src/pages/Login.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.lg-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+.lg-navbar {
+  height: 84px;
+  background: #ffffff;
+  border-bottom: 1px solid #dbdbdb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.lg-navbar__brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.lg-navbar__logo {
+  width: 300px;
+  height: 76px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.lg-navbar__right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lg-navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.lg-navbar__links a {
+  text-decoration: none;
+  color: #2d2d2d;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.lg-navbar__links a:hover {
+  color: #7b2d8b;
+}
+
+.lg-navbar__btn {
+  border: none;
+  border-radius: 999px;
+  background: #8a348f;
+  color: #ffffff;
+  padding: 12px 26px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lg-navbar__btn:hover {
+  background: #752878;
+}
+
+/* CONTENIDO */
+.lg-main {
+  min-height: calc(100vh - 84px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lg-card {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: stretch;
+}
+
+.lg-card__image-side,
+.lg-card__form-side {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.lg-card__image-side {
+  flex: 1.02;
+  padding: 12px;
+  margin-right: -6px;
+  z-index: 1;
+}
+
+.lg-card__image {
+  width: 100%;
+  height: 100%;
+  max-height: 580px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.lg-card__form-side {
+  flex: 0.98;
+  padding: 34px 34px 28px;
+  border-left: 1px solid #ececec;
+}
+
+.lg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lg-form__brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.lg-form__brand-logo {
+  width: 200px;
+  height: 58px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.lg-form__title {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 900;
+  color: #222222;
+}
+
+.lg-form__subtitle {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: #383838;
+  font-weight: 600;
+}
+
+.lg-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lg-form__group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+
+.lg-form__group input {
+  width: 100%;
+  border: 1.5px solid #e0d8f0;
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  background: #f7f3ff;
+  color: #1f1f1f;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.lg-form__group input:focus {
+  border-color: #8a348f;
+}
+
+.lg-form__extras {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.lg-form__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #3e3e3e;
+  font-weight: 600;
+}
+
+.lg-form__check input {
+  width: 15px;
+  height: 15px;
+  accent-color: #8a348f;
+}
+
+.lg-form__extras a {
+  color: #9b5a9e;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lg-form__extras a:hover {
+  color: #813885;
+}
+
+.lg-form__btn-main {
+  margin-top: 4px;
+  height: 44px;
+  border-radius: 10px;
+  border: none;
+  background: #8a348f;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lg-form__btn-main:hover {
+  background: #752878;
+}
+
+.lg-form__separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #b4b4b4;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.lg-form__separator::before,
+.lg-form__separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #dddddd;
+}
+
+.lg-form__btn-google {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #dddddd;
+  background: #fbfbfb;
+  color: #4a4a4a;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lg-form__btn-google:hover {
+  background: #f4f4f4;
+}
+
+.lg-form__btn-google img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1060px) {
+  .lg-navbar__logo {
+    width: 260px;
+    height: 68px;
+  }
+
+  .lg-navbar__links {
+    gap: 16px;
+  }
+
+  .lg-navbar__links a {
+    font-size: 14px;
+  }
+
+  .lg-card__form-side {
+    padding: 28px;
+  }
+
+  .lg-form__title {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 880px) {
+  .lg-navbar__links {
+    display: none;
+  }
+
+  .lg-card {
+    max-width: 530px;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .lg-card__image-side {
+    margin-right: 0;
+  }
+
+  .lg-card__form-side {
+    border-left: none;
+  }
+
+  .lg-card__image {
+    max-height: 460px;
+  }
+}
+
+@media (max-width: 520px) {
+  .lg-navbar {
+    padding: 0 14px;
+    height: 76px;
+  }
+
+  .lg-navbar__logo {
+    width: 180px;
+    height: 56px;
+  }
+
+  .lg-navbar__btn {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  .lg-main {
+    padding: 16px;
+  }
+
+  .lg-card__form-side {
+    padding: 24px 18px 20px;
+  }
+
+  .lg-form__brand-logo {
+    width: 170px;
+    height: 50px;
+  }
+
+  .lg-form__title {
+    font-size: 36px;
+  }
+
+  .lg-form__subtitle {
+    font-size: 16px;
+  }
+
+  .lg-form__group input {
+    font-size: 15px;
+  }
+}
