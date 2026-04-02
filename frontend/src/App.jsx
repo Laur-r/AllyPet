@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import MenuRegistro      from './pages/MenuRegistro';
-import RegistroDueno     from './pages/RegistroDueno';
-import RegistroPaseador  from './pages/RegistroPaseador';
-import RegistroVeterinario from './pages/RegistroVeterinario';
-import Login from './pages/Login';
+import MenuRegistro from './pages/Registro/MenuRegistro/MenuRegistro';
+import RegistroDueno from './pages/Registro/RegistroDueno/RegistroDueno';
+import RegistroPaseador from './pages/Registro/RegistroPaseador/RegistroPaseador';
+import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
+import Login from './pages/Login/Login';
 
 function App() {
   return (

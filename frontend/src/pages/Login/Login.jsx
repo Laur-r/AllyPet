@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-import logo from '../assets/login/allypet-logo-login.png';
-import loginImage from '../assets/login/login-side-image.png';
-import googleLogo from '../assets/login/google-logo.png';
+import logo from '../../assets/login/allypet-logo-login.png';
+import loginImage from '../../assets/login/login-side-image.png';
+import googleLogo from '../../assets/login/google-logo.png';
 
 export default function Login() {
   const navigate = useNavigate();
