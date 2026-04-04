@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroPaseador.css';
 
-import logo        from '../assets/Logo-AllyPet.png';
-import paseadorImg from '../assets/register/formulario-paseador.png';
+import logo        from "../../../assets/Logo-AllyPet.png";
+import paseadorImg from '../../../assets/register/formulario-paseador.png';
 
 export default function RegistroPaseador() {
   const navigate = useNavigate();

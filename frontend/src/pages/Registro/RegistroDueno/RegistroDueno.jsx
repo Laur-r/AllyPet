@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroDueno.css';
 
-import logo          from '../assets/Logo-AllyPet.png';
-import formularioImg from '../assets/register/formulario-dueno.png';
+import logo from "../../../assets/Logo-AllyPet.png";
+import formularioImg from '../../../assets/register/formulario-dueno.png';
 
 export default function RegistroDueno() {
   const navigate = useNavigate();

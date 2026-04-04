@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroVeterinario.css';
 
-import logo         from '../assets/Logo-AllyPet.png';
-import veterinarioImg from '../assets/register/formulario-veterinario.png';
+import logo from "../../../assets/Logo-AllyPet.png";
+import veterinarioImg from "../../../assets/register/formulario-veterinario.png";
 
 export default function RegistroVeterinario() {
   const navigate = useNavigate();
