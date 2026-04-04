@@ -1,28 +1,25 @@
-// frontend/src/pages/RegistroVeterinario.jsx
+// frontend/src/pages/RegistroDueno.jsx
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import './RegistroVeterinario.css';
+import './RegistroDueno.css';
 
-import logo         from '../assets/Logo-AllyPet.png';
-import veterinarioImg from '../assets/register/formulario-veterinario.png';
+import logo from '../../../assets/Logo-AllyPet.png';
+import formularioImg from '../../../assets/register/formulario-dueno.png';
 
-export default function RegistroVeterinario() {
+export default function RegistroDueno() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    nombre:                 '',
-    correo:                 '',
-    contrasena:             '',
-    confirmar:              '',
-    telefono:               '',
-    ciudad:                 '',
-    nombre_establecimiento: '',
-    direccion:              '',
-    servicios:              '',
-    horarios:               '',
-    terminos:               false,
+    nombre:     '',
+    correo:     '',
+    contrasena: '',
+    confirmar:  '',
+    telefono:   '',
+    ciudad:     '',
+    direccion:  '',
+    terminos:   false,
   });
 
   const [verContrasena, setVerContrasena] = useState(false);
@@ -38,7 +35,7 @@ export default function RegistroVeterinario() {
     e.preventDefault();
     setError('');
 
-    if (!form.nombre || !form.correo || !form.contrasena || !form.confirmar || !form.nombre_establecimiento) {
+    if (!form.nombre || !form.correo || !form.contrasena || !form.confirmar) {
       setError('Por favor completa todos los campos obligatorios.');
       return;
     }
@@ -56,15 +53,15 @@ export default function RegistroVeterinario() {
   };
 
   return (
-    <div className="rv-wrapper">
+    <div className="rd-wrapper">
 
       {/* NAVBAR */}
-      <header className="rv-navbar">
-        <div className="rv-navbar__brand" onClick={() => navigate('/')}>
-          <img src={logo} alt="AllyPet" className="rv-navbar__logo" />
-          <span className="rv-navbar__name"><strong>Ally</strong>Pet</span>
+      <header className="rd-navbar">
+        <div className="rd-navbar__brand" onClick={() => navigate('/')}>
+          <img src={logo} alt="AllyPet" className="rd-navbar__logo" />
+          <span className="rd-navbar__name"><strong>Ally</strong>Pet</span>
         </div>
-        <nav className="rv-navbar__links">
+        <nav className="rd-navbar__links">
           <a href="#">Servicios</a>
           <a href="#">Paseadores</a>
           <a href="#">Veterinarios</a>
@@ -73,29 +70,29 @@ export default function RegistroVeterinario() {
       </header>
 
       {/* FONDO BLOB */}
-      <div className="rv-bg">
-        <div className="rv-blob" />
+      <div className="rd-bg">
+        <div className="rd-blob" />
 
         {/* CARD FORMULARIO */}
-        <div className="rv-card">
+        <div className="rd-card">
 
           {/* IMAGEN SUPERIOR */}
-          <div className="rv-card__img-wrap">
-            <img src={veterinarioImg} alt="Veterinario" className="rv-card__img" />
-            <div className="rv-card__img-overlay">
-              <h2 className="rv-card__title">Registro de<br />Veterinaria</h2>
-              <p className="rv-card__subtitle">
-                Únete a nuestra red de veterinarios y brinda atención profesional a las mascotas de tu ciudad.
+          <div className="rd-card__img-wrap">
+            <img src={formularioImg} alt="Dueño de mascota" className="rd-card__img" />
+            <div className="rd-card__img-overlay">
+              <h2 className="rd-card__title">Registro del Dueño<br />de Mascotas</h2>
+              <p className="rd-card__subtitle">
+                Completa tus datos para empezar a gestionar el bienestar de tu mejor amigo.
               </p>
             </div>
           </div>
 
           {/* FORMULARIO */}
-          <form className="rv-form" onSubmit={handleSubmit}>
+          <form className="rd-form" onSubmit={handleSubmit}>
 
             {/* Fila 1 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group">
+            <div className="rd-form__row">
+              <div className="rd-form__group">
                 <label>Nombre completo*</label>
                 <input
                   type="text"
@@ -105,7 +102,7 @@ export default function RegistroVeterinario() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="rv-form__group">
+              <div className="rd-form__group">
                 <label>Correo electrónico*</label>
                 <input
                   type="email"
@@ -118,10 +115,10 @@ export default function RegistroVeterinario() {
             </div>
 
             {/* Fila 2 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group">
+            <div className="rd-form__row">
+              <div className="rd-form__group">
                 <label>Crea una contraseña*</label>
-                <div className="rv-input-eye">
+                <div className="rd-input-eye">
                   <input
                     type={verContrasena ? 'text' : 'password'}
                     name="contrasena"
@@ -136,9 +133,9 @@ export default function RegistroVeterinario() {
                   </span>
                 </div>
               </div>
-              <div className="rv-form__group">
+              <div className="rd-form__group">
                 <label>Repite la contraseña*</label>
-                <div className="rv-input-eye">
+                <div className="rd-input-eye">
                   <input
                     type={verConfirmar ? 'text' : 'password'}
                     name="confirmar"
@@ -156,19 +153,9 @@ export default function RegistroVeterinario() {
             </div>
 
             {/* Fila 3 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group">
-                <label>Nombre del establecimiento*</label>
-                <input
-                  type="text"
-                  name="nombre_establecimiento"
-                  placeholder="Nombre de la clínica o consultorio"
-                  value={form.nombre_establecimiento}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="rv-form__group">
-                <label>Teléfono (Opcional)</label>
+            <div className="rd-form__row">
+              <div className="rd-form__group">
+                <label>Número de teléfono (Opcional)</label>
                 <input
                   type="tel"
                   name="telefono"
@@ -177,11 +164,7 @@ export default function RegistroVeterinario() {
                   onChange={handleChange}
                 />
               </div>
-            </div>
-
-            {/* Fila 4 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group">
+              <div className="rd-form__group">
                 <label>Ciudad (Opcional)</label>
                 <input
                   type="text"
@@ -191,51 +174,27 @@ export default function RegistroVeterinario() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="rv-form__group">
+            </div>
+
+            {/* Fila 4 */}
+            <div className="rd-form__row">
+              <div className="rd-form__group rd-form__group--full">
                 <label>Dirección (Opcional)</label>
                 <input
                   type="text"
                   name="direccion"
-                  placeholder="Dirección del establecimiento"
+                  placeholder="Dirección"
                   value={form.direccion}
                   onChange={handleChange}
                 />
               </div>
             </div>
 
-            {/* Fila 5 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group">
-                <label>Horarios de atención (Opcional)</label>
-                <input
-                  type="text"
-                  name="horarios"
-                  placeholder="Ej: Lunes a Viernes 8am - 6pm"
-                  value={form.horarios}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Fila 6 */}
-            <div className="rv-form__row">
-              <div className="rv-form__group rv-form__group--full">
-                <label>Servicios ofrecidos (Opcional)</label>
-                <textarea
-                  name="servicios"
-                  placeholder="Ej: Consulta general, vacunación, cirugía, grooming..."
-                  value={form.servicios}
-                  onChange={handleChange}
-                  rows={3}
-                />
-              </div>
-            </div>
-
             {/* Error */}
-            {error && <p className="rv-error">{error}</p>}
+            {error && <p className="rd-error">{error}</p>}
 
             {/* Términos */}
-            <div className="rv-terminos">
+            <div className="rd-terminos">
               <input
                 type="checkbox"
                 name="terminos"
@@ -244,19 +203,19 @@ export default function RegistroVeterinario() {
                 onChange={handleChange}
               />
               <label htmlFor="terminos">
-                Acepto los <span className="rv-link">términos y condiciones</span>
+                Acepto los <span className="rd-link">términos y condiciones</span>
               </label>
             </div>
 
             {/* Botón */}
-            <button type="submit" className="rv-btn">
+            <button type="submit" className="rd-btn">
               Registrarse
             </button>
 
             {/* Link login */}
-            <p className="rv-login-link">
+            <p className="rd-login-link">
               ¿Ya tienes una cuenta?{' '}
-              <span className="rv-link" onClick={() => navigate('/login')}>
+              <span className="rd-link" onClick={() => navigate('/login')}>
                 Iniciar Sesión
               </span>
             </p>

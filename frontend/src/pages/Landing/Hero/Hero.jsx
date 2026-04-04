@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import './Hero.css';
 
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
 
@@ -32,7 +35,7 @@ export default function Hero() {
           </p>
 
           <div className="hero__actions">
-            <a className="hero__btn-main" href="#">
+            <a className="hero__btn-main" onClick={() => navigate('/register')}>
               Crear cuenta gratis
             </a>
             <a className="hero__btn-ghost" href="#servicios">

@@ -72,7 +72,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   position: relative;
-  transition: color 0.2s;
+  transition: color 0.10s;
 }
 
 .navbar__links a::after {

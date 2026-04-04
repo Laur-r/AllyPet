@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -11,6 +12,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -47,10 +49,10 @@ export default function Navbar() {
       </ul>
 
       {/* Acciones */}
-      <div className="navbar__actions">
-        <a className="navbar__register" href="#">
+     <div className="navbar__actions">
+        <button onClick={() => navigate('/register')} className="navbar__register">
           Comenzar gratis
-        </a>
+        </button>
 
         {/* Hamburger mobile */}
         <button
