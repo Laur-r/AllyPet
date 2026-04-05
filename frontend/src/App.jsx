@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import LandingPage from './pages/Landing/LandingPage';
 import Login from './pages/Login/Login';
 import MenuRegistro from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno from './pages/Registro/RegistroDueno/RegistroDueno';
@@ -17,8 +18,10 @@ function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* Landing */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Acceso */}
-        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
 
         {/* Registro */}

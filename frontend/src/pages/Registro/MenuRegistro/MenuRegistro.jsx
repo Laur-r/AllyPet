@@ -3,10 +3,12 @@
 import { useNavigate } from 'react-router-dom';
 import './MenuRegistro.css';
 
-import logo from '../../../assets/Logo-AllyPet.png';
-import imgDueno from '../../../assets/register/dueno.png';
-import imgVet from '../../../assets/register/Veterinario.png';
+import logo from '../../../assets/logo-allypet.png';
+
+import imgDueno    from '../../../assets/register/dueno.png';
+import imgVet      from '../../../assets/register/Veterinario.png';
 import imgPaseador from '../../../assets/register/Paseador.png';
+
 
 const CARDS = [
   {
