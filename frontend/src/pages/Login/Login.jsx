@@ -1,6 +1,6 @@
 // frontend/src/pages/Login.jsx
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -16,17 +16,36 @@ export default function Login() {
     contrasena: '',
     recordar: false,
   });
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
+  const handleAuthSuccess = (data) => {
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+
+    const successMessage =
+      data.message ||
+      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${
+        data.user?.rol || 'usuario'
+      }).`;
+    alert(successMessage);
+    navigate('/dashboard');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,25 +64,47 @@ export default function Login() {
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
-
-      const successMessage =
-        data.message ||
-        `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${
-          data.user?.rol || 'usuario'
-        }).`;
-      alert(successMessage);
-      navigate('/dashboard');
+      handleAuthSuccess(data);
     } catch (error) {
       console.error('Login error:', error);
       alert('Error conectando con el servidor');
     }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const error = params.get('error');
+
+    if (!token) {
+      if (error) {
+        const errorMessage =
+          params.get('message') ||
+          'No se pudo iniciar sesion con Google. Verifica tu cuenta e intentalo de nuevo.';
+        alert(errorMessage);
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      return;
+    }
+
+    const message =
+      params.get('message') || `Inicio de sesión con Google exitoso. Bienvenido ${params.get('name') || ''}`;
+    const user = {
+      nombre: params.get('name') || '',
+      email: params.get('email') || '',
+      rol: params.get('role') || 'usuario',
+    };
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    alert(message);
+
+    window.history.replaceState(null, '', window.location.pathname);
+    navigate('/dashboard');
+  }, [navigate]);
+
+  const handleGoogleClick = () => {
+    window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
   return (
@@ -153,7 +194,7 @@ export default function Login() {
                 <span>o</span>
               </div>
 
-              <button type="button" className="lg-form__btn-google">
+              <button type="button" className="lg-form__btn-google" onClick={handleGoogleClick}>
                 <img src={googleLogo} alt="" aria-hidden="true" />
                 Continuar con Google
               </button>
@@ -164,3 +205,4 @@ export default function Login() {
     </div>
   );
 }
+
