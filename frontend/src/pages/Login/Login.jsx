@@ -22,10 +22,48 @@ export default function Login() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos login:', form);
-    alert('Inicio de sesion exitoso! (pendiente conexion con backend)');
+
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.correo,
+          password: form.contrasena,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const backendMessage = data?.message || 'Datos incorrectos';
+        alert(backendMessage);
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      const successMessage =
+        data.message ||
+        `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${
+          data.user?.rol || 'usuario'
+        }).`;
+      alert(successMessage);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Error conectando con el servidor');
+    }
   };
 
   return (
