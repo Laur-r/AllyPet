@@ -25,6 +25,8 @@ const crearMascota = async (req, res) => {
   } catch (err) {
     res.status(err.status || 500).json({ ok: false, message: err.message });
   }
+  console.log("usuario_id:", req.usuario_id);
+console.log("body:", req.body);
 };
 
 const actualizarMascota = async (req, res) => {
