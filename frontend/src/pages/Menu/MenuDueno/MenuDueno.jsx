@@ -1,13 +1,13 @@
 import { useState } from "react";
 import "./MenuDueno.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
-
+import { Outlet, useNavigate } from "react-router-dom";
 export default function MenuDueno({ children }) {
   const [activeItem, setActiveItem] = useState("inicio");
   const [serviciosOpen, setServiciosOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
-
+const navigate = useNavigate();
   const navItems = [
     {
       key: "inicio", label: "Inicio",
@@ -86,14 +86,18 @@ export default function MenuDueno({ children }) {
                     : activeItem === item.key ? "active" : ""
                 }`}
                 onClick={() => {
-                  if (item.hasChildren) {
-                    setServiciosOpen(!serviciosOpen);
-                    setActiveItem("servicios");
-                  } else {
-                    setActiveItem(item.key);
-                    setServiciosOpen(false);
-                  }
-                }}
+  if (item.hasChildren) {
+    setServiciosOpen(!serviciosOpen);
+    setActiveItem("servicios");
+  } else {
+    setActiveItem(item.key);
+    setServiciosOpen(false);
+
+    // 👇 SOLO AGREGA ESTO
+    if (item.key === "mascotas") navigate("mascotas");
+    if (item.key === "inicio") navigate("/menu/dueno");
+  }
+}}
               >
                 <span className="md-nav-icon">{item.icon}</span>
                 {sidebarOpen && (
@@ -185,8 +189,8 @@ export default function MenuDueno({ children }) {
         </header>
 
         <main className="md-content">
-          {children}
-        </main>
+  <Outlet />
+</main>
       </div>
     </div>
   );
