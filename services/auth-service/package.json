@@ -1,7 +1,6 @@
 {
   "name": "auth-service",
   "version": "1.0.0",
-<<<<<<< HEAD
   "description": "Microservicio de autenticación AllyPet",
   "main": "src/app.js",
   "scripts": {
@@ -9,13 +8,6 @@
     "start": "node src/app.js",
     "test": "echo \"No tests configured\" && exit 0"
   },
-=======
-  "main": "index.js",
-"scripts": {
-  "dev": "nodemon src/app.js",
-  "start": "node src/app.js"
-},
->>>>>>> dev
   "keywords": [],
   "author": "",
   "license": "ISC",
