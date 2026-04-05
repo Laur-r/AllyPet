@@ -50,6 +50,9 @@ export default function Navbar() {
 
       {/* Acciones */}
      <div className="navbar__actions">
+      <button onClick={() => navigate('/login')} className="navbar__login">
+          Iniciar sesión
+        </button>
         <button onClick={() => navigate('/register')} className="navbar__register">
           Comenzar gratis
         </button>
