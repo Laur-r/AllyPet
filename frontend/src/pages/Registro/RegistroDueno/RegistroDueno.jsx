@@ -6,6 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroDueno.css';
 
 
+import { registrarDueno }                        from '../../../services/auth.service';
 import logo         from '../../../assets/logo-allypet.png';
 import formularioImg from '../../../assets/register/formulario-dueno.png';
 
@@ -32,26 +33,42 @@ export default function RegistroDueno() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
 
-    if (!form.nombre || !form.correo || !form.contrasena || !form.confirmar) {
-      setError('Por favor completa todos los campos obligatorios.');
-      return;
-    }
-    if (form.contrasena !== form.confirmar) {
-      setError('Las contraseñas no coinciden.');
-      return;
-    }
-    if (!form.terminos) {
-      setError('Debes aceptar los términos y condiciones.');
-      return;
-    }
+  if (!form.nombre || !form.correo || !form.contrasena || !form.confirmar) {
+    setError('Por favor completa todos los campos obligatorios.');
+    return;
+  }
+  if (form.contrasena !== form.confirmar) {
+    setError('Las contraseñas no coinciden.');
+    return;
+  }
+  if (!form.terminos) {
+    setError('Debes aceptar los términos y condiciones.');
+    return;
+  }
 
-    console.log('Datos del formulario:', form);
-    alert('Registro exitoso! (pendiente conexión con backend)');
-  };
+  try {
+    await registrarDueno({
+      nombre:    form.nombre,
+      correo:    form.correo,
+      contrasena: form.contrasena,
+      telefono:  form.telefono,
+      ciudad:    form.ciudad,
+      direccion: form.direccion,
+    });
+    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+    navigate('/login');
+  } catch (error) {
+    if (error.response?.status === 409) {
+      setError('Este correo ya está registrado.');
+    } else {
+      setError('Ocurrió un error. Intenta de nuevo.');
+    }
+  }
+};
 
   return (
     <div className="rd-wrapper">
