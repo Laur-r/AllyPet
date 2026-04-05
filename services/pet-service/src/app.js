@@ -8,17 +8,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
-const authRoutes = require('./routes/auth.routes');
-app.use('/api/auth', authRoutes);
+// Rutas (CORREGIDO)
+const petRoutes = require('./routes/pet.routes');
+app.use('/api/pets', petRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.send('Auth Service funcionando 🔐');
+  res.send('Pet Service funcionando 🐶');
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 app.listen(PORT, () => {
-  console.log(`Auth Service corriendo en http://localhost:${PORT}`);
+  console.log(`Pet Service corriendo en http://localhost:${PORT}`);
 });
