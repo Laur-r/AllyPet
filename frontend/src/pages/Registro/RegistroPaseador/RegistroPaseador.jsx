@@ -7,9 +7,6 @@ import './RegistroPaseador.css';
 
 
 import logo        from '../../../assets/logo-allypet.png';
-
-import logo from '../../../assets/logo-allypet.png';
-
 import paseadorImg from '../../../assets/register/formulario-paseador.png';
 
 export default function RegistroPaseador() {
