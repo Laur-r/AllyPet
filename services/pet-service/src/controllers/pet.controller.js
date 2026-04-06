@@ -20,20 +20,24 @@ const getMascota = async (req, res) => {
 
 const crearMascota = async (req, res) => {
   try {
-    const nueva = await PetService.crearMascota(req.usuario_id, req.body);
-    res.status(201).json({ ok: true, data: nueva });
-  } catch (err) {
-    res.status(err.status || 500).json({ ok: false, message: err.message });
+    const foto = req.file ? `/uploads/${req.file.filename}` : null;
+    const data  = { ...req.body, foto };
+    const mascota = await PetService.crearMascota(req.usuario_id, data);
+    res.json({ ok: true, data: mascota });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ ok: false, message: 'Error creando mascota' });
   }
-  console.log("usuario_id:", req.usuario_id);
-console.log("body:", req.body);
 };
 
 const actualizarMascota = async (req, res) => {
   try {
-    const actualizada = await PetService.actualizarMascota(req.params.id, req.usuario_id, req.body);
+    const foto = req.file ? `/uploads/${req.file.filename}` : req.body.foto || null;
+    const data  = { ...req.body, foto };
+    const actualizada = await PetService.actualizarMascota(req.params.id, req.usuario_id, data);
     res.json({ ok: true, data: actualizada });
   } catch (err) {
+    console.error(err);
     res.status(err.status || 500).json({ ok: false, message: err.message });
   }
 };

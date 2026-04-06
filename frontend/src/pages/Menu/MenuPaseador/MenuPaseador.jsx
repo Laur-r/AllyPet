@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./MenuPaseador.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
+import avatarDefault from "../../../assets/menus/menudefault.png";
 
 export default function MenuPaseador({ children }) {
   const [activeItem, setActiveItem] = useState("inicio");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) setUser(JSON.parse(userData));
+  }, []);
 
   const navItems = [
     {
@@ -41,12 +48,12 @@ export default function MenuPaseador({ children }) {
 
         <div className="mp-profile">
           <div className="mp-avatar-wrap">
-            <img className="mp-avatar" src="https://i.pravatar.cc/80?img=12" alt="Carlos" />
+            <img className="mp-avatar" src={avatarDefault} alt="avatar" />
             <span className="mp-avatar-dot" />
           </div>
           {sidebarOpen && (
             <div className="mp-profile-info">
-              <span className="mp-profile-name">Carlos Ruiz</span>
+              <span className="mp-profile-name">{user?.nombre || "Usuario"}</span>
               <span className="mp-profile-role">Paseador</span>
             </div>
           )}
@@ -66,7 +73,7 @@ export default function MenuPaseador({ children }) {
                 <>
                   <span className="mp-nav-label">{item.label}</span>
                   {item.badge && <span className="mp-badge">{item.badge}</span>}
-                  {item.tag  && <span className="mp-tag">{item.tag}</span>}
+                  {item.tag   && <span className="mp-tag">{item.tag}</span>}
                 </>
               )}
             </button>
@@ -74,7 +81,14 @@ export default function MenuPaseador({ children }) {
         </nav>
 
         <div className="mp-sidebar-footer">
-          <button className="mp-logout">
+          <button
+            className="mp-logout"
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+          >
             <span className="mp-nav-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -92,12 +106,15 @@ export default function MenuPaseador({ children }) {
           <div className="mp-navbar-left">
             <button className="mp-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
             <div className="mp-searchbar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
                 type="text"
@@ -107,6 +124,7 @@ export default function MenuPaseador({ children }) {
               />
             </div>
           </div>
+
           <div className="mp-navbar-right">
             <div className="mp-status-pill">
               <span className="mp-status-dot" />
@@ -120,8 +138,8 @@ export default function MenuPaseador({ children }) {
               <span className="mp-bell-dot" />
             </button>
             <div className="mp-user-chip">
-              <img src="https://i.pravatar.cc/80?img=12" alt="Carlos" />
-              <span>Carlos R.</span>
+              <img src={avatarDefault} alt="avatar" />
+              <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>
         </header>

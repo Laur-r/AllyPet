@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./MenuVeterinario.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
+import avatarDefault from "../../../assets/menus/menudefault.png";
 
 export default function MenuVeterinario({ children }) {
   const [activeItem, setActiveItem] = useState("inicio");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) setUser(JSON.parse(userData));
+  }, []);
 
   const navItems = [
     {
@@ -41,13 +48,13 @@ export default function MenuVeterinario({ children }) {
 
         <div className="mv-profile">
           <div className="mv-avatar-wrap">
-            <img className="mv-avatar" src="https://i.pravatar.cc/80?img=51" alt="Dra. Mora" />
+            <img className="mv-avatar" src={avatarDefault} alt="avatar" />
             <span className="mv-avatar-dot" />
           </div>
           {sidebarOpen && (
             <div className="mv-profile-info">
-              <span className="mv-profile-name">Dra. Ana Mora</span>
-              <span className="mv-profile-role">Veterinaria</span>
+              <span className="mv-profile-name">{user?.nombre || "Usuario"}</span>
+              <span className="mv-profile-role">Veterinario</span>
             </div>
           )}
         </div>
@@ -66,7 +73,7 @@ export default function MenuVeterinario({ children }) {
                 <>
                   <span className="mv-nav-label">{item.label}</span>
                   {item.badge && <span className="mv-badge">{item.badge}</span>}
-                  {item.tag  && <span className="mv-tag">{item.tag}</span>}
+                  {item.tag   && <span className="mv-tag">{item.tag}</span>}
                 </>
               )}
             </button>
@@ -74,7 +81,14 @@ export default function MenuVeterinario({ children }) {
         </nav>
 
         <div className="mv-sidebar-footer">
-          <button className="mv-logout">
+          <button
+            className="mv-logout"
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+          >
             <span className="mv-nav-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -92,12 +106,15 @@ export default function MenuVeterinario({ children }) {
           <div className="mv-navbar-left">
             <button className="mv-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
             <div className="mv-searchbar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
                 type="text"
@@ -107,6 +124,7 @@ export default function MenuVeterinario({ children }) {
               />
             </div>
           </div>
+
           <div className="mv-navbar-right">
             <div className="mv-status-pill">
               <span className="mv-status-dot" />
@@ -120,8 +138,8 @@ export default function MenuVeterinario({ children }) {
               <span className="mv-bell-dot" />
             </button>
             <div className="mv-user-chip">
-              <img src="https://i.pravatar.cc/80?img=51" alt="Dra. Mora" />
-              <span>Dra. Mora</span>
+              <img src={avatarDefault} alt="avatar" />
+              <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>
         </header>
