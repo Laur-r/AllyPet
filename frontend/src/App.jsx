@@ -12,6 +12,7 @@ import MenuPaseador from './pages/Menu/MenuPaseador/MenuPaseador';
 import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
 
 import Mascotas from './pages/Mascotas/Mascotas';
+import PerfilVeterinario from './pages/PerfilVeterinario/PerfilVeterinario';
 
 function App() {
   return (
@@ -25,9 +26,9 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         {/* Registro */}
-        <Route path="/register" element={<MenuRegistro />} />
-        <Route path="/register/dueno" element={<RegistroDueno />} />
-        <Route path="/register/paseador" element={<RegistroPaseador />} />
+        <Route path="/register"             element={<MenuRegistro />} />
+        <Route path="/register/dueno"       element={<RegistroDueno />} />
+        <Route path="/register/paseador"    element={<RegistroPaseador />} />
         <Route path="/register/veterinario" element={<RegistroVeterinario />} />
 
         {/* Menú Dueño con rutas anidadas */}
@@ -37,8 +38,11 @@ function App() {
         </Route>
 
         {/* Otros menús */}
-        <Route path="/menu/paseador" element={<MenuPaseador />} />
+        <Route path="/menu/paseador"    element={<MenuPaseador />} />
         <Route path="/menu/veterinario" element={<MenuVeterinario />} />
+
+        {/* Perfiles comerciales */}
+        <Route path="/perfil/veterinario" element={<PerfilVeterinario />} />
 
       </Routes>
     </BrowserRouter>
