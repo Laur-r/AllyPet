@@ -97,20 +97,15 @@
   max-width: 900px;
   display: flex;
   align-items: stretch;
-}
-
-.lg-card__image-side,
-.lg-card__form-side {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
 .lg-card__image-side {
   flex: 1.02;
   padding: 12px;
-  margin-right: -6px;
-  z-index: 1;
 }
 
 .lg-card__image {
@@ -125,7 +120,6 @@
 .lg-card__form-side {
   flex: 0.98;
   padding: 34px 34px 28px;
-  border-left: 1px solid #ececec;
 }
 
 .lg-form {

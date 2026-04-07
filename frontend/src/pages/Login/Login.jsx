@@ -69,6 +69,11 @@ export default function Login() {
 
       const data = await response.json();
 
+      if (response.status === 403) {
+        alert('Tu cuenta está en revisión por un administrador');
+        return;
+      }
+
       if (!response.ok) {
         const backendMessage = data?.message || 'Datos incorrectos';
         alert(backendMessage);
@@ -126,7 +131,6 @@ export default function Login() {
       navigate('/');
     }
   }, [navigate]);
-
 
   const handleGoogleClick = () => {
     window.location.href = `${BACKEND_URL}/auth/google`;
@@ -230,4 +234,3 @@ export default function Login() {
     </div>
   );
 }
-

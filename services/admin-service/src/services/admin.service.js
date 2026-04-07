@@ -6,11 +6,11 @@ const pool = require('../config/db');
  */
 const getUserRoleById = async (userId) => {
   try {
-    const query = 'SELECT role, rol FROM users WHERE id = $1';
+    const query = 'SELECT rol FROM usuarios WHERE id = $1';
     const { rows } = await pool.query(query, [userId]);
     if (rows.length === 0) return null;
     
-    return rows[0].role || rows[0].rol;
+    return rows[0].rol;
   } catch (error) {
     console.error('Error in getUserRoleById:', error);
     return null;
@@ -22,7 +22,7 @@ const getUserRoleById = async (userId) => {
  */
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT id, nombre, email, role, active, estado, provider_approved as "providerApproved" FROM users ORDER BY id DESC';
+    const query = 'SELECT id, nombre, correo AS email, rol AS role, active, estado, provider_approved as "providerApproved" FROM usuarios ORDER BY id DESC';
     const { rows } = await pool.query(query);
     return rows;
   } catch (error) {
@@ -36,9 +36,9 @@ const getAllUsers = async () => {
  */
 const getDashboardStats = async () => {
   try {
-    const totalUsers = await pool.query('SELECT COUNT(*) FROM users');
-    const adminUsers = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'admin' OR rol = 'admin'");
-    const totalPets = await pool.query('SELECT COUNT(*) FROM pets').catch(() => ({ rows: [{ count: 0 }] }));
+    const totalUsers = await pool.query('SELECT COUNT(*) FROM usuarios');
+    const adminUsers = await pool.query("SELECT COUNT(*) FROM usuarios WHERE rol = 'admin'");
+    const totalPets = await pool.query('SELECT COUNT(*) FROM mascotas').catch(() => ({ rows: [{ count: 0 }] }));
 
     return {
       totalUsers: parseInt(totalUsers.rows[0].count, 10),
@@ -55,7 +55,7 @@ const getDashboardStats = async () => {
  * Aprueba un proveedor.
  */
 const approveUser = async (userId) => {
-  const query = 'UPDATE users SET provider_approved = true WHERE id = $1 RETURNING id';
+  const query = 'UPDATE usuarios SET provider_approved = true WHERE id = $1 RETURNING id';
   const { rows } = await pool.query(query, [userId]);
   return rows.length > 0;
 };
@@ -64,7 +64,7 @@ const approveUser = async (userId) => {
  * Rechaza/Desaprueba un proveedor.
  */
 const rejectUser = async (userId) => {
-  const query = 'UPDATE users SET provider_approved = false WHERE id = $1 RETURNING id';
+  const query = 'UPDATE usuarios SET provider_approved = false WHERE id = $1 RETURNING id';
   const { rows } = await pool.query(query, [userId]);
   return rows.length > 0;
 };
@@ -73,7 +73,7 @@ const rejectUser = async (userId) => {
  * Desactiva la cuenta de un usuario.
  */
 const deactivateUser = async (userId) => {
-  const query = 'UPDATE users SET active = false, estado = false WHERE id = $1 RETURNING id';
+  const query = 'UPDATE usuarios SET active = false, estado = false WHERE id = $1 RETURNING id';
   const { rows } = await pool.query(query, [userId]);
   return rows.length > 0;
 };
