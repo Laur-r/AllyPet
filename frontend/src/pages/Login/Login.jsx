@@ -32,13 +32,24 @@ export default function Login() {
       localStorage.setItem('user', JSON.stringify(data.user));
     }
 
+    const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
+
     const successMessage =
       data.message ||
-      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${
-        data.user?.rol || 'usuario'
-      }).`;
+      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${role}).`;
     alert(successMessage);
-    navigate('/dashboard');
+
+    if (role === 'admin') {
+      navigate('/menu/admin');
+    } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
+      navigate('/menu/dueno');
+    } else if (role === 'paseador') {
+      navigate('/menu/paseador');
+    } else if (role === 'veterinario') {
+      navigate('/menu/veterinario');
+    } else {
+      navigate('/');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -87,12 +98,13 @@ export default function Login() {
       return;
     }
 
+    const roleStr = params.get('role') || 'usuario';
     const message =
       params.get('message') || `Inicio de sesión con Google exitoso. Bienvenido ${params.get('name') || ''}`;
     const user = {
       nombre: params.get('name') || '',
       email: params.get('email') || '',
-      rol: params.get('role') || 'usuario',
+      rol: roleStr,
     };
 
     localStorage.setItem('token', token);
@@ -100,8 +112,21 @@ export default function Login() {
     alert(message);
 
     window.history.replaceState(null, '', window.location.pathname);
-    navigate('/dashboard');
+
+    const role = roleStr.toLowerCase();
+    if (role === 'admin') {
+      navigate('/menu/admin');
+    } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
+      navigate('/menu/dueno');
+    } else if (role === 'paseador') {
+      navigate('/menu/paseador');
+    } else if (role === 'veterinario') {
+      navigate('/menu/veterinario');
+    } else {
+      navigate('/');
+    }
   }, [navigate]);
+
 
   const handleGoogleClick = () => {
     window.location.href = `${BACKEND_URL}/auth/google`;
