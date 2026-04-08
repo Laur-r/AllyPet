@@ -25,14 +25,37 @@ export default function Login() {
   };
 
   const handleAuthSuccess = (data) => {
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
 
-    if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
 
+<<<<<<< HEAD
+  const successMessage =
+    data.message ||
+    `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${
+      data.user?.rol || 'usuario'
+    }).`;
+
+  alert(successMessage);
+
+  // 🔥 REDIRECCIÓN POR ROL
+  const rol = data.user?.rol;
+
+  if (rol === 'dueno') {
+    navigate('/menu/dueno');
+  } else if (rol === 'paseador') {
+    navigate('/menu/paseador');
+  } else if (rol === 'veterinario') {
+    navigate('/menu/veterinario');
+  } else {
+    navigate('/');
+  }
+};
+=======
     const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
 
     const successMessage =
@@ -52,6 +75,7 @@ export default function Login() {
       navigate('/');
     }
   };
+>>>>>>> 019ce12f34ba38faf5c747ba1e1440c8422bb243
 
   const handleSubmit = async (e) => {
     e.preventDefault();

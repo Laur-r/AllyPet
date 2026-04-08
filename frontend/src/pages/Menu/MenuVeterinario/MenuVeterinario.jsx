@@ -1,31 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuVeterinario.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
+import avatarDefault from "../../../assets/menus/menudefault.png";
 
-export default function MenuVeterinario({ children }) {
-  const [activeItem, setActiveItem] = useState("inicio");
+export default function MenuVeterinario() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) setUser(JSON.parse(userData));
+  }, []);
+
+  /* Determina el ítem activo según la URL actual */
+  const getActive = () => {
+    const path = location.pathname;
+    if (path.includes("perfil"))        return "perfil";
+    if (path.includes("citas"))         return "citas";
+    if (path.includes("mensajes"))      return "mensajes";
+    if (path.includes("configuracion")) return "configuracion";
+    return "inicio";
+  };
 
   const navItems = [
     {
-      key: "inicio", label: "Inicio",
+      key: "inicio", label: "Inicio", route: "/menu/veterinario",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     },
     {
-      key: "perfil", label: "Mi Perfil", tag: "Comercial",
+      key: "perfil", label: "Mi Perfil", tag: "Comercial", route: "/menu/veterinario/perfil",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
     },
     {
-      key: "citas", label: "Citas", badge: 4,
+      key: "citas", label: "Citas", badge: 4, route: "/menu/veterinario/citas",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
     },
     {
-      key: "mensajes", label: "Mensajes", badge: 1,
+      key: "mensajes", label: "Mensajes", badge: 1, route: "/menu/veterinario/mensajes",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
     },
     {
-      key: "configuracion", label: "Configuración",
+      key: "configuracion", label: "Configuración", route: "/menu/veterinario/configuracion",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
     },
   ];
@@ -41,13 +61,13 @@ export default function MenuVeterinario({ children }) {
 
         <div className="mv-profile">
           <div className="mv-avatar-wrap">
-            <img className="mv-avatar" src="https://i.pravatar.cc/80?img=51" alt="Dra. Mora" />
+            <img className="mv-avatar" src={avatarDefault} alt="avatar" />
             <span className="mv-avatar-dot" />
           </div>
           {sidebarOpen && (
             <div className="mv-profile-info">
-              <span className="mv-profile-name">Dra. Ana Mora</span>
-              <span className="mv-profile-role">Veterinaria</span>
+              <span className="mv-profile-name">{user?.nombre || "Usuario"}</span>
+              <span className="mv-profile-role">Veterinario</span>
             </div>
           )}
         </div>
@@ -58,15 +78,15 @@ export default function MenuVeterinario({ children }) {
           {navItems.map((item) => (
             <button
               key={item.key}
-              className={`mv-nav-item ${activeItem === item.key ? "active" : ""}`}
-              onClick={() => setActiveItem(item.key)}
+              className={`mv-nav-item ${getActive() === item.key ? "active" : ""}`}
+              onClick={() => navigate(item.route)}
             >
               <span className="mv-nav-icon">{item.icon}</span>
               {sidebarOpen && (
                 <>
                   <span className="mv-nav-label">{item.label}</span>
                   {item.badge && <span className="mv-badge">{item.badge}</span>}
-                  {item.tag  && <span className="mv-tag">{item.tag}</span>}
+                  {item.tag   && <span className="mv-tag">{item.tag}</span>}
                 </>
               )}
             </button>
@@ -74,7 +94,14 @@ export default function MenuVeterinario({ children }) {
         </nav>
 
         <div className="mv-sidebar-footer">
-          <button className="mv-logout">
+          <button
+            className="mv-logout"
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+          >
             <span className="mv-nav-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -92,12 +119,15 @@ export default function MenuVeterinario({ children }) {
           <div className="mv-navbar-left">
             <button className="mv-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
             <div className="mv-searchbar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
                 type="text"
@@ -107,6 +137,7 @@ export default function MenuVeterinario({ children }) {
               />
             </div>
           </div>
+
           <div className="mv-navbar-right">
             <div className="mv-status-pill">
               <span className="mv-status-dot" />
@@ -120,13 +151,16 @@ export default function MenuVeterinario({ children }) {
               <span className="mv-bell-dot" />
             </button>
             <div className="mv-user-chip">
-              <img src="https://i.pravatar.cc/80?img=51" alt="Dra. Mora" />
-              <span>Dra. Mora</span>
+              <img src={avatarDefault} alt="avatar" />
+              <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>
         </header>
 
-        <main className="mv-content">{children}</main>
+        {/* Aquí se renderizan las páginas hijas */}
+        <main className="mv-content">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
