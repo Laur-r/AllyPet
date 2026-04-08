@@ -1,49 +1,77 @@
 import { useState, useEffect } from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuPaseador.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 
-export default function MenuPaseador({ children }) {
-  const [activeItem, setActiveItem] = useState("inicio");
+export default function MenuPaseador() {
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [search, setSearch] = useState("");
-  const [user, setUser] = useState(null);
+  const [search, setSearch]           = useState("");
+  const [user, setUser]               = useState(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) setUser(JSON.parse(userData));
   }, []);
 
+  /* Deriva el item activo de la URL actual */
+  const getActive = () => {
+    const path = location.pathname;
+    if (path.includes("/perfil"))        return "perfil";
+    if (path.includes("/reservas"))      return "reservas";
+    if (path.includes("/mensajes"))      return "mensajes";
+    if (path.includes("/configuracion")) return "configuracion";
+    return "inicio";
+  };
+  const activeItem = getActive();
+
   const navItems = [
     {
-      key: "inicio", label: "Inicio",
+      key: "inicio", label: "Inicio", path: "/menu/paseador",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     },
     {
-      key: "perfil", label: "Mi Perfil", tag: "Comercial",
+      key: "perfil", label: "Mi Perfil", path: "/menu/paseador/perfil", tag: "Comercial",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
     },
     {
-      key: "reservas", label: "Reservas", badge: 5,
+      key: "reservas", label: "Reservas", path: "/menu/paseador/reservas", badge: 5,
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
     },
     {
-      key: "mensajes", label: "Mensajes", badge: 2,
+      key: "mensajes", label: "Mensajes", path: "/menu/paseador/mensajes", badge: 2,
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
     },
     {
-      key: "configuracion", label: "Configuración",
+      key: "configuracion", label: "Configuración", path: "/menu/paseador/configuracion",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
     },
   ];
 
+  const handleNav = (item) => {
+    navigate(item.path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <div className="mp-layout">
 
+      {/* ── Sidebar ── */}
       <aside className={`mp-sidebar ${sidebarOpen ? "" : "collapsed"}`}>
 
         <div className="mp-logo">
-          <img src={logoNavbar} alt="AllyPet" className={sidebarOpen ? "mp-logo-img" : "mp-logo-img-small"} />
+          <img
+            src={logoNavbar}
+            alt="AllyPet"
+            className={sidebarOpen ? "mp-logo-img" : "mp-logo-img-small"}
+          />
         </div>
 
         <div className="mp-profile">
@@ -66,7 +94,7 @@ export default function MenuPaseador({ children }) {
             <button
               key={item.key}
               className={`mp-nav-item ${activeItem === item.key ? "active" : ""}`}
-              onClick={() => setActiveItem(item.key)}
+              onClick={() => handleNav(item)}
             >
               <span className="mp-nav-icon">{item.icon}</span>
               {sidebarOpen && (
@@ -81,14 +109,7 @@ export default function MenuPaseador({ children }) {
         </nav>
 
         <div className="mp-sidebar-footer">
-          <button
-            className="mp-logout"
-            onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              window.location.href = "/login";
-            }}
-          >
+          <button className="mp-logout" onClick={handleLogout}>
             <span className="mp-nav-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -101,6 +122,7 @@ export default function MenuPaseador({ children }) {
         </div>
       </aside>
 
+      {/* ── Main ── */}
       <div className="mp-main">
         <header className="mp-navbar">
           <div className="mp-navbar-left">
@@ -118,7 +140,7 @@ export default function MenuPaseador({ children }) {
               </svg>
               <input
                 type="text"
-                placeholder="Buscar solicitudes, clientes, zonas..."
+                placeholder="Buscar reservas, clientes, zonas..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -144,7 +166,10 @@ export default function MenuPaseador({ children }) {
           </div>
         </header>
 
-        <main className="mp-content">{children}</main>
+        {/* Outlet renderiza la ruta anidada activa */}
+        <main className="mp-content">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
