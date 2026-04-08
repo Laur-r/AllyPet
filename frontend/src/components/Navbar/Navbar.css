@@ -121,6 +121,24 @@
   box-shadow: 0 5px 16px rgba(139, 53, 200, 0.4);
 }
 
+.navbar__login {
+  color: var(--color-purple);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1.5px solid var(--color-purple);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navbar__login:hover {
+  background: var(--color-purple);
+  color: #fff;
+}
+
 /* ── Hamburger (mobile) ── */
 .navbar__toggle {
   display: none;

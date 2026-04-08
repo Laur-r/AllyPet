@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -13,6 +13,7 @@ export default function Navbar({ isSimple = false }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -52,6 +53,11 @@ export default function Navbar({ isSimple = false }) {
 
       {/* Acciones */}
      <div className="navbar__actions">
+        {location.pathname !== '/login' && (
+          <button onClick={() => navigate('/login')} className="navbar__login">
+            Iniciar sesión
+          </button>
+        )}
         <button onClick={() => navigate('/register')} className="navbar__register">
           Registrarse
         </button>
