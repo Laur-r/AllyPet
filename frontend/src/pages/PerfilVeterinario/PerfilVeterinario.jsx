@@ -1,69 +1,43 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./PerfilVeterinario.css";
 
-/* ─── SVG icons para servicios ─── */
-const SrvIcons = {
-  consulta: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-    </svg>
-  ),
-  vacuna: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m18 2 4 4"/><path d="m17 7 1-5"/><path d="M7 22 2 17l9.5-9.5"/><path d="m16 6-9.5 9.5"/><path d="m9.5 10.5 1 1"/><path d="m13 9 1 1"/><path d="m6 14 1 1"/>
-    </svg>
-  ),
-  parasito: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-  ),
-  peluqueria: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
-      <line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/>
-      <line x1="8.12" y1="8.12" x2="12" y2="12"/>
-    </svg>
-  ),
-  dental: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 5c-1-2-3.5-3-5-3C4 2 2 4 2 7c0 5 4 8 10 15 6-7 10-10 10-15 0-3-2-5-5-5-1.5 0-4 1-5 3z"/>
-    </svg>
-  ),
-  laboratorio: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11m0 0a6 6 0 0 0 6 6 6 6 0 0 0 6-6"/>
-      <path d="M3 9h18"/>
-    </svg>
-  ),
+/* ── CONFIG ── */
+const API = 'http://localhost:3005';
+const getToken = () => localStorage.getItem('token');
+const authFetch = (url, options = {}) => {
+  const isFormData = options.body instanceof FormData;
+  return fetch(`${API}${url}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...options.headers,
+    },
+  }).then(r => r.json());
+};
+const fotoUrl = (f) => {
+  if (!f) return null;
+  if (f.startsWith('http') || f.startsWith('blob')) return f;
+  return `${API}${f}`;
 };
 
-const VET_INICIAL = {
-  nombre:       "Dr. Alexander Velez",
-  especialidad: "Medicina Veterinaria General",
-  foto:         "https://i.pravatar.cc/300?img=57",
-  banner:       "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=1200&q=80",
-  ciudad:       "Cali",
-  estado:       "Valle del Cauca",
-  disponible:   true,
-  calificacion: 4.8,
-  totalResenas: 124,
-  experiencia:  9,
-  descripcion:  "Soy veterinaria con más de 9 años de experiencia en medicina de pequeños animales. Me especializo en prevención, diagnóstico y tratamiento de perros y gatos. Mi prioridad es el bienestar de tu mascota y brindarte información clara en cada consulta.",
-  servicios: [
-    { icon: SrvIcons.consulta,    iconKey: "consulta",    nombre: "Consulta General",  precio: "Desde $40.000" },
-    { icon: SrvIcons.vacuna,      iconKey: "vacuna",      nombre: "Vacunación",         precio: "Desde $25.000" },
-    { icon: SrvIcons.parasito,    iconKey: "parasito",    nombre: "Desparasitación",    precio: "Desde $20.000" },
-    { icon: SrvIcons.peluqueria,  iconKey: "peluqueria",  nombre: "Peluquería",         precio: "Desde $35.000" },
-    { icon: SrvIcons.dental,      iconKey: "dental",      nombre: "Limpieza Dental",    precio: "Desde $60.000" },
-    { icon: SrvIcons.laboratorio, iconKey: "laboratorio", nombre: "Laboratorio",        precio: "Desde $45.000" },
-  ],
-  resenas: [
-    { id: 1, cliente: "Valentina Ríos",   avatar: "https://i.pravatar.cc/60?img=5",  fecha: "15 mar 2025", estrellas: 5, comentario: "Excelente atención. La Dra. Mora explicó todo con paciencia y mi perro quedó muy bien. Super recomendada." },
-    { id: 2, cliente: "Mateo Gómez",      avatar: "https://i.pravatar.cc/60?img=11", fecha: "2 feb 2025",  estrellas: 5, comentario: "Llevé a mi gata por una consulta de urgencia y me atendieron rápido. Muy profesional y amable." },
-    { id: 3, cliente: "Camila Herrera",   avatar: "https://i.pravatar.cc/60?img=9",  fecha: "18 ene 2025", estrellas: 4, comentario: "Buen servicio, instalaciones limpias. El precio es justo para la calidad que ofrecen." },
-    { id: 4, cliente: "Sebastián Torres", avatar: "https://i.pravatar.cc/60?img=15", fecha: "5 ene 2025",  estrellas: 5, comentario: "Mi mascota siempre sale contenta de las consultas. La doctora tiene mucha paciencia con los animales." },
-  ],
+/* ─── SVG icons servicios ─── */
+const SrvIcons = {
+  consulta: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+  vacuna:   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m18 2 4 4"/><path d="m17 7 1-5"/><path d="M7 22 2 17l9.5-9.5"/><path d="m16 6-9.5 9.5"/><path d="m9.5 10.5 1 1"/><path d="m13 9 1 1"/><path d="m6 14 1 1"/></svg>,
+  parasito: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  default:  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+};
+
+const DIAS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const HORARIO_VACIO = DIAS.reduce((acc, d) => ({ ...acc, [d]: { abierto: d !== 'Sáb' && d !== 'Dom', desde: '08:00', hasta: '18:00' } }), {});
+
+const VET_VACIO = {
+  nombre: '', especialidad: '', foto_perfil: null, banner: null,
+  ciudad: '', estado: '', disponible: true, calificacion: 0,
+  totalResenas: 0, experiencia: 0,
+  descripcion: '', nombre_establecimiento: '', direccion: '',
+  servicios: [], horarios: HORARIO_VACIO, resenas: [],
 };
 
 /* ── íconos UI ── */
@@ -77,20 +51,13 @@ const IcoTrash  = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="no
 function Estrellas({ valor, size = 15 }) {
   return (
     <span className="pv-stars" style={{ fontSize: size }}>
-      {[1,2,3,4,5].map((i) => (
-        <span key={i} className={i <= Math.round(valor) ? "star on" : "star"}>★</span>
-      ))}
+      {[1,2,3,4,5].map(i => <span key={i} className={i <= Math.round(valor) ? 'star on' : 'star'}>★</span>)}
     </span>
   );
 }
 
-/* ── Botón editar/guardar/cancelar inline ── */
 function EditBtn({ editando, onEdit, onSave, onCancel }) {
-  if (!editando) return (
-    <button className="pv-edit-trigger" onClick={onEdit} title="Editar">
-      <IcoEdit /> Editar
-    </button>
-  );
+  if (!editando) return <button className="pv-edit-trigger" onClick={onEdit}><IcoEdit /> Editar</button>;
   return (
     <div className="pv-edit-actions">
       <button className="pv-edit-save" onClick={onSave}><IcoSave /> Guardar</button>
@@ -99,126 +66,209 @@ function EditBtn({ editando, onEdit, onSave, onCancel }) {
   );
 }
 
-/* ── Toast ── */
-function Toast({ msg }) {
-  return msg ? (
-    <div className="pv-toast">
-      <IcoSave /> {msg}
-    </div>
-  ) : null;
-}
-
 /* ════════════════════════════════════════════════════════ */
 export default function PerfilVeterinario() {
-  const [vet, setVet]           = useState(VET_INICIAL);
-  const [tab, setTab]           = useState("info");
-  const [toast, setToast]       = useState(null);
+  const [vet,          setVet]          = useState(VET_VACIO);
+  const [cargando,     setCargando]     = useState(true);
+  const [tab,          setTab]          = useState('info');
+  const [toast,        setToast]        = useState(null);
+  const [guardando,    setGuardando]    = useState(false);
 
-  /* estados de edición por sección */
-  const [editHero,      setEditHero]      = useState(false);
-  const [editDesc,      setEditDesc]      = useState(false);
-  const [editServicio,  setEditServicio]  = useState(null); // índice
-  const [addServicio,   setAddServicio]   = useState(false);
+  const [editHero,     setEditHero]     = useState(false);
+  const [editDesc,     setEditDesc]     = useState(false);
+  const [editHorarios, setEditHorarios] = useState(false);
+  const [editServicio, setEditServicio] = useState(null);
+  const [addServicio,  setAddServicio]  = useState(false);
 
-  /* drafts */
-  const [draftHero, setDraftHero] = useState({});
-  const [draftDesc, setDraftDesc] = useState("");
-  const [draftSrv,  setDraftSrv]  = useState({ nombre: "", precio: "" });
-  const [newSrv,    setNewSrv]    = useState({ nombre: "", precio: "" });
+  const [draftHero,    setDraftHero]    = useState({});
+  const [draftDesc,    setDraftDesc]    = useState('');
+  const [draftHorarios,setDraftHorarios]= useState({});
+  const [draftSrv,     setDraftSrv]     = useState({ nombre: '', precio: '' });
+  const [newSrv,       setNewSrv]       = useState({ nombre: '', precio: '' });
 
-  /* refs para inputs de archivo */
+  /* archivos seleccionados (File objects) */
+  const [fileFoto,   setFileFoto]   = useState(null);
+  const [fileBanner, setFileBanner] = useState(null);
+
   const bannerRef = useRef();
   const fotoRef   = useRef();
 
-  const notify = msg => { setToast(msg); setTimeout(() => setToast(null), 2600); };
+  const notify = msg => { setToast(msg); setTimeout(() => setToast(null), 2800); };
 
-  /* ── helpers imagen ── */
-  const handleBanner = e => {
-    const f = e.target.files[0];
-    if (f) setDraftHero(d => ({ ...d, banner: URL.createObjectURL(f) }));
-  };
-  const handleFoto = e => {
-    const f = e.target.files[0];
-    if (f) setDraftHero(d => ({ ...d, foto: URL.createObjectURL(f) }));
+  /* ── Cargar perfil al montar ── */
+  useEffect(() => {
+  const token = getToken();
+  if (!token) return;
+
+  authFetch('/perfil-vet')
+    .then(res => {
+      if (res.ok && res.data) {
+        const d = res.data;
+        setVet({
+          ...VET_VACIO,
+          nombre: d.nombre_establecimiento || '',
+          nombre_establecimiento: d.nombre_establecimiento || '',
+          especialidad: d.especialidad || '',
+          foto_perfil: d.foto_perfil || null,
+          banner: d.banner || null,
+          ciudad: d.ciudad || '',
+          estado: d.estado || '',
+          direccion: d.direccion || '',
+          disponible: d.disponible ?? true,
+          calificacion: parseFloat(d.calificacion) || 0,
+          totalResenas: d.total_resenas || 0,
+          experiencia: d.experiencia || 0,
+          descripcion: d.descripcion || '',
+          servicios: Array.isArray(d.servicios) ? d.servicios : [],
+          horarios: d.horarios || HORARIO_VACIO,
+        });
+      }
+    })
+    .catch(() => notify('Error al cargar perfil'))
+    .finally(() => setCargando(false));
+}, []);
+
+  /* ── Guardar en backend ── */
+  const guardarEnBackend = async (camposExtra = {}) => {
+    setGuardando(true);
+    try {
+      const fd = new FormData();
+      if (fileFoto)   fd.append('foto_perfil', fileFoto);
+      if (fileBanner) fd.append('banner',       fileBanner);
+
+      const campos = { ...vet, ...camposExtra };
+      fd.append('nombre_establecimiento', campos.nombre_establecimiento || '');
+      fd.append('direccion',   campos.direccion   || '');
+      fd.append('ciudad',      campos.ciudad      || '');
+      fd.append('estado',      campos.estado      || '');
+      fd.append('especialidad',campos.especialidad|| '');
+      fd.append('experiencia', campos.experiencia || 0);
+      fd.append('descripcion', campos.descripcion || '');
+      fd.append('disponible',  campos.disponible  ?? true);
+      fd.append('servicios',   JSON.stringify(campos.servicios  || []));
+      fd.append('horarios',    JSON.stringify(campos.horarios   || {}));
+
+      const res = await authFetch('/perfil-vet', { method: 'PUT', body: fd });
+      if (res.ok) {
+        setFileFoto(null);
+        setFileBanner(null);
+      } else {
+        notify(res.message || 'Error al guardar');
+      }
+    } catch {
+      notify('Error de conexión');
+    }
+    setGuardando(false);
   };
 
   /* ── HERO ── */
   const abrirHero = () => {
     setDraftHero({
-      nombre: vet.nombre, especialidad: vet.especialidad,
-      ciudad: vet.ciudad, estado: vet.estado,
+      nombre: vet.nombre, nombre_establecimiento: vet.nombre_establecimiento,
+      especialidad: vet.especialidad, ciudad: vet.ciudad,
+      estado: vet.estado, direccion: vet.direccion,
       experiencia: vet.experiencia, disponible: vet.disponible,
-      foto: vet.foto, banner: vet.banner,
+      foto_perfil: vet.foto_perfil, banner: vet.banner,
     });
     setEditHero(true);
   };
-  const guardarHero = () => {
-    setVet(v => ({ ...v, ...draftHero }));
+  const guardarHero = async () => {
+    const nuevo = { ...vet, ...draftHero, nombre: draftHero.nombre_establecimiento };
+    setVet(nuevo);
     setEditHero(false);
-    notify("Información principal actualizada");
+    await guardarEnBackend(nuevo);
+    notify('Información principal actualizada');
   };
-  const cancelarHero = () => setEditHero(false);
+  const cancelarHero = () => { setEditHero(false); setFileFoto(null); setFileBanner(null); };
 
   /* ── DESC ── */
-  const abrirDesc = () => { setDraftDesc(vet.descripcion); setEditDesc(true); };
-  const guardarDesc = () => { setVet(v => ({ ...v, descripcion: draftDesc })); setEditDesc(false); notify("Descripción actualizada"); };
+  const abrirDesc    = () => { setDraftDesc(vet.descripcion); setEditDesc(true); };
+  const guardarDesc  = async () => {
+    const nuevo = { ...vet, descripcion: draftDesc };
+    setVet(nuevo); setEditDesc(false);
+    await guardarEnBackend(nuevo);
+    notify('Descripción actualizada');
+  };
   const cancelarDesc = () => setEditDesc(false);
 
-  /* ── SERVICIO editar ── */
-  const abrirSrv = (i) => { setDraftSrv({ nombre: vet.servicios[i].nombre, precio: vet.servicios[i].precio }); setEditServicio(i); };
-  const guardarSrv = (i) => {
-    setVet(v => {
-      const srvs = [...v.servicios];
-      srvs[i] = { ...srvs[i], ...draftSrv };
-      return { ...v, servicios: srvs };
-    });
-    setEditServicio(null);
-    notify("Servicio actualizado");
+  /* ── HORARIOS ── */
+  const abrirHorarios   = () => { setDraftHorarios({ ...vet.horarios }); setEditHorarios(true); };
+  const guardarHorarios = async () => {
+    const nuevo = { ...vet, horarios: draftHorarios };
+    setVet(nuevo); setEditHorarios(false);
+    await guardarEnBackend(nuevo);
+    notify('Horarios actualizados');
   };
-  const eliminarSrv = (i) => {
-    setVet(v => ({ ...v, servicios: v.servicios.filter((_, idx) => idx !== i) }));
-    notify("Servicio eliminado");
-  };
+  const cancelarHorarios = () => setEditHorarios(false);
 
-  /* ── SERVICIO agregar ── */
-  const guardarNuevoSrv = () => {
+  /* ── SERVICIOS ── */
+  const abrirSrv    = i => { setDraftSrv({ nombre: vet.servicios[i].nombre, precio: vet.servicios[i].precio }); setEditServicio(i); };
+  const guardarSrv  = async i => {
+    const srvs = vet.servicios.map((s, idx) => idx === i ? { ...s, ...draftSrv } : s);
+    const nuevo = { ...vet, servicios: srvs };
+    setVet(nuevo); setEditServicio(null);
+    await guardarEnBackend(nuevo);
+    notify('Servicio actualizado');
+  };
+  const eliminarSrv = async i => {
+    const srvs = vet.servicios.filter((_, idx) => idx !== i);
+    const nuevo = { ...vet, servicios: srvs };
+    setVet(nuevo);
+    await guardarEnBackend(nuevo);
+    notify('Servicio eliminado');
+  };
+  const guardarNuevoSrv = async () => {
     if (!newSrv.nombre.trim()) return;
-    setVet(v => ({
-      ...v,
-      servicios: [...v.servicios, {
-        icon: SrvIcons.consulta, iconKey: "consulta",
-        nombre: newSrv.nombre, precio: newSrv.precio,
-      }],
-    }));
-    setNewSrv({ nombre: "", precio: "" });
-    setAddServicio(false);
-    notify("Servicio agregado");
+    const srvs = [...vet.servicios, { nombre: newSrv.nombre, precio: newSrv.precio }];
+    const nuevo = { ...vet, servicios: srvs };
+    setVet(nuevo); setNewSrv({ nombre: '', precio: '' }); setAddServicio(false);
+    await guardarEnBackend(nuevo);
+    notify('Servicio agregado');
   };
 
-  /* ── disponible toggle ── */
-  const toggleDisponible = () => {
-    if (editHero) {
-      setDraftHero(d => ({ ...d, disponible: !d.disponible }));
-    } else {
-      setVet(v => ({ ...v, disponible: !v.disponible }));
-    }
+  /* ── Disponible toggle (inmediato) ── */
+  const toggleDisponible = async () => {
+    if (editHero) { setDraftHero(d => ({ ...d, disponible: !d.disponible })); return; }
+    const nuevo = { ...vet, disponible: !vet.disponible };
+    setVet(nuevo);
+    await guardarEnBackend(nuevo);
   };
 
   const disponibleActual = editHero ? draftHero.disponible : vet.disponible;
+
+  /* ── Helpers imagen ── */
+  const handleBanner = e => {
+    const f = e.target.files[0]; if (!f) return;
+    setFileBanner(f);
+    setDraftHero(d => ({ ...d, banner: URL.createObjectURL(f) }));
+  };
+  const handleFoto = e => {
+    const f = e.target.files[0]; if (!f) return;
+    setFileFoto(f);
+    setDraftHero(d => ({ ...d, foto_perfil: URL.createObjectURL(f) }));
+  };
+
+  if (cargando) return (
+    <div style={{ padding: 40, textAlign: 'center', color: '#6B7280', fontFamily: 'Inter, sans-serif' }}>
+      Cargando perfil…
+    </div>
+  );
+
+  const bannerSrc   = editHero ? (draftHero.banner     || vet.banner)      : vet.banner;
+  const fotoSrc     = editHero ? (draftHero.foto_perfil || vet.foto_perfil) : vet.foto_perfil;
 
   return (
     <div className="pv-page">
 
       {/* ══════ HERO ══════ */}
       <div className="pv-hero">
-
-        {/* Banner */}
         <div className="pv-banner">
-          <img src={editHero && draftHero.banner ? draftHero.banner : vet.banner} alt="banner" />
+          {bannerSrc
+            ? <img src={fotoUrl(bannerSrc)} alt="banner" />
+            : <div className="pv-banner-placeholder" />
+          }
           <div className="pv-banner-overlay" />
           <div className="pv-banner-brand" />
-
-          {/* Botón cambiar banner — solo en edición */}
           {editHero && (
             <>
               <button className="pv-banner-edit-btn" onClick={() => bannerRef.current.click()}>
@@ -229,37 +279,31 @@ export default function PerfilVeterinario() {
           )}
         </div>
 
-        {/* Foto perfil */}
         <div className="pv-foto-wrap">
-          <img className="pv-foto" src={editHero && draftHero.foto ? draftHero.foto : vet.foto} alt={vet.nombre} />
+          {fotoSrc
+            ? <img className="pv-foto" src={fotoUrl(fotoSrc)} alt="foto" />
+            : <div className="pv-foto pv-foto-placeholder"><IcoCamera /></div>
+          }
           <span
-            className={`pv-disponible-badge ${disponibleActual ? "on" : "off"}`}
+            className={`pv-disponible-badge ${disponibleActual ? 'on' : 'off'}`}
             onClick={toggleDisponible}
             style={{ cursor: 'pointer' }}
             title="Clic para cambiar disponibilidad"
           >
             <span className="pv-badge-dot" />
-            {disponibleActual ? "Disponible" : "Ocupado"}
+            {disponibleActual ? 'Disponible' : 'Ocupado'}
           </span>
-          {/* Botón cambiar foto — solo en edición */}
           {editHero && (
             <>
-              <button className="pv-foto-edit-btn" onClick={() => fotoRef.current.click()} title="Cambiar foto">
-                <IcoCamera />
-              </button>
+              <button className="pv-foto-edit-btn" onClick={() => fotoRef.current.click()}><IcoCamera /></button>
               <input ref={fotoRef} type="file" accept="image/*" style={{ display:'none' }} onChange={handleFoto} />
             </>
           )}
         </div>
 
-        {/* Acciones hero */}
         <div className="pv-acciones">
-          <EditBtn
-            editando={editHero}
-            onEdit={abrirHero}
-            onSave={guardarHero}
-            onCancel={cancelarHero}
-          />
+          {guardando && <span className="pv-guardando">Guardando…</span>}
+          <EditBtn editando={editHero} onEdit={abrirHero} onSave={guardarHero} onCancel={cancelarHero} />
         </div>
       </div>
 
@@ -268,81 +312,79 @@ export default function PerfilVeterinario() {
         <div className="pv-header-left">
           {editHero ? (
             <div className="pv-hero-edit-form">
-              <input
-                className="pv-hero-input pv-hero-input-nombre"
-                value={draftHero.nombre}
-                onChange={e => setDraftHero(d => ({ ...d, nombre: e.target.value }))}
-                placeholder="Nombre completo"
-              />
-              <input
-                className="pv-hero-input"
+              <input className="pv-hero-input pv-hero-input-nombre"
+                value={draftHero.nombre_establecimiento}
+                onChange={e => setDraftHero(d => ({ ...d, nombre_establecimiento: e.target.value }))}
+                placeholder="Nombre del establecimiento o tuyo" />
+              <input className="pv-hero-input"
                 value={draftHero.especialidad}
                 onChange={e => setDraftHero(d => ({ ...d, especialidad: e.target.value }))}
-                placeholder="Especialidad"
-              />
+                placeholder="Especialidad" />
               <div className="pv-hero-row">
-                <input
-                  className="pv-hero-input"
+                <input className="pv-hero-input"
                   value={draftHero.ciudad}
                   onChange={e => setDraftHero(d => ({ ...d, ciudad: e.target.value }))}
-                  placeholder="Ciudad"
-                />
-                <input
-                  className="pv-hero-input"
+                  placeholder="Ciudad" />
+                <input className="pv-hero-input"
                   value={draftHero.estado}
                   onChange={e => setDraftHero(d => ({ ...d, estado: e.target.value }))}
-                  placeholder="Departamento"
-                />
-                <input
-                  className="pv-hero-input pv-hero-input-sm"
-                  type="number"
+                  placeholder="Departamento" />
+                <input className="pv-hero-input pv-hero-input-sm" type="number"
                   value={draftHero.experiencia}
                   onChange={e => setDraftHero(d => ({ ...d, experiencia: Number(e.target.value) }))}
-                  placeholder="Años exp."
-                />
+                  placeholder="Años exp." />
               </div>
+              <input className="pv-hero-input"
+                value={draftHero.direccion}
+                onChange={e => setDraftHero(d => ({ ...d, direccion: e.target.value }))}
+                placeholder="Dirección del consultorio" />
             </div>
           ) : (
             <>
-              <h1 className="pv-nombre">{vet.nombre}</h1>
-              <p className="pv-especialidad">{vet.especialidad}</p>
+              <h1 className="pv-nombre">{vet.nombre_establecimiento || 'Mi consultorio'}</h1>
+              <p className="pv-especialidad">{vet.especialidad || 'Veterinario'}</p>
               <div className="pv-meta-row">
-                <span className="pv-meta-item">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  {vet.ciudad}, {vet.estado}
-                </span>
-                <span className="pv-meta-item">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                  </svg>
-                  {vet.experiencia} años de experiencia
-                </span>
+                {(vet.ciudad || vet.estado) && (
+                  <span className="pv-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {[vet.ciudad, vet.estado].filter(Boolean).join(', ')}
+                  </span>
+                )}
+                {vet.direccion && (
+                  <span className="pv-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    {vet.direccion}
+                  </span>
+                )}
+                {vet.experiencia > 0 && (
+                  <span className="pv-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {vet.experiencia} años de experiencia
+                  </span>
+                )}
               </div>
             </>
           )}
         </div>
 
-        <div className="pv-rating-box">
-          <span className="pv-rating-num">{vet.calificacion}</span>
-          <Estrellas valor={vet.calificacion} size={17} />
-          <span className="pv-rating-count">{vet.totalResenas} reseñas</span>
-        </div>
+        {vet.calificacion > 0 && (
+          <div className="pv-rating-box">
+            <span className="pv-rating-num">{vet.calificacion}</span>
+            <Estrellas valor={vet.calificacion} size={17} />
+            <span className="pv-rating-count">{vet.totalResenas} reseñas</span>
+          </div>
+        )}
       </div>
 
       {/* ══════ TABS ══════ */}
       <div className="pv-tabs">
         {[
-          { key: "info",      label: "Información" },
-          { key: "servicios", label: "Servicios"   },
-          { key: "resenas",   label: `Reseñas (${vet.resenas.length})` },
-        ].map((t) => (
-          <button
-            key={t.key}
-            className={`pv-tab ${tab === t.key ? "activa" : ""}`}
-            onClick={() => setTab(t.key)}
-          >
+          { key: 'info',      label: 'Información' },
+          { key: 'servicios', label: 'Servicios'   },
+          { key: 'horarios',  label: 'Horarios'    },
+          { key: 'resenas',   label: `Reseñas (${vet.resenas.length})` },
+        ].map(t => (
+          <button key={t.key} className={`pv-tab ${tab === t.key ? 'activa' : ''}`} onClick={() => setTab(t.key)}>
             {t.label}
           </button>
         ))}
@@ -352,42 +394,28 @@ export default function PerfilVeterinario() {
       <div className="pv-body">
 
         {/* ── INFO ── */}
-        {tab === "info" && (
+        {tab === 'info' && (
           <div className="pv-tab-info">
             <div className="pv-card">
               <div className="pv-card-header">
                 <h3 className="pv-card-title">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   Sobre mí
                 </h3>
-                <EditBtn
-                  editando={editDesc}
-                  onEdit={abrirDesc}
-                  onSave={guardarDesc}
-                  onCancel={cancelarDesc}
-                />
+                <EditBtn editando={editDesc} onEdit={abrirDesc} onSave={guardarDesc} onCancel={cancelarDesc} />
               </div>
-
-              {editDesc ? (
-                <textarea
-                  className="pv-desc-textarea"
-                  value={draftDesc}
-                  onChange={e => setDraftDesc(e.target.value)}
-                  rows={5}
-                />
-              ) : (
-                <p className="pv-desc">{vet.descripcion}</p>
-              )}
+              {editDesc
+                ? <textarea className="pv-desc-textarea" value={draftDesc} onChange={e => setDraftDesc(e.target.value)} rows={5} />
+                : <p className="pv-desc">{vet.descripcion || 'Agrega una descripción sobre ti y tu consultorio.'}</p>
+              }
             </div>
 
             <div className="pv-stats-grid">
               {[
-                { num: vet.experiencia,       label: "Años de experiencia"   },
-                { num: vet.totalResenas,      label: "Reseñas recibidas"     },
-                { num: vet.calificacion,      label: "Calificación promedio" },
-                { num: vet.servicios.length,  label: "Servicios ofrecidos"   },
+                { num: vet.experiencia,      label: 'Años de experiencia'   },
+                { num: vet.totalResenas,     label: 'Reseñas recibidas'     },
+                { num: vet.calificacion,     label: 'Calificación promedio' },
+                { num: vet.servicios.length, label: 'Servicios ofrecidos'   },
               ].map((s, i) => (
                 <div className="pv-stat" key={i}>
                   <span className="pv-stat-num">{s.num}</span>
@@ -399,7 +427,7 @@ export default function PerfilVeterinario() {
         )}
 
         {/* ── SERVICIOS ── */}
-        {tab === "servicios" && (
+        {tab === 'servicios' && (
           <div className="pv-tab-servicios">
             <div className="pv-servicios-header">
               <div>
@@ -411,21 +439,12 @@ export default function PerfilVeterinario() {
               </button>
             </div>
 
-            {/* Modal agregar servicio */}
             {addServicio && (
               <div className="pv-add-srv-form">
-                <input
-                  className="pv-srv-input"
-                  placeholder="Nombre del servicio"
-                  value={newSrv.nombre}
-                  onChange={e => setNewSrv(s => ({ ...s, nombre: e.target.value }))}
-                />
-                <input
-                  className="pv-srv-input"
-                  placeholder="Precio (ej: Desde $40.000)"
-                  value={newSrv.precio}
-                  onChange={e => setNewSrv(s => ({ ...s, precio: e.target.value }))}
-                />
+                <input className="pv-srv-input" placeholder="Nombre del servicio"
+                  value={newSrv.nombre} onChange={e => setNewSrv(s => ({ ...s, nombre: e.target.value }))} />
+                <input className="pv-srv-input" placeholder="Precio (ej: Desde $40.000)"
+                  value={newSrv.precio} onChange={e => setNewSrv(s => ({ ...s, precio: e.target.value }))} />
                 <div className="pv-add-srv-btns">
                   <button className="pv-edit-save" onClick={guardarNuevoSrv}><IcoSave /> Guardar</button>
                   <button className="pv-edit-cancel" onClick={() => setAddServicio(false)}><IcoCancel /> Cancelar</button>
@@ -433,26 +452,21 @@ export default function PerfilVeterinario() {
               </div>
             )}
 
+            {vet.servicios.length === 0 && !addServicio && (
+              <div className="pv-empty-state">No tienes servicios aún. Agrega el primero.</div>
+            )}
+
             <div className="pv-servicios-grid">
               {vet.servicios.map((srv, i) => (
                 <div className="pv-srv-card" key={i}>
                   <div className="pv-srv-accent" />
-                  <div className="pv-srv-icon-wrap">{srv.icon}</div>
-
+                  <div className="pv-srv-icon-wrap">{SrvIcons.default}</div>
                   {editServicio === i ? (
                     <div className="pv-srv-edit-form">
-                      <input
-                        className="pv-srv-input"
-                        value={draftSrv.nombre}
-                        onChange={e => setDraftSrv(d => ({ ...d, nombre: e.target.value }))}
-                        placeholder="Nombre"
-                      />
-                      <input
-                        className="pv-srv-input"
-                        value={draftSrv.precio}
-                        onChange={e => setDraftSrv(d => ({ ...d, precio: e.target.value }))}
-                        placeholder="Precio"
-                      />
+                      <input className="pv-srv-input" value={draftSrv.nombre}
+                        onChange={e => setDraftSrv(d => ({ ...d, nombre: e.target.value }))} placeholder="Nombre" />
+                      <input className="pv-srv-input" value={draftSrv.precio}
+                        onChange={e => setDraftSrv(d => ({ ...d, precio: e.target.value }))} placeholder="Precio" />
                       <div className="pv-srv-edit-btns">
                         <button className="pv-edit-save sm" onClick={() => guardarSrv(i)}><IcoSave /></button>
                         <button className="pv-edit-cancel sm" onClick={() => setEditServicio(null)}><IcoCancel /></button>
@@ -465,8 +479,8 @@ export default function PerfilVeterinario() {
                         <span className="pv-srv-precio">{srv.precio}</span>
                       </div>
                       <div className="pv-srv-card-actions">
-                        <button className="pv-srv-icon-btn" onClick={() => abrirSrv(i)} title="Editar"><IcoEdit /></button>
-                        <button className="pv-srv-icon-btn del" onClick={() => eliminarSrv(i)} title="Eliminar"><IcoTrash /></button>
+                        <button className="pv-srv-icon-btn" onClick={() => abrirSrv(i)}><IcoEdit /></button>
+                        <button className="pv-srv-icon-btn del" onClick={() => eliminarSrv(i)}><IcoTrash /></button>
                       </div>
                     </>
                   )}
@@ -476,54 +490,98 @@ export default function PerfilVeterinario() {
           </div>
         )}
 
+        {/* ── HORARIOS ── */}
+        {tab === 'horarios' && (
+          <div className="pv-tab-horarios">
+            <div className="pv-card">
+              <div className="pv-card-header">
+                <h3 className="pv-card-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Horarios de atención
+                </h3>
+                <EditBtn editando={editHorarios} onEdit={abrirHorarios} onSave={guardarHorarios} onCancel={cancelarHorarios} />
+              </div>
+
+              <div className="pv-horarios-lista">
+                {DIAS.map(dia => {
+                  const h = editHorarios ? (draftHorarios[dia] || { abierto: false, desde: '08:00', hasta: '18:00' }) : (vet.horarios?.[dia] || { abierto: false, desde: '08:00', hasta: '18:00' });
+                  return (
+                    <div className={`pv-horario-row ${h.abierto ? '' : 'cerrado'}`} key={dia}>
+                      <span className="pv-dia">{dia}</span>
+                      {editHorarios ? (
+                        <div className="pv-horario-edit">
+                          <label className="pv-toggle-wrap">
+                            <input type="checkbox" checked={h.abierto}
+                              onChange={e => setDraftHorarios(d => ({ ...d, [dia]: { ...h, abierto: e.target.checked } }))} />
+                            <span className="pv-toggle-label">{h.abierto ? 'Abierto' : 'Cerrado'}</span>
+                          </label>
+                          {h.abierto && (
+                            <>
+                              <input type="time" className="pv-time-input" value={h.desde}
+                                onChange={e => setDraftHorarios(d => ({ ...d, [dia]: { ...h, desde: e.target.value } }))} />
+                              <span className="pv-time-sep">–</span>
+                              <input type="time" className="pv-time-input" value={h.hasta}
+                                onChange={e => setDraftHorarios(d => ({ ...d, [dia]: { ...h, hasta: e.target.value } }))} />
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        <>
+                          <span className="pv-hora">{h.abierto ? `${h.desde} – ${h.hasta}` : '—'}</span>
+                          <span className={`pv-estado-dia ${h.abierto ? 'on' : 'off'}`}>{h.abierto ? 'Abierto' : 'Cerrado'}</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── RESEÑAS ── */}
-        {tab === "resenas" && (
+        {tab === 'resenas' && (
           <div className="pv-tab-resenas">
-            {/* aviso de solo lectura */}
             <div className="pv-resenas-notice">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               Las reseñas son generadas por los dueños de mascotas y no pueden editarse.
             </div>
-
-            <div className="pv-rating-summary">
-              <div className="pv-rating-big">
-                <span className="pv-rating-big-num">{vet.calificacion}</span>
-                <Estrellas valor={vet.calificacion} size={20} />
-                <span className="pv-rating-big-sub">{vet.totalResenas} reseñas</span>
-              </div>
-              <div className="pv-bars">
-                {[{s:5,p:78},{s:4,p:14},{s:3,p:5},{s:2,p:2},{s:1,p:1}].map((b) => (
-                  <div className="pv-bar-row" key={b.s}>
-                    <span className="pv-bar-label">{b.s}★</span>
-                    <div className="pv-bar-track">
-                      <div className="pv-bar-fill" style={{ width: `${b.p}%` }} />
+            {vet.resenas.length === 0
+              ? <div className="pv-empty-state">Aún no tienes reseñas. Cuando los dueños te caliquen, aparecerán aquí.</div>
+              : (
+                <>
+                  <div className="pv-rating-summary">
+                    <div className="pv-rating-big">
+                      <span className="pv-rating-big-num">{vet.calificacion}</span>
+                      <Estrellas valor={vet.calificacion} size={20} />
+                      <span className="pv-rating-big-sub">{vet.totalResenas} reseñas</span>
                     </div>
-                    <span className="pv-bar-pct">{b.p}%</span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="pv-resenas-list">
-              {vet.resenas.map((r) => (
-                <div className="pv-resena" key={r.id}>
-                  <div className="pv-resena-head">
-                    <img className="pv-resena-avatar" src={r.avatar} alt={r.cliente} />
-                    <div className="pv-resena-meta">
-                      <span className="pv-resena-nombre">{r.cliente}</span>
-                      <span className="pv-resena-fecha">{r.fecha}</span>
-                    </div>
-                    <Estrellas valor={r.estrellas} size={13} />
+                  <div className="pv-resenas-list">
+                    {vet.resenas.map(r => (
+                      <div className="pv-resena" key={r.id}>
+                        <div className="pv-resena-head">
+                          <img className="pv-resena-avatar" src={r.avatar} alt={r.cliente} />
+                          <div className="pv-resena-meta">
+                            <span className="pv-resena-nombre">{r.cliente}</span>
+                            <span className="pv-resena-fecha">{r.fecha}</span>
+                          </div>
+                          <Estrellas valor={r.estrellas} size={13} />
+                        </div>
+                        <p className="pv-resena-txt">{r.comentario}</p>
+                      </div>
+                    ))}
                   </div>
-                  <p className="pv-resena-txt">{r.comentario}</p>
-                </div>
-              ))}
-            </div>
+                </>
+              )
+            }
           </div>
         )}
       </div>
 
-      <Toast msg={toast} />
+      {toast && (
+        <div className="pv-toast"><IcoSave /> {toast}</div>
+      )}
     </div>
   );
 }
