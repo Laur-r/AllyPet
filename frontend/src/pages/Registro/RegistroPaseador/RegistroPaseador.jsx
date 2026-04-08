@@ -68,7 +68,7 @@ const handleSubmit = async (e) => {
     if (error.response?.status === 409) {
       setError('Este correo ya está registrado.');
     } else {
-      setError('Ocurrió un error. Intenta de nuevo.');
+      setError('Este correo ya está registrado.');
     }
   }
 };
