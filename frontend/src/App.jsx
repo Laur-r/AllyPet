@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LandingPage from './pages/Landing/LandingPage';
 import Login from './pages/Login/Login';
+import Profile from './pages/Profiles/ProfileOwner/Profilepage';
 import MenuRegistro from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador from './pages/Registro/RegistroPaseador/RegistroPaseador';
@@ -27,7 +28,7 @@ function App() {
 
         {/* Acceso */}
         <Route path="/login" element={<Login />} />
-
+        <Route path="/profile" element={<Profile />} />
         {/* Registro */}
         <Route path="/register" element={<MenuRegistro />} />
         <Route path="/register/dueno" element={<RegistroDueno />} />
