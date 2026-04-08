@@ -14,7 +14,6 @@ import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
 import Mascotas from './pages/Mascotas/Mascotas';
 
 // Nuevas páginas admin
-import Admin from './pages/Admin/Admin';
 import MenuAdmin from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -45,15 +44,6 @@ function App() {
         <Route path="/menu/paseador" element={<MenuPaseador />} />
         <Route path="/menu/veterinario" element={<MenuVeterinario />} />
 
-        {/* Admin y Gestión */}
-        <Route 
-          path="/admin" 
-          element={
-            <ProtectedRoute requireAdmin={true}>
-              <Admin />
-            </ProtectedRoute>
-          } 
-        />
         <Route 
           path="/menu/admin" 
           element={
