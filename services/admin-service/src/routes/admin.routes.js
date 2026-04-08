@@ -1,9 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const adminController = require('../controllers/admin.controller');
+const { requireAdmin } = require('../middlewares/jwt.middleware');
 
 // Ruta de prueba
 router.get('/', (req, res) => {
-  res.json({ message: 'Auth Service rutas funcionando 🔐' });
+  res.json({ message: 'Admin Service rutas funcionando 🔩' });
 });
 
+// Dashboard y listados
+router.get('/dashboard', requireAdmin, adminController.getDashboard);
+router.get('/users', requireAdmin, adminController.getUsers);
+
+// Acciones de usuarios
+router.put('/users/:id/approve', requireAdmin, adminController.approveUser);
+router.put('/users/:id/reject', requireAdmin, adminController.rejectUser);
+router.put('/users/:id/deactivate', requireAdmin, adminController.deactivateUser);
+
 module.exports = router;
+

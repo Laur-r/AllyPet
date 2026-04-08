@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { label: 'Servicios',     href: '#servicios' },
-  { label: 'Paseadores',   href: '#servicios' },
-  { label: 'Veterinarios', href: '#servicios' },
-  { label: 'Comunidad',    href: '#comunidad' },
+  { label: 'Servicios',     href: '/#servicios' },
+  { label: 'Paseadores',   href: '/#servicios' },
+  { label: 'Veterinarios', href: '/#servicios' },
+  { label: 'Comunidad',    href: '/#comunidad' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ isSimple = false }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -26,7 +27,7 @@ export default function Navbar() {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
 
       {/* Logo */}
-      <a className="navbar__logo" href="#">
+      <a className="navbar__logo" href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
         <img
           src="/logo.png"
           alt="AllyPet"
@@ -38,32 +39,41 @@ export default function Navbar() {
       </a>
 
       {/* Links */}
-      <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
-        {NAV_LINKS.map((link) => (
-          <li key={link.label}>
-            <a href={link.href} onClick={handleLinkClick}>
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {!isSimple && (
+        <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
+          {NAV_LINKS.map((link) => (
+            <li key={link.label}>
+              <a href={link.href} onClick={handleLinkClick}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* Acciones */}
      <div className="navbar__actions">
+        {location.pathname !== '/login' && (
+          <button onClick={() => navigate('/login')} className="navbar__login">
+            Iniciar sesión
+          </button>
+        )}
         <button onClick={() => navigate('/register')} className="navbar__register">
-          Comenzar gratis
+          Registrarse
         </button>
 
         {/* Hamburger mobile */}
-        <button
-          className={`navbar__toggle ${menuOpen ? 'navbar__toggle--open' : ''}`}
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Abrir menú"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        {!isSimple && (
+          <button
+            className={`navbar__toggle ${menuOpen ? 'navbar__toggle--open' : ''}`}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Abrir menú"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        )}
       </div>
 
     </header>

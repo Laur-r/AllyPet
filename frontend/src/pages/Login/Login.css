@@ -12,76 +12,9 @@
   font-family: 'Nunito', sans-serif;
   background: #f5f5f5;
   min-height: 100vh;
+  padding-top: 68px; /* Fixed Navbar height */
 }
 
-/* NAVBAR */
-.lg-navbar {
-  height: 84px;
-  background: #ffffff;
-  border-bottom: 1px solid #dbdbdb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.lg-navbar__brand {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  cursor: pointer;
-}
-
-.lg-navbar__logo {
-  width: 300px;
-  height: 76px;
-  object-fit: contain;
-  object-position: left center;
-}
-
-.lg-navbar__right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.lg-navbar__links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.lg-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.lg-navbar__links a:hover {
-  color: #7b2d8b;
-}
-
-.lg-navbar__btn {
-  border: none;
-  border-radius: 999px;
-  background: #8a348f;
-  color: #ffffff;
-  padding: 12px 26px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.lg-navbar__btn:hover {
-  background: #752878;
-}
 
 /* CONTENIDO */
 .lg-main {
@@ -97,20 +30,15 @@
   max-width: 900px;
   display: flex;
   align-items: stretch;
-}
-
-.lg-card__image-side,
-.lg-card__form-side {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
 .lg-card__image-side {
   flex: 1.02;
   padding: 12px;
-  margin-right: -6px;
-  z-index: 1;
 }
 
 .lg-card__image {
@@ -125,7 +53,6 @@
 .lg-card__form-side {
   flex: 0.98;
   padding: 34px 34px 28px;
-  border-left: 1px solid #ececec;
 }
 
 .lg-form {
@@ -291,19 +218,6 @@
 
 /* RESPONSIVE */
 @media (max-width: 1060px) {
-  .lg-navbar__logo {
-    width: 260px;
-    height: 68px;
-  }
-
-  .lg-navbar__links {
-    gap: 16px;
-  }
-
-  .lg-navbar__links a {
-    font-size: 14px;
-  }
-
   .lg-card__form-side {
     padding: 28px;
   }
@@ -314,10 +228,6 @@
 }
 
 @media (max-width: 880px) {
-  .lg-navbar__links {
-    display: none;
-  }
-
   .lg-card {
     max-width: 530px;
     flex-direction: column;
@@ -338,21 +248,6 @@
 }
 
 @media (max-width: 520px) {
-  .lg-navbar {
-    padding: 0 14px;
-    height: 76px;
-  }
-
-  .lg-navbar__logo {
-    width: 180px;
-    height: 56px;
-  }
-
-  .lg-navbar__btn {
-    padding: 10px 18px;
-    font-size: 13px;
-  }
-
   .lg-main {
     padding: 16px;
   }

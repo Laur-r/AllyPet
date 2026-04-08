@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LandingPage         from './pages/Landing/LandingPage';
 import Login               from './pages/Login/Login';
@@ -14,6 +14,10 @@ import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
 import Mascotas          from './pages/Mascotas/Mascotas';
 import PerfilVeterinario from './pages/PerfilVeterinario/PerfilVeterinario';
 import PerfilPaseador    from './pages/PerfilPaseador/PerfilPaseador';
+
+// Nuevas páginas admin
+import MenuAdmin from './pages/MenuAdmin/MenuAdmin';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -55,6 +59,18 @@ function App() {
           <Route path="mensajes"      element={<h2>Mensajes</h2>} />
           <Route path="configuracion" element={<h2>Configuración</h2>} />
         </Route>
+
+        <Route 
+          path="/menu/admin" 
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <MenuAdmin />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Redirección Dashboard genérico */}
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
 
       </Routes>
     </BrowserRouter>

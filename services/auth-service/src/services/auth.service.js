@@ -10,7 +10,8 @@ const getUserByEmail = async (email) => {
       nombre,
       correo AS email,
       contrasena AS password,
-      rol
+      rol,
+      estado
     FROM usuarios
     WHERE LOWER(correo) = LOWER($1)
     LIMIT 1
