@@ -2,13 +2,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authService = require('../services/auth.service');
 
-// ── LOGIN ────────────────────────────────────────────
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
+      return res.status(400).json({ message: 'Email y contrasena son obligatorios' });
     }
 
     const user = await authService.getUserByEmail(email);
@@ -18,7 +19,7 @@ const login = async (req, res) => {
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ message: 'Credenciales invalidas' });
     }
 
     const payload = { sub: user.id, email: user.email };
@@ -30,7 +31,7 @@ const login = async (req, res) => {
       email: user.email,
       rol: user.rol || 'usuario',
     };
-    const successMessage = `Inicio de sesión exitoso. Bienvenido ${user.nombre || user.email} (${userResponse.rol}).`;
+    const successMessage = `Inicio de sesion exitoso. Bienvenido ${user.nombre || user.email} (${userResponse.rol}).`;
 
     return res.status(200).json({
       message: successMessage,
@@ -39,86 +40,128 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error('auth.controller login error:', error);
-    return res.status(500).json({ message: 'Error interno al iniciar sesión' });
+    return res.status(500).json({ message: 'Error interno al iniciar sesion' });
   }
 };
 
-// ── REGISTRO DUEÑO ──────────────────────────────────
 const registrarDueno = async (req, res) => {
   try {
     const { nombre, correo, contrasena, telefono, ciudad, direccion } = req.body;
 
     if (!nombre || !correo || !contrasena) {
-      return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios' });
+      return res.status(400).json({ error: 'Nombre, correo y contrasena son obligatorios' });
     }
 
     const usuario = await authService.registrarDueno({
-      nombre, correo, contrasena, telefono, ciudad, direccion
+      nombre,
+      correo,
+      contrasena,
+      telefono,
+      ciudad,
+      direccion,
     });
 
-    res.status(201).json({
-      mensaje: 'Dueño registrado exitosamente',
+    return res.status(201).json({
+      mensaje: 'Dueno registrado exitosamente',
       usuario,
     });
   } catch (error) {
-    if (error.message === 'El correo ya está registrado') {
+    if (error.message === 'El correo ya esta registrado') {
       return res.status(409).json({ error: error.message });
     }
     console.error('Error en registrarDueno:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-// ── REGISTRO PASEADOR ────────────────────────────────
 const registrarPaseador = async (req, res) => {
   try {
     const { nombre, correo, contrasena, telefono, ciudad, descripcion, tarifa, disponibilidad } = req.body;
 
     if (!nombre || !correo || !contrasena) {
-      return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios' });
+      return res.status(400).json({ error: 'Nombre, correo y contrasena son obligatorios' });
     }
 
     const usuario = await authService.registrarPaseador({
-      nombre, correo, contrasena, telefono, ciudad, descripcion, tarifa, disponibilidad
+      nombre,
+      correo,
+      contrasena,
+      telefono,
+      ciudad,
+      descripcion,
+      tarifa,
+      disponibilidad,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       mensaje: 'Paseador registrado exitosamente',
       usuario,
     });
   } catch (error) {
-    if (error.message === 'El correo ya está registrado') {
+    if (error.message === 'El correo ya esta registrado') {
       return res.status(409).json({ error: error.message });
     }
     console.error('Error en registrarPaseador:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-// ── REGISTRO VETERINARIO ─────────────────────────────
 const registrarVeterinario = async (req, res) => {
   try {
-    const { nombre, correo, contrasena, telefono, ciudad, nombre_establecimiento, direccion, servicios, horarios } = req.body;
+    const { nombre, correo, contrasena, telefono, ciudad, nombre_establecimiento, direccion, servicios, horarios } =
+      req.body;
 
     if (!nombre || !correo || !contrasena || !nombre_establecimiento) {
-      return res.status(400).json({ error: 'Nombre, correo, contraseña y nombre del establecimiento son obligatorios' });
+      return res
+        .status(400)
+        .json({ error: 'Nombre, correo, contrasena y nombre del establecimiento son obligatorios' });
     }
 
     const usuario = await authService.registrarVeterinario({
-      nombre, correo, contrasena, telefono, ciudad, nombre_establecimiento, direccion, servicios, horarios
+      nombre,
+      correo,
+      contrasena,
+      telefono,
+      ciudad,
+      nombre_establecimiento,
+      direccion,
+      servicios,
+      horarios,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       mensaje: 'Veterinario registrado exitosamente',
       usuario,
     });
   } catch (error) {
-    if (error.message === 'El correo ya está registrado') {
+    if (error.message === 'El correo ya esta registrado') {
       return res.status(409).json({ error: error.message });
     }
     console.error('Error en registrarVeterinario:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
+};
+
+const googleCallbackHandler = (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res.redirect(`${FRONTEND_URL}/login?error=google`);
+  }
+
+  const payload = { sub: user.id, email: user.email, rol: user.rol || 'usuario' };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
+
+  const redirectUrl = new URL(`${FRONTEND_URL}/login`);
+  redirectUrl.searchParams.set('token', token);
+  redirectUrl.searchParams.set(
+    'message',
+    `Inicio de sesion exitoso. Bienvenido ${user.nombre || user.email} (${user.rol || 'usuario'}).`
+  );
+  redirectUrl.searchParams.set('name', user.nombre || user.email);
+  redirectUrl.searchParams.set('role', user.rol || 'usuario');
+  redirectUrl.searchParams.set('email', user.email);
+
+  return res.redirect(redirectUrl.toString());
 };
 
 module.exports = {
@@ -126,4 +169,5 @@ module.exports = {
   registrarDueno,
   registrarPaseador,
   registrarVeterinario,
+  googleCallbackHandler,
 };

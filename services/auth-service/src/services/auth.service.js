@@ -1,8 +1,9 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const pool = require('../config/db');
 
 // ── LOGIN ────────────────────────────────────────────
 const getUserByEmail = async (email) => {
+  const normalizedEmail = String(email || '').trim();
   const query = `
     SELECT
       id,
@@ -11,10 +12,10 @@ const getUserByEmail = async (email) => {
       contrasena AS password,
       rol
     FROM usuarios
-    WHERE correo = $1
+    WHERE LOWER(correo) = LOWER($1)
     LIMIT 1
   `;
-  const { rows } = await pool.query(query, [email]);
+  const { rows } = await pool.query(query, [normalizedEmail]);
   return rows[0] || null;
 };
 

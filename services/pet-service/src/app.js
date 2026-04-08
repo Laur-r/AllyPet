@@ -1,24 +1,16 @@
-const express = require('express');
-const cors = require('cors');
 require('dotenv').config();
+const express  = require('express');
+const cors     = require('cors');
+const petRoutes = require('./routes/pet.routes');
 
-const app = express();
+const app  = express();
+const PORT = process.env.PORT || 3003;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Rutas
-const authRoutes = require('./routes/auth.routes');
-app.use('/api/auth', authRoutes);
+app.use('/mascotas', petRoutes);
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('Auth Service funcionando 🔐');
-});
+app.get('/health', (_, res) => res.json({ ok: true, service: 'pet-service' }));
 
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`Auth Service corriendo en http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🐾 Pet-service corriendo en puerto ${PORT}`));
