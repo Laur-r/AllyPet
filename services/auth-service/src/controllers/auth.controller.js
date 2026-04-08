@@ -22,6 +22,12 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales invalidas' });
     }
 
+    if (user.estado === false) {
+      return res.status(403).json({
+        message: 'Tu cuenta está pendiente de aprobación por un administrador',
+      });
+    }
+
     const payload = { sub: user.id, email: user.email };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
