@@ -1,41 +1,41 @@
 import './Footer.css';
 
-const FOOTER_LINKS = [
-  { label: 'Servicios',    href: '#servicios' },
-  { label: 'Paseadores',  href: '#servicios' },
-  { label: 'Veterinarias',href: '#servicios' },
-  { label: 'Comunidad',   href: '#comunidad' },
-  { label: 'Privacidad',  href: '#'          },
-];
-
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer__inner">
 
-        {/* Logo */}
-       <a className="navbar__logo" href="#">
-        <img
-          src="/logo.png"
-          alt="AllyPet"
-          className="navbar__logo-img"
-        />
-        <span className="navbar__logo-text">
-          Ally<span>Pet</span>
-        </span>
-      </a>
+        {/* Brand */}
+        <div className="footer__brand">
+          <img src="/logo.png" alt="AllyPet" className="footer__logo" />
+          <h3>Ally<span>Pet</span></h3>
+          <p>Encuentra servicios para tu mascota cerca de ti.</p>
+        </div>
+
         {/* Links */}
-        <nav className="footer__links">
-          {FOOTER_LINKS.map((l) => (
-            <a key={l.label} href={l.href} className="footer__link">
-              {l.label}
-            </a>
-          ))}
-        </nav>
+        <div className="footer__section">
+          <h4>Servicios</h4>
+          <a href="#">Paseadores</a>
+          <a href="#">Veterinarios</a>
+          <a href="#">Guarderías</a>
+        </div>
 
-        {/* Copy */}
-        <span className="footer__copy">© 2025 AllyPet</span>
+        <div className="footer__section">
+          <h4>Compañía</h4>
+          <a href="#">Sobre nosotros</a>
+          <a href="#">Comunidad</a>
+        </div>
 
+        <div className="footer__section">
+          <h4>Legal</h4>
+          <a href="#">Privacidad</a>
+          <a href="#">Términos</a>
+        </div>
+
+      </div>
+
+      <div className="footer__bottom">
+        © 2025 AllyPet
       </div>
     </footer>
   );
