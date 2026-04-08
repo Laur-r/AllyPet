@@ -62,7 +62,7 @@ const handleSubmit = async (e) => {
       tarifa:        form.tarifa,
       disponibilidad: form.disponibilidad,
     });
-    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+    alert('Registro exitoso. Tu cuenta está pendiente de aprobación por un administrador.');
     navigate('/login');
   } catch (error) {
     if (error.response?.status === 409) {
