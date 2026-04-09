@@ -7,6 +7,7 @@ import './Login.css';
 import logo from '../../assets/login/allypet-logo-login.png';
 import loginImage from '../../assets/login/login-side-image.png';
 import googleLogo from '../../assets/login/google-logo.png';
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,34 +25,45 @@ export default function Login() {
   };
 
   const handleAuthSuccess = (data) => {
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
 
-    if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
 
-    const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
+const handleAuthSuccess = (data) => {
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
 
-    const successMessage =
-      data.message ||
-      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${role}).`;
-    alert(successMessage);
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
 
-    if (role === 'admin') {
-      navigate('/menu/admin');
-    } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
-      navigate('/menu/dueno');
-    } else if (role === 'paseador') {
-      navigate('/menu/paseador');
-    } else if (role === 'veterinario') {
-      navigate('/menu/veterinario');
-    } else {
-      navigate('/');
-    }
-  };
+  const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
 
+  const successMessage =
+    data.message ||
+    `Inicio de sesión exitoso. Bienvenido ${
+      data.user?.nombre || data.user?.email
+    } (${role}).`;
+
+  alert(successMessage);
+
+  if (role === 'admin') {
+    navigate('/menu/admin');
+  } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
+    navigate('/menu/dueno');
+  } else if (role === 'paseador') {
+    navigate('/menu/paseador');
+  } else if (role === 'veterinario') {
+    navigate('/menu/veterinario');
+  } else {
+    navigate('/');
+  }
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -138,25 +150,7 @@ export default function Login() {
 
   return (
     <div className="lg-wrapper">
-      {/* NAVBAR */}
-      <header className="lg-navbar">
-        <div className="lg-navbar__brand" onClick={() => navigate('/')}>
-          <img src={logo} alt="AllyPet" className="lg-navbar__logo" />
-        </div>
-
-        <div className="lg-navbar__right">
-          <nav className="lg-navbar__links">
-            <a href="#servicios">Servicios</a>
-            <a href="#paseadores">Paseadores</a>
-            <a href="#veterinarios">Veterinarios</a>
-            <a href="#contacto">Contacto</a>
-          </nav>
-
-          <button className="lg-navbar__btn" onClick={() => navigate('/register')}>
-            Registrarse
-          </button>
-        </div>
-      </header>
+      <Navbar />
 
       {/* CONTENIDO */}
       <main className="lg-main">
@@ -233,4 +227,5 @@ export default function Login() {
       </main>
     </div>
   );
+  }
 }
