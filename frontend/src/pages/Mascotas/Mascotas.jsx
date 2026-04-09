@@ -8,15 +8,37 @@ const API = 'http://localhost:3003';
 
 const getToken = () => localStorage.getItem('token');
 
-const authFetch = (url, options = {}) =>
-  fetch(`${API}${url}`, {
+const authFetch = (url, options = {}) => {
+  const isFormData = options.body instanceof FormData;
+  return fetch(`${API}${url}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${getToken()}`,
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     },
   }).then(r => r.json());
+};
+
+/* ── Helper foto ───────────────────────────────────────── */
+const getFotoUrl = (foto) => {
+  if (!foto) return null;
+  if (foto.startsWith('http')) return foto;
+  if (foto.startsWith('/uploads')) return `${API}${foto}`;
+  return null;
+};
+
+/* ── Normaliza mascota que viene del backend ───────────── */
+// Garantiza que especie, sexo, color, notas siempre tengan valor
+const normalizarMascota = (m) => ({
+  ...m,
+  especie: m.especie || 'Perro',
+  sexo:    m.sexo    || 'Macho',
+  color:   m.color   || '',
+  notas:   m.notas   || '',
+  edad:    m.edad    != null ? String(m.edad) : '',
+  peso:    m.peso    != null ? String(m.peso) : '',
+});
 
 /* ══════════════════════════════════════════════════════════
    DATOS SOLO FRONTEND (recordatorios — no van al backend)
@@ -33,7 +55,7 @@ const RAZAS_OTRO  = ['Conejo','Hamster','Ave','Reptil','Otro'];
 const FILTROS     = ['Todas','Perros','Gatos','Otros','Recordatorios'];
 const FORM_VACIO  = { nombre:'', especie:'Perro', raza:'', sexo:'Macho', edad:'', peso:'', color:'', notas:'', foto:null };
 
-/* ── íconos ────────────────────────────────────────────────────────── */
+/* ── íconos ────────────────────────────────────────────── */
 const IcoEdit  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
 const IcoDel   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcoX     = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>;
@@ -75,14 +97,15 @@ export default function Mascotas() {
   /* ── Cargar mascotas al montar ─────────────────────────── */
   useEffect(() => {
     authFetch('/mascotas')
-      .then(res => { if (res.ok) setMascotas(res.data); })
+      .then(res => { if (res.ok) setMascotas(res.data.map(normalizarMascota)); })
       .catch(() => notify('Error al cargar mascotas'))
       .finally(() => setCargando(false));
   }, []);
 
   /* ── Abrir modales ─────────────────────────────────────── */
   const abrirCrear  = () => { setEditando(null); setModalForm(true); };
-  const abrirEditar = m  => { setEditando(m);    setModalForm(true); };
+  // Normalizamos antes de pasarlo al formulario
+  const abrirEditar = m  => { setEditando(normalizarMascota(m)); setModalForm(true); };
 
   /* ── Guardar (crear o editar) ──────────────────────────── */
   const guardar = async (data) => {
@@ -91,14 +114,23 @@ export default function Mascotas() {
     const method = esEdicion ? 'PUT' : 'POST';
 
     try {
-      const res = await authFetch(url, { method, body: JSON.stringify(data) });
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        if (data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
+      });
+
+      const res = await authFetch(url, { method, body: formData });
+
       if (res.ok) {
+        const mascotaActualizada = normalizarMascota(res.data);
         if (esEdicion) {
-          setMascotas(ms => ms.map(m => m.id === res.data.id ? res.data : m));
-          notify(`${res.data.nombre} actualizada correctamente`);
+          setMascotas(ms => ms.map(m => m.id === mascotaActualizada.id ? mascotaActualizada : m));
+          notify(`${mascotaActualizada.nombre} actualizada correctamente`);
         } else {
-          setMascotas(ms => [...ms, res.data]);
-          notify(`${res.data.nombre} registrada con éxito`);
+          setMascotas(ms => [...ms, mascotaActualizada]);
+          notify(`${mascotaActualizada.nombre} registrada con éxito`);
         }
         setModalForm(false);
         setEditando(null);
@@ -128,7 +160,6 @@ export default function Mascotas() {
   };
 
   /* ── Filtro ────────────────────────────────────────────── */
-  // Los recordatorios siguen siendo solo frontend (mock)
   const conRecordatorio = mascotas.map(m => ({
     ...m,
     recordatorio: RECORDATORIOS_MOCK[m.id] || null,
@@ -146,7 +177,6 @@ export default function Mascotas() {
     .filter(m => m.recordatorio)
     .sort((a, b) => a.recordatorio.dias - b.recordatorio.dias);
 
-  /* ── Render ────────────────────────────────────────────── */
   if (cargando) return (
     <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-soft)', fontFamily: 'Poppins, sans-serif' }}>
       Cargando mascotas…
@@ -156,20 +186,17 @@ export default function Mascotas() {
   return (
     <div className="mas-page">
 
-      {/* CABECERA */}
       <div className="mas-head">
         <h1>Mis Mascotas</h1>
         <p>Tienes {mascotas.length} mascota{mascotas.length !== 1 ? 's' : ''} registrada{mascotas.length !== 1 ? 's' : ''}</p>
       </div>
 
-      {/* FILTROS */}
       <div className="mas-filters">
         {FILTROS.map(f => (
           <button key={f} className={`mas-filter${filtro === f ? ' active' : ''}`} onClick={() => setFiltro(f)}>{f}</button>
         ))}
       </div>
 
-      {/* GRID */}
       <div className="mas-grid">
         {visibles.map((m, i) => (
           <Tarjeta
@@ -182,7 +209,6 @@ export default function Mascotas() {
         <TarjetaAgregar onClick={abrirCrear} />
       </div>
 
-      {/* PRÓXIMOS RECORDATORIOS — solo frontend */}
       {proximosRecordatorios.length > 0 && (
         <>
           <div className="mas-section-title">
@@ -211,7 +237,6 @@ export default function Mascotas() {
         </>
       )}
 
-      {/* MODALES */}
       {modalForm && (
         <FormularioMascota
           mascota={editando}
@@ -227,7 +252,6 @@ export default function Mascotas() {
         />
       )}
 
-      {/* TOAST */}
       {toast && <div className="mas-toast"><IcoCheck /> {toast}</div>}
     </div>
   );
@@ -238,29 +262,27 @@ export default function Mascotas() {
    ════════════════════════════════════════════════════════════ */
 function Tarjeta({ mascota, style, onEditar, onEliminar }) {
   const { nombre, especie, raza, sexo, edad, peso, color, foto, recordatorio } = mascota;
-
-  const diasClass = recordatorio
-    ? recordatorio.dias <= 7 ? 'urgent' : ''
-    : '';
+  const diasClass = recordatorio ? (recordatorio.dias <= 7 ? 'urgent' : '') : '';
+  const fotoUrl   = getFotoUrl(foto);
 
   return (
     <div className="mas-card" style={style}>
       <div className="mas-card-img">
-        {foto
-          ? <img src={foto} alt={nombre} />
+        {fotoUrl
+          ? <img src={fotoUrl} alt={nombre} />
           : <div className="mas-placeholder">
               {especie === 'Gato' ? <IcoCat /> : <IcoDog />}
               <span>Sin foto</span>
             </div>
         }
-        <span className="mas-badge">{especie}</span>
+        <span className="mas-badge">{especie || 'Mascota'}</span>
       </div>
 
       <div className="mas-card-body">
         <div className="mas-card-top">
           <div>
             <div className="mas-card-name">{nombre}</div>
-            <div className="mas-card-sub">{color} · {sexo}</div>
+            <div className="mas-card-sub">{color || '—'} · {sexo || '—'}</div>
           </div>
           <div className="mas-card-actions">
             <button className="mas-icon-btn" title="Editar"    onClick={onEditar}><IcoEdit /></button>
@@ -270,15 +292,15 @@ function Tarjeta({ mascota, style, onEditar, onEliminar }) {
 
         <div className="mas-stats">
           <div className="mas-stat">
-            <div className="mas-stat-val">{edad  || '—'}</div>
+            <div className="mas-stat-val">{edad || '—'}</div>
             <div className="mas-stat-lbl">Edad</div>
           </div>
           <div className="mas-stat">
-            <div className="mas-stat-val">{peso  || '—'}</div>
+            <div className="mas-stat-val">{peso || '—'}</div>
             <div className="mas-stat-lbl">Peso</div>
           </div>
           <div className="mas-stat">
-            <div className="mas-stat-val">{raza  || '—'}</div>
+            <div className="mas-stat-val">{raza || '—'}</div>
             <div className="mas-stat-lbl">Raza</div>
           </div>
         </div>
@@ -322,30 +344,48 @@ function TarjetaAgregar({ onClick }) {
    ════════════════════════════════════════════════════════════ */
 function FormularioMascota({ mascota, onGuardar, onCerrar }) {
   const esEdicion = !!mascota;
-  const [form,    setForm]    = useState(esEdicion ? { ...mascota } : { ...FORM_VACIO });
-  const [preview, setPreview] = useState(mascota?.foto || null);
-  const [errs,    setErrs]    = useState({});
+
+  // Al editar usamos la mascota ya normalizada, al crear usamos el form vacío
+  const [form, setForm] = useState(esEdicion ? { ...mascota } : { ...FORM_VACIO });
+
+  // Preview: si editando y tiene foto, construimos la URL completa
+  const [preview, setPreview] = useState(() => {
+    if (!esEdicion || !mascota.foto) return null;
+    return getFotoUrl(mascota.foto);
+  });
+
+  const [errs, setErrs] = useState({});
   const fileRef = useRef();
 
-  useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
-  const razas = form.especie === 'Perro' ? RAZAS_PERRO : form.especie === 'Gato' ? RAZAS_GATO : RAZAS_OTRO;
-  const set = (k, v) => { setForm(f => ({ ...f, [k]: v })); setErrs(e => ({ ...e, [k]: '' })); };
+  // Las razas dependen de la especie actual del form
+  const razas = form.especie === 'Perro' ? RAZAS_PERRO
+              : form.especie === 'Gato'  ? RAZAS_GATO
+              : RAZAS_OTRO;
+
+  const set = (k, v) => {
+    setForm(f => ({ ...f, [k]: v }));
+    setErrs(e => ({ ...e, [k]: '' }));
+  };
 
   const handleFoto = e => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreview(url); set('foto', url);
+    setPreview(URL.createObjectURL(file));
+    set('foto', file);
   };
 
   const handleGuardar = () => {
     const e = {};
-    if (!form.nombre.trim()) e.nombre = 'Campo requerido';
-    if (!form.raza)          e.raza   = 'Selecciona una raza';
-    if (!form.edad.trim())   e.edad   = 'Campo requerido';
+    if (!String(form.nombre).trim()) e.nombre = 'Campo requerido';
+    if (!form.raza)                  e.raza   = 'Selecciona una raza';
+    if (!String(form.edad).trim())   e.edad   = 'Campo requerido';
     if (Object.keys(e).length) { setErrs(e); return; }
-    // Solo mandamos los campos que el backend espera
+
     const { nombre, raza, edad, peso, foto, especie, sexo, color, notas } = form;
     onGuardar({ id: mascota?.id, nombre, raza, edad, peso, foto, especie, sexo, color, notas });
   };
@@ -359,6 +399,7 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
         </div>
 
         <div className="mas-modal-body">
+          {/* Foto */}
           <div className="mas-fg full" style={{ marginBottom: 16 }}>
             <label>Foto</label>
             <div className="mas-photo" onClick={() => fileRef.current.click()}>
@@ -380,7 +421,7 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
 
             <div className="mas-fg">
               <label>Especie *</label>
-              <select className="mas-select" value={form.especie} onChange={e => { set('especie', e.target.value); set('raza',''); }}>
+              <select className="mas-select" value={form.especie} onChange={e => { set('especie', e.target.value); set('raza', ''); }}>
                 {['Perro','Gato','Otro'].map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
@@ -439,7 +480,11 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
    MODAL ELIMINAR
    ════════════════════════════════════════════════════════════ */
 function ModalEliminar({ mascota, onConfirmar, onCerrar }) {
-  useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   return (
     <div className="mas-overlay" onClick={onCerrar}>
       <div className="mas-modal mas-del-modal" onClick={e => e.stopPropagation()}>
