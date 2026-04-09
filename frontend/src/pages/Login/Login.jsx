@@ -71,7 +71,7 @@ export default function Login() {
       const data = await response.json();
 
       if (response.status === 403) {
-        alert('Tu cuenta está en revisión por un administrador');
+        alert('Tu cuenta está pendiente de aprobación por un administrador.');
         return;
       }
 

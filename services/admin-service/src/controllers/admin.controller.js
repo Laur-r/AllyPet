@@ -52,6 +52,20 @@ const rejectUser = async (req, res) => {
   }
 };
 
+const activateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.activateUser(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    res.json({ message: 'Usuario activado satisfactoriamente' });
+  } catch (error) {
+    console.error('activateUser controller error:', error);
+    res.status(500).json({ message: 'Error interno al activar usuario' });
+  }
+};
+
 const deactivateUser = async (req, res) => {
   const { id } = req.params;
   try {
@@ -71,5 +85,6 @@ module.exports = {
   getUsers,
   approveUser,
   rejectUser,
+  activateUser,
   deactivateUser,
 };

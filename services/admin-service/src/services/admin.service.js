@@ -70,6 +70,15 @@ const rejectUser = async (userId) => {
 };
 
 /**
+ * Activa la cuenta de un usuario.
+ */
+const activateUser = async (userId) => {
+  const query = 'UPDATE usuarios SET active = true, estado = true WHERE id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [userId]);
+  return rows.length > 0;
+};
+
+/**
  * Desactiva la cuenta de un usuario.
  */
 const deactivateUser = async (userId) => {
@@ -84,5 +93,6 @@ module.exports = {
   getDashboardStats,
   approveUser,
   rejectUser,
+  activateUser,
   deactivateUser,
 };

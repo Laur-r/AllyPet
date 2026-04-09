@@ -22,7 +22,10 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales invalidas' });
     }
 
-    if (user.estado === false) {
+    // Validación estricta: solo permite si estado es true
+    const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1 || user.active === true || user.active === 'true';
+    
+    if (!isActivo) {
       return res.status(403).json({
         message: 'Tu cuenta está pendiente de aprobación por un administrador',
       });
@@ -152,6 +155,14 @@ const googleCallbackHandler = (req, res) => {
   const user = req.user;
   if (!user) {
     return res.redirect(`${FRONTEND_URL}/login?error=google`);
+  }
+
+  const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1 || user.active === true || user.active === 'true';
+  if (!isActivo) {
+      const redirectUrl = new URL(`${FRONTEND_URL}/login`);
+      redirectUrl.searchParams.set('error', 'inactive');
+      redirectUrl.searchParams.set('message', 'Tu cuenta está pendiente de aprobación por un administrador.');
+      return res.redirect(redirectUrl.toString());
   }
 
   const payload = { sub: user.id, email: user.email, rol: user.rol || 'usuario' };

@@ -130,6 +130,22 @@ export default function MenuAdmin() {
     }
   };
 
+  const activateUser = async (userId) => {
+    setActionLoadingId(userId);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+        const response = await requestAdmin(`/api/admin/users/${userId}/activate`, { method: 'PATCH' });
+        updateUserLocalState(userId, { active: true, estado: true, status: 'activo' });
+        setSuccessMessage(response?.message || 'Usuario activado');
+    } catch (error) {
+        setErrorMessage(error.message || 'No fue posible activar la cuenta');
+    } finally {
+        setActionLoadingId(null);
+    }
+  };
+
   const deactivateUser = async (userId) => {
     const confirmed = window.confirm('Deseas desactivar esta cuenta?');
     if (!confirmed) {
@@ -141,7 +157,7 @@ export default function MenuAdmin() {
     setSuccessMessage('');
 
     try {
-      const response = await requestAdmin(`/api/admin/users/${userId}/deactivate`, { method: 'PUT' });
+      const response = await requestAdmin(`/api/admin/users/${userId}/deactivate`, { method: 'PATCH' });
       updateUserLocalState(userId, { active: false, estado: false, status: 'inactivo' });
       setSuccessMessage(response?.message || 'Usuario desactivado');
     } catch (error) {
@@ -320,14 +336,25 @@ export default function MenuAdmin() {
                             </>
                           )}
 
-                          <button
-                            className="menu-admin-btn menu-admin-btn--deactivate"
-                            type="button"
-                            disabled={isLoadingRow || !isActive}
-                            onClick={() => deactivateUser(item.id)}
-                          >
-                            Desactivar cuenta
-                          </button>
+                          {isActive ? (
+                            <button
+                              className="menu-admin-btn menu-admin-btn--deactivate"
+                              type="button"
+                              disabled={isLoadingRow}
+                              onClick={() => deactivateUser(item.id)}
+                            >
+                              Desactivar
+                            </button>
+                          ) : (
+                            <button
+                              className="menu-admin-btn menu-admin-btn--approve"
+                              type="button"
+                              disabled={isLoadingRow}
+                              onClick={() => activateUser(item.id)}
+                            >
+                              Activar
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
