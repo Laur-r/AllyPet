@@ -22,7 +22,7 @@ const getUserRoleById = async (userId) => {
  */
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT id, nombre, correo AS email, rol AS role, active, estado, provider_approved as "providerApproved" FROM usuarios ORDER BY id DESC';
+    const query = 'SELECT id, nombre, correo AS email, rol AS role, estado, provider_approved as "providerApproved" FROM usuarios ORDER BY id DESC';
     const { rows } = await pool.query(query);
     return rows;
   } catch (error) {
@@ -73,7 +73,7 @@ const rejectUser = async (userId) => {
  * Activa la cuenta de un usuario.
  */
 const activateUser = async (userId) => {
-  const query = 'UPDATE usuarios SET active = true, estado = true WHERE id = $1 RETURNING id';
+  const query = 'UPDATE usuarios SET estado = true WHERE id = $1 RETURNING id';
   const { rows } = await pool.query(query, [userId]);
   return rows.length > 0;
 };
@@ -82,7 +82,7 @@ const activateUser = async (userId) => {
  * Desactiva la cuenta de un usuario.
  */
 const deactivateUser = async (userId) => {
-  const query = 'UPDATE usuarios SET active = false, estado = false WHERE id = $1 RETURNING id';
+  const query = 'UPDATE usuarios SET estado = false WHERE id = $1 RETURNING id';
   const { rows } = await pool.query(query, [userId]);
   return rows.length > 0;
 };

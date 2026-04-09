@@ -23,7 +23,7 @@ const login = async (req, res) => {
     }
 
     // Validación estricta: solo permite si estado es true
-    const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1 || user.active === true || user.active === 'true';
+    const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1;
     
     if (!isActivo) {
       return res.status(403).json({
@@ -157,7 +157,7 @@ const googleCallbackHandler = (req, res) => {
     return res.redirect(`${FRONTEND_URL}/login?error=google`);
   }
 
-  const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1 || user.active === true || user.active === 'true';
+  const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1;
   if (!isActivo) {
       const redirectUrl = new URL(`${FRONTEND_URL}/login`);
       redirectUrl.searchParams.set('error', 'inactive');

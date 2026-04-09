@@ -137,7 +137,7 @@ export default function MenuAdmin() {
 
     try {
         const response = await requestAdmin(`/api/admin/users/${userId}/activate`, { method: 'PATCH' });
-        updateUserLocalState(userId, { active: true, estado: true, status: 'activo' });
+        updateUserLocalState(userId, { estado: true, status: 'activo' });
         setSuccessMessage(response?.message || 'Usuario activado');
     } catch (error) {
         setErrorMessage(error.message || 'No fue posible activar la cuenta');
@@ -158,7 +158,7 @@ export default function MenuAdmin() {
 
     try {
       const response = await requestAdmin(`/api/admin/users/${userId}/deactivate`, { method: 'PATCH' });
-      updateUserLocalState(userId, { active: false, estado: false, status: 'inactivo' });
+      updateUserLocalState(userId, { estado: false, status: 'inactivo' });
       setSuccessMessage(response?.message || 'Usuario desactivado');
     } catch (error) {
       setErrorMessage(error.message || 'No fue posible desactivar la cuenta');
@@ -183,7 +183,7 @@ export default function MenuAdmin() {
       const fullName = String(item?.nombre || '').toLowerCase();
       const email = String(item?.email || '').toLowerCase();
       const roleCategory = getRoleCategory(item?.role);
-      const status = (item?.estado ?? item?.active) ? 'activo' : 'inactivo';
+      const status = item?.estado ? 'activo' : 'inactivo';
 
       const searchOk =
         !normalizedSearch || fullName.includes(normalizedSearch) || email.includes(normalizedSearch);
@@ -288,7 +288,7 @@ export default function MenuAdmin() {
                 {filteredUsers.map((item) => {
                   const roleCategory = getRoleCategory(item.role);
                   const isProvider = roleCategory === 'proveedor';
-                  const isActive = Boolean(item.estado ?? item.active);
+                  const isActive = Boolean(item.estado);
                   const isLoadingRow = actionLoadingId === item.id;
 
                   return (
