@@ -12,55 +12,7 @@
   font-family: 'Nunito', sans-serif;
   background: #faf8fc;
   min-height: 100vh;
-}
-
-/* NAVBAR */
-.rv-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 60px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.rv-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.rv-navbar__logo {
-  width: 90px;
-  height: 60px;
-  object-fit: contain;
-}
-
-.rv-navbar__name {
-  font-size: 24px;
-  color: #7B2D8B;
-}
-
-.rv-navbar__name strong {
-  font-weight: 900;
-}
-
-.rv-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.rv-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.rv-navbar__links a:hover {
-  color: #7B2D8B;
+  padding-top: 68px;
 }
 
 /* FONDO */
@@ -80,7 +32,7 @@
   transform: translateX(-50%);
   width: 110%;
   height: 340px;
-  background: #e6f7f8;
+  background: #f0e6f8;
   border-radius: 0 0 50% 50%;
   z-index: 0;
 }
@@ -174,11 +126,11 @@
 .rv-form__group input,
 .rv-form__group textarea {
   padding: 10px 14px;
-  border: 1.5px solid #c8eef1;
+  border: 1.5px solid #e0d8f0;
   border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  background: #f0fbfc;
+  background: #f7f3ff;
   color: #2d2d2d;
   outline: none;
   transition: border 0.2s;
@@ -187,12 +139,12 @@
 
 .rv-form__group input:focus,
 .rv-form__group textarea:focus {
-  border-color: #5BC8D4;
+  border-color: #7B2D8B;
 }
 
 .rv-form__group input::placeholder,
 .rv-form__group textarea::placeholder {
-  color: #a0cdd2;
+  color: #b0a8c0;
 }
 
 /* INPUT CON OJO */
@@ -211,7 +163,7 @@
   position: absolute;
   right: 12px;
   cursor: pointer;
-  color: #5BC8D4;
+  color: #7B2D8B;
   display: flex;
   align-items: center;
 }
@@ -237,13 +189,13 @@
 .rv-terminos input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #5BC8D4;
+  accent-color: #7B2D8B;
   cursor: pointer;
 }
 
 /* LINK */
 .rv-link {
-  color: #5BC8D4;
+  color: #7B2D8B;
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -253,10 +205,10 @@
 .rv-btn {
   width: 100%;
   padding: 14px;
-  background: #5BC8D4;
+  background: #7B2D8B;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 16px;
   font-weight: 800;
@@ -265,7 +217,7 @@
 }
 
 .rv-btn:hover {
-  background: #38adb9;
+  background: #a44db8;
   transform: scale(1.02);
 }
 
@@ -279,8 +231,6 @@
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  .rv-navbar { padding: 10px 20px; }
-  .rv-navbar__links { display: none; }
   .rv-form { padding: 20px; }
   .rv-form__row { flex-direction: column; gap: 0; }
   .rv-card__img-wrap { height: 160px; }

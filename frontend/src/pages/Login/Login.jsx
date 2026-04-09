@@ -1,22 +1,23 @@
-// frontend/src/pages/Login.jsx
+// frontend/src/pages/Login/Login.jsx
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-import logo from '../../assets/login/allypet-logo-login.png';
+import logo       from '../../assets/login/allypet-logo-login.png';
 import loginImage from '../../assets/login/login-side-image.png';
 import googleLogo from '../../assets/login/google-logo.png';
-import Navbar from '../../components/Navbar/Navbar';
+import Navbar     from '../../components/Navbar/Navbar';
 
 export default function Login() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    correo: '',
+    correo:    '',
     contrasena: '',
-    recordar: false,
+    recordar:  false,
   });
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
   const handleChange = (e) => {
@@ -28,16 +29,12 @@ export default function Login() {
     if (data.token) {
       localStorage.setItem('token', data.token);
     }
-
     if (data.user) {
       localStorage.setItem('user', JSON.stringify(data.user));
     }
 
     const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
-
-    const successMessage =
-      data.message ||
-      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${role}).`;
+    const successMessage = data.message || `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${role}).`;
     alert(successMessage);
 
     if (role === 'admin') {
@@ -55,15 +52,12 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: form.correo,
+          email:    form.correo,
           password: form.contrasena,
         }),
       });
@@ -76,8 +70,7 @@ export default function Login() {
       }
 
       if (!response.ok) {
-        const backendMessage = data?.message || 'Datos incorrectos';
-        alert(backendMessage);
+        alert(data?.message || 'Datos incorrectos');
         return;
       }
 
@@ -90,14 +83,12 @@ export default function Login() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    const error = params.get('error');
+    const token  = params.get('token');
+    const error  = params.get('error');
 
     if (!token) {
       if (error) {
-        const errorMessage =
-          params.get('message') ||
-          'No se pudo iniciar sesion con Google. Verifica tu cuenta e intentalo de nuevo.';
+        const errorMessage = params.get('message') || 'No se pudo iniciar sesión con Google.';
         alert(errorMessage);
         window.history.replaceState(null, '', window.location.pathname);
       }
@@ -105,32 +96,23 @@ export default function Login() {
     }
 
     const roleStr = params.get('role') || 'usuario';
-    const message =
-      params.get('message') || `Inicio de sesión con Google exitoso. Bienvenido ${params.get('name') || ''}`;
     const user = {
-      nombre: params.get('name') || '',
-      email: params.get('email') || '',
-      rol: roleStr,
+      nombre: params.get('name')  || '',
+      email:  params.get('email') || '',
+      rol:    roleStr,
     };
 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
-    alert(message);
-
+    alert(params.get('message') || `Bienvenido ${user.nombre}`);
     window.history.replaceState(null, '', window.location.pathname);
 
     const role = roleStr.toLowerCase();
-    if (role === 'admin') {
-      navigate('/menu/admin');
-    } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
-      navigate('/menu/dueno');
-    } else if (role === 'paseador') {
-      navigate('/menu/paseador');
-    } else if (role === 'veterinario') {
-      navigate('/menu/veterinario');
-    } else {
-      navigate('/');
-    }
+    if (role === 'admin') navigate('/menu/admin');
+    else if (role === 'dueno' || role === 'propietario' || role === 'cliente') navigate('/menu/dueno');
+    else if (role === 'paseador') navigate('/menu/paseador');
+    else if (role === 'veterinario') navigate('/menu/veterinario');
+    else navigate('/');
   }, [navigate]);
 
   const handleGoogleClick = () => {
@@ -141,9 +123,9 @@ export default function Login() {
     <div className="lg-wrapper">
       <Navbar />
 
-      {/* CONTENIDO */}
       <main className="lg-main">
         <section className="lg-card">
+
           {/* COLUMNA IZQUIERDA */}
           <article className="lg-card__image-side">
             <img src={loginImage} alt="Familia con mascotas" className="lg-card__image" />
@@ -156,16 +138,16 @@ export default function Login() {
                 <img src={logo} alt="AllyPet" className="lg-form__brand-logo" />
               </div>
 
-              <h1 className="lg-form__title">Inicia Sesion</h1>
+              <h1 className="lg-form__title">Inicia Sesión</h1>
               <p className="lg-form__subtitle">Conecta con servicios para tu mascota</p>
 
               <div className="lg-form__group">
-                <label htmlFor="correo">Correo electronico</label>
+                <label htmlFor="correo">Correo electrónico</label>
                 <input
                   id="correo"
                   name="correo"
                   type="email"
-                  placeholder="Correo electronico"
+                  placeholder="Correo electrónico"
                   value={form.correo}
                   onChange={handleChange}
                   required
@@ -173,12 +155,12 @@ export default function Login() {
               </div>
 
               <div className="lg-form__group">
-                <label htmlFor="contrasena">Contrasena</label>
+                <label htmlFor="contrasena">Contraseña</label>
                 <input
                   id="contrasena"
                   name="contrasena"
                   type="password"
-                  placeholder="Contrasena"
+                  placeholder="Contraseña"
                   value={form.contrasena}
                   onChange={handleChange}
                   required
@@ -195,11 +177,11 @@ export default function Login() {
                   />
                   Recordarme
                 </label>
-                <a href="#recuperar">Olvidaste tu contrasena?</a>
+                <a href="#recuperar">¿Olvidaste tu contraseña?</a>
               </div>
 
               <button type="submit" className="lg-form__btn-main">
-                Iniciar sesion
+                Iniciar sesión
               </button>
 
               <div className="lg-form__separator">
@@ -210,8 +192,10 @@ export default function Login() {
                 <img src={googleLogo} alt="" aria-hidden="true" />
                 Continuar con Google
               </button>
+
             </form>
           </article>
+
         </section>
       </main>
     </div>

@@ -2,13 +2,15 @@ require('dotenv').config();
 const express  = require('express');
 const cors     = require('cors');
 const petRoutes = require('./routes/pet.routes');
+const path = require('path');
+
 
 const app  = express();
 const PORT = process.env.PORT || 3003;
 
 app.use(cors());
 app.use(express.json());
-
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/mascotas', petRoutes);
 
 app.get('/health', (_, res) => res.json({ ok: true, service: 'pet-service' }));

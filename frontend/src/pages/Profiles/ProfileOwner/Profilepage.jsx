@@ -17,7 +17,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [form,    setForm]    = useState({});
 
-  // ID del usuario — en un proyecto real vendría del contexto/auth
+  // ID del usuario — reemplazar con authContext.user.id cuando se integre JWT
   const userId = 1;
 
   // ── Cargar datos al montar ──────────────────────────────────
@@ -59,7 +59,7 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      setProfile(data.usuario);
+      setProfile(data); // ✅ CORREGIDO: el backend devuelve el objeto directo
       setMode('view');
     } catch (err) {
       setError('No se pudo guardar. Intenta de nuevo.');
@@ -127,10 +127,10 @@ export default function ProfilePage() {
         {mode === 'view' && (
           <>
             <div className="profile-fields">
-              <Field label="Correo electrónico" value={profile?.correo} icon="✉️" />
-              <Field label="Teléfono"            value={profile?.telefono || '—'} icon="📱" />
-              <Field label="Ciudad"              value={profile?.ciudad   || '—'} icon="📍" />
-              <Field label="Dirección"           value={profile?.direccion || '—'} icon="🏠" />
+              <Field label="Correo electrónico" value={profile?.correo}             icon="✉️" />
+              <Field label="Teléfono"            value={profile?.telefono  || '—'}  icon="📱" />
+              <Field label="Ciudad"              value={profile?.ciudad    || '—'}  icon="📍" />
+              <Field label="Dirección"           value={profile?.direccion || '—'}  icon="🏠" />
               <Field
                 label="Miembro desde"
                 value={new Date(profile?.fecha_registro).toLocaleDateString('es-CO', {
@@ -141,7 +141,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="profile-actions">
-              <button className="btn-edit" onClick={() => setMode('edit')}>
+              <button className="btn-edit"   onClick={() => setMode('edit')}>
                 Editar perfil
               </button>
               <button className="btn-delete" onClick={() => setMode('delete')}>
