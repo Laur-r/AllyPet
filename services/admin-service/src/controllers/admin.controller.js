@@ -24,33 +24,7 @@ const getUsers = async (req, res) => {
   }
 };
 
-const approveUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const success = await adminService.approveUser(id);
-    if (!success) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    res.json({ message: 'Usuario aprobado satisfactoriamente' });
-  } catch (error) {
-    console.error('approveUser controller error:', error);
-    res.status(500).json({ message: 'Error interno al aprobar usuario' });
-  }
-};
 
-const rejectUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const success = await adminService.rejectUser(id);
-    if (!success) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    res.json({ message: 'Usuario rechazado satisfactoriamente' });
-  } catch (error) {
-    console.error('rejectUser controller error:', error);
-    res.status(500).json({ message: 'Error interno al rechazar usuario' });
-  }
-};
 
 const activateUser = async (req, res) => {
   const { id } = req.params;
@@ -83,8 +57,6 @@ const deactivateUser = async (req, res) => {
 module.exports = {
   getDashboard,
   getUsers,
-  approveUser,
-  rejectUser,
   activateUser,
   deactivateUser,
 };

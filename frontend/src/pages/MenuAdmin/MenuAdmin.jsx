@@ -98,37 +98,7 @@ export default function MenuAdmin() {
     setUsers((prev) => prev.map((item) => (item.id === userId ? { ...item, ...patch } : item)));
   };
 
-  const approveProvider = async (userId) => {
-    setActionLoadingId(userId);
-    setErrorMessage('');
-    setSuccessMessage('');
 
-    try {
-      const response = await requestAdmin(`/api/admin/users/${userId}/approve`, { method: 'PUT' });
-      updateUserLocalState(userId, { providerApproved: true });
-      setSuccessMessage(response?.message || 'Usuario aprobado');
-    } catch (error) {
-      setErrorMessage(error.message || 'No fue posible aprobar el usuario');
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
-
-  const rejectProvider = async (userId) => {
-    setActionLoadingId(userId);
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    try {
-      const response = await requestAdmin(`/api/admin/users/${userId}/reject`, { method: 'PUT' });
-      updateUserLocalState(userId, { providerApproved: false });
-      setSuccessMessage(response?.message || 'Usuario desaprobado');
-    } catch (error) {
-      setErrorMessage(error.message || 'No fue posible desaprobar el usuario');
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
 
   const activateUser = async (userId) => {
     setActionLoadingId(userId);
@@ -280,14 +250,11 @@ export default function MenuAdmin() {
                   <th>Correo</th>
                   <th>Rol</th>
                   <th>Estado</th>
-                  <th>Aprobacion</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((item) => {
-                  const roleCategory = getRoleCategory(item.role);
-                  const isProvider = roleCategory === 'proveedor';
                   const isActive = Boolean(item.estado);
                   const isLoadingRow = actionLoadingId === item.id;
 
@@ -302,40 +269,7 @@ export default function MenuAdmin() {
                         </span>
                       </td>
                       <td>
-                        {isProvider ? (
-                          <span
-                            className={`menu-admin-chip ${item.providerApproved ? 'menu-admin-chip--ok' : 'menu-admin-chip--warn'}`}
-                          >
-                            {item.providerApproved ? 'aprobado' : 'desaprobado'}
-                          </span>
-                        ) : (
-                          '-'
-                        )}
-                      </td>
-                      <td>
                         <div className="menu-admin-actions">
-                          {isProvider && (
-                            <>
-                              <button
-                                className="menu-admin-btn menu-admin-btn--approve"
-                                type="button"
-                                disabled={isLoadingRow}
-                                onClick={() => approveProvider(item.id)}
-                              >
-                                Aprobar
-                              </button>
-
-                              <button
-                                className="menu-admin-btn menu-admin-btn--reject"
-                                type="button"
-                                disabled={isLoadingRow}
-                                onClick={() => rejectProvider(item.id)}
-                              >
-                                Desaprobar
-                              </button>
-                            </>
-                          )}
-
                           {isActive ? (
                             <button
                               className="menu-admin-btn menu-admin-btn--deactivate"

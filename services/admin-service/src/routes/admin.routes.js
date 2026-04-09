@@ -13,8 +13,6 @@ router.get('/dashboard', requireAdmin, adminController.getDashboard);
 router.get('/users', requireAdmin, adminController.getUsers);
 
 // Acciones de usuarios
-router.put('/users/:id/approve', requireAdmin, adminController.approveUser);
-router.put('/users/:id/reject', requireAdmin, adminController.rejectUser);
 router.patch('/users/:id/activate', requireAdmin, adminController.activateUser);
 router.patch('/users/:id/deactivate', requireAdmin, adminController.deactivateUser);
 

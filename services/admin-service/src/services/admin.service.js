@@ -22,7 +22,7 @@ const getUserRoleById = async (userId) => {
  */
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT id, nombre, correo AS email, rol AS role, estado, provider_approved as "providerApproved" FROM usuarios ORDER BY id DESC';
+    const query = 'SELECT id, nombre, correo AS email, rol AS role, estado FROM usuarios ORDER BY id DESC';
     const { rows } = await pool.query(query);
     return rows;
   } catch (error) {
@@ -51,23 +51,7 @@ const getDashboardStats = async () => {
   }
 };
 
-/**
- * Aprueba un proveedor.
- */
-const approveUser = async (userId) => {
-  const query = 'UPDATE usuarios SET provider_approved = true WHERE id = $1 RETURNING id';
-  const { rows } = await pool.query(query, [userId]);
-  return rows.length > 0;
-};
 
-/**
- * Rechaza/Desaprueba un proveedor.
- */
-const rejectUser = async (userId) => {
-  const query = 'UPDATE usuarios SET provider_approved = false WHERE id = $1 RETURNING id';
-  const { rows } = await pool.query(query, [userId]);
-  return rows.length > 0;
-};
 
 /**
  * Activa la cuenta de un usuario.
@@ -91,8 +75,6 @@ module.exports = {
   getUserRoleById,
   getAllUsers,
   getDashboardStats,
-  approveUser,
-  rejectUser,
   activateUser,
   deactivateUser,
 };
