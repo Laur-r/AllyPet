@@ -22,61 +22,22 @@
   min-height: 100vh;
 }
 
-/* NAVBAR */
-.mr-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 60px;
-  background: var(--ap-white);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
 
-.mr-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.mr-navbar__logo {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-}
-
-.mr-navbar__name {
-  font-size: 22px;
-  color: var(--ap-purple);
-}
-
-.mr-navbar__name strong {
-  font-weight: 900;
-}
-
-.mr-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.mr-navbar__links a {
-  text-decoration: none;
-  color: var(--ap-text);
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.mr-navbar__links a:hover {
-  color: var(--ap-purple);
+.mr-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: var(--ap-bg);
+  min-height: 100vh;
+  padding-top: 68px;
+  overflow: hidden;
 }
 
 /* HERO */
 .mr-hero {
   position: relative;
   text-align: center;
-  padding: 50px 20px 70px;
-  overflow: hidden;
+  padding: 40px 20px 40px;
+  overflow: visible;
+  min-height: 160px;
 }
 
 .mr-hero__blob {
@@ -84,20 +45,11 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 110%;
-  height: 340px;
+  width: 140%;
+  height: 400px;
   background: var(--ap-blob);
   border-radius: 0 0 50% 50%;
   z-index: 0;
-}
-
-.mr-hero__logo {
-  position: relative;
-  z-index: 1;
-  width: 400px;
-  height: 150px;
-  object-fit: contain;
-  margin: 0 auto 12px;
 }
 
 .mr-hero__title {
@@ -124,6 +76,8 @@
   gap: 40px;
   padding: 40px 40px 80px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .mr-card {

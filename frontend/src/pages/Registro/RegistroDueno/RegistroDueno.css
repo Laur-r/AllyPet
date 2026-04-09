@@ -12,56 +12,14 @@
   font-family: 'Nunito', sans-serif;
   background: #faf8fc;
   min-height: 100vh;
+  padding-top: 68px;
 }
 
-/* NAVBAR */
-.rd-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 25px 60px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.mr-wrapper {
+  padding-top: 68px;
 }
 
-.rd-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
 
-.rd-navbar__logo {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-}
-
-.rd-navbar__name {
-  font-size: 24px;
-  color: #7B2D8B;
-}
-
-.rd-navbar__name strong {
-  font-weight: 900;
-}
-
-.rd-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.rd-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.rd-navbar__links a:hover {
-  color: #7B2D8B;
-}
 
 /* FONDO */
 .rd-bg {

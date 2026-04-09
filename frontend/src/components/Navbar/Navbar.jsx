@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { label: 'Servicios',     href: '/#servicios' },
-  { label: 'Paseadores',   href: '/#servicios' },
-  { label: 'Veterinarios', href: '/#servicios' },
-  { label: 'Comunidad',    href: '/#comunidad' },
+  { label: 'Servicios',     href: '#servicios' },
+  { label: 'Paseadores',   href: '#servicios' },
+  { label: 'Veterinarios', href: '#servicios' },
+  { label: 'Comunidad',    href: '#comunidad' },
 ];
 
-export default function Navbar({ isSimple = false }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+export default function Navbar({ showActions = true }) {
+  const [scrolled,  setScrolled]  = useState(false);
+  const [menuOpen,  setMenuOpen]  = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -27,7 +26,7 @@ export default function Navbar({ isSimple = false }) {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
 
       {/* Logo */}
-      <a className="navbar__logo" href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+      <a className="navbar__logo" href="#">
         <img
           src="/logo.png"
           alt="AllyPet"
@@ -39,41 +38,45 @@ export default function Navbar({ isSimple = false }) {
       </a>
 
       {/* Links */}
-      {!isSimple && (
-        <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <a href={link.href} onClick={handleLinkClick}>
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
+        {NAV_LINKS.map((link) => (
+          <li key={link.label}>
+            <a href={link.href} onClick={handleLinkClick}>
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
       {/* Acciones */}
-     <div className="navbar__actions">
-        {location.pathname !== '/login' && (
-          <button onClick={() => navigate('/login')} className="navbar__login">
-            Iniciar sesión
-          </button>
+      <div className="navbar__actions">
+        {showActions && (
+          <>
+            <button
+              onClick={() => navigate('/login')}
+              className="navbar__login"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="navbar__register"
+            >
+              Comenzar gratis
+            </button>
+          </>
         )}
-        <button onClick={() => navigate('/register')} className="navbar__register">
-          Registrarse
-        </button>
 
         {/* Hamburger mobile */}
-        {!isSimple && (
-          <button
-            className={`navbar__toggle ${menuOpen ? 'navbar__toggle--open' : ''}`}
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Abrir menú"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        )}
+        <button
+          className={`navbar__toggle ${menuOpen ? 'navbar__toggle--open' : ''}`}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Abrir menú"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
       </div>
 
     </header>

@@ -1,4 +1,3 @@
-/* frontend/src/pages/RegistroPaseador.css */
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
@@ -12,55 +11,7 @@
   font-family: 'Nunito', sans-serif;
   background: #faf8fc;
   min-height: 100vh;
-}
-
-/* NAVBAR */
-.rp-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 60px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.rp-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.rp-navbar__logo {
-  width: 90px;
-  height: 60px;
-  object-fit: contain;
-}
-
-.rp-navbar__name {
-  font-size: 24px;
-  color: #7B2D8B;
-}
-
-.rp-navbar__name strong {
-  font-weight: 900;
-}
-
-.rp-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.rp-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.rp-navbar__links a:hover {
-  color: #7B2D8B;
+  padding-top: 68px;
 }
 
 /* FONDO */

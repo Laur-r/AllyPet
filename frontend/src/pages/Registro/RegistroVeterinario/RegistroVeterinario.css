@@ -12,55 +12,7 @@
   font-family: 'Nunito', sans-serif;
   background: #faf8fc;
   min-height: 100vh;
-}
-
-/* NAVBAR */
-.rv-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 60px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.rv-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.rv-navbar__logo {
-  width: 90px;
-  height: 60px;
-  object-fit: contain;
-}
-
-.rv-navbar__name {
-  font-size: 24px;
-  color: #7B2D8B;
-}
-
-.rv-navbar__name strong {
-  font-weight: 900;
-}
-
-.rv-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.rv-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.rv-navbar__links a:hover {
-  color: #7B2D8B;
+  padding-top: 68px;
 }
 
 /* FONDO */
