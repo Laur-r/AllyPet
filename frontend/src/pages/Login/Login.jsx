@@ -25,34 +25,45 @@ export default function Login() {
   };
 
   const handleAuthSuccess = (data) => {
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
 
-    if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
 
-    const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
+const handleAuthSuccess = (data) => {
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
 
-    const successMessage =
-      data.message ||
-      `Inicio de sesión exitoso. Bienvenido ${data.user?.nombre || data.user?.email} (${role}).`;
-    alert(successMessage);
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
 
-    if (role === 'admin') {
-      navigate('/menu/admin');
-    } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
-      navigate('/menu/dueno');
-    } else if (role === 'paseador') {
-      navigate('/menu/paseador');
-    } else if (role === 'veterinario') {
-      navigate('/menu/veterinario');
-    } else {
-      navigate('/');
-    }
-  };
+  const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
 
+  const successMessage =
+    data.message ||
+    `Inicio de sesión exitoso. Bienvenido ${
+      data.user?.nombre || data.user?.email
+    } (${role}).`;
+
+  alert(successMessage);
+
+  if (role === 'admin') {
+    navigate('/menu/admin');
+  } else if (role === 'dueno' || role === 'propietario' || role === 'cliente') {
+    navigate('/menu/dueno');
+  } else if (role === 'paseador') {
+    navigate('/menu/paseador');
+  } else if (role === 'veterinario') {
+    navigate('/menu/veterinario');
+  } else {
+    navigate('/');
+  }
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -216,4 +227,5 @@ export default function Login() {
       </main>
     </div>
   );
+  }
 }

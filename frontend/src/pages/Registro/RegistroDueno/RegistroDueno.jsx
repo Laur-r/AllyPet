@@ -6,7 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroDueno.css';
 
 
-import { registrarDueno }                        from '../../../services/auth.service';
+import { registrarDueno } from '../../../services/auth.service';
 import Navbar from '../../../components/Navbar/Navbar';
 import formularioImg from '../../../assets/register/formulario-dueno.png';
 
