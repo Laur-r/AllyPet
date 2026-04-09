@@ -15,12 +15,6 @@
   padding-top: 68px;
 }
 
-.mr-wrapper {
-  padding-top: 68px;
-}
-
-
-
 /* FONDO */
 .rd-bg {
   position: relative;
@@ -38,7 +32,7 @@
   transform: translateX(-50%);
   width: 110%;
   height: 340px;
-  background: #f0e6f8;
+  background: #e8f5e9;
   border-radius: 0 0 50% 50%;
   z-index: 0;
 }
@@ -55,6 +49,7 @@
   overflow: hidden;
   margin-top: 40px;
 }
+
 /* IMAGEN SUPERIOR */
 .rd-card__img-wrap {
   position: relative;
@@ -80,7 +75,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 20px 24px;
-  background: linear-gradient(to left, rgba(255,255,255,0.1) 40%, transparent);
+  background: linear-gradient(to left, rgba(255,255,255,0.75) 40%, transparent);
 }
 
 .rd-card__title {
@@ -130,22 +125,22 @@
 
 .rd-form__group input {
   padding: 10px 14px;
-  border: 1.5px solid #e0d8f0;
+  border: 1.5px solid #d4edda;
   border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  background: #f7f3ff;
+  background: #f4fbf4;
   color: #2d2d2d;
   outline: none;
   transition: border 0.2s;
 }
 
 .rd-form__group input:focus {
-  border-color: #7B2D8B;
+  border-color: #7BC67E;
 }
 
 .rd-form__group input::placeholder {
-  color: #b0a8c0;
+  color: #a8d5a2;
 }
 
 /* INPUT CON OJO */
@@ -164,7 +159,7 @@
   position: absolute;
   right: 12px;
   cursor: pointer;
-  color: #7B2D8B;
+  color: #7BC67E;
   display: flex;
   align-items: center;
 }
@@ -190,13 +185,13 @@
 .rd-terminos input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #7B2D8B;
+  accent-color: #7BC67E;
   cursor: pointer;
 }
 
 /* LINK */
 .rd-link {
-  color: #7B2D8B;
+  color: #7BC67E;
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -206,10 +201,10 @@
 .rd-btn {
   width: 100%;
   padding: 14px;
-  background: #5BC8D4;
+  background: #7BC67E;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 16px;
   font-weight: 800;
@@ -218,7 +213,7 @@
 }
 
 .rd-btn:hover {
-  background: #38adb9;
+  background: #5aaa5e;
   transform: scale(1.02);
 }
 
@@ -232,8 +227,6 @@
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  .rd-navbar { padding: 10px 20px; }
-  .rd-navbar__links { display: none; }
   .rd-form { padding: 20px; }
   .rd-form__row { flex-direction: column; gap: 0; }
   .rd-card__img-wrap { height: 160px; }

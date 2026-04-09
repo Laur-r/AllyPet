@@ -18,14 +18,14 @@ const CARDS = [
     accent: '#5aaa5e',
     img: imgDueno,
   },
-  {
-    rol: 'veterinario',
-    label: 'Veterinaria',
-    ruta: '/register/veterinario',
-    color: '#F5A623',
-    accent: '#d48b12',
-    img: imgVet,
-  },
+{
+  rol: 'veterinario',
+  label: 'Veterinaria',
+  ruta: '/register/veterinario',
+  color: '#7B2D8B',
+  accent: '#a44db8',
+  img: imgVet,
+},
   {
     rol: 'paseador',
     label: 'Paseador',
