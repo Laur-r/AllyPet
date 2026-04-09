@@ -6,8 +6,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroDueno.css';
 
 
-import { registrarDueno } from "../../../services/auth.service";
-import logo         from '../../../assets/logo-allypet.png';
+import { registrarDueno } from '../../../services/auth.service';
+import Navbar from '../../../components/Navbar/Navbar';
 import formularioImg from '../../../assets/register/formulario-dueno.png';
 
 export default function RegistroDueno() {
@@ -65,7 +65,7 @@ export default function RegistroDueno() {
     if (error.response?.status === 409) {
       setError('Este correo ya está registrado.');
     } else {
-      setError('Ocurrió un error. Intenta de nuevo.');
+      setError('Este correo ya está registrado.');
     }
   }
 };
@@ -74,18 +74,7 @@ export default function RegistroDueno() {
     <div className="rd-wrapper">
 
       {/* NAVBAR */}
-      <header className="rd-navbar">
-        <div className="rd-navbar__brand" onClick={() => navigate('/')}>
-          <img src={logo} alt="AllyPet" className="rd-navbar__logo" />
-          <span className="rd-navbar__name"><strong>Ally</strong>Pet</span>
-        </div>
-        <nav className="rd-navbar__links">
-          <a href="#">Servicios</a>
-          <a href="#">Paseadores</a>
-          <a href="#">Veterinarios</a>
-          <a href="#">Sobre Nosotros</a>
-        </nav>
-      </header>
+      <Navbar showActions={false} />
 
       {/* FONDO BLOB */}
       <div className="rd-bg">

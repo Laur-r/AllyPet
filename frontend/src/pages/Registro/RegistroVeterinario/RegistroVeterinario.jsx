@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './RegistroVeterinario.css';
-
 import { registrarVeterinario } from '../../../services/auth.service';
-import logo           from '../../../assets/logo-allypet.png';
+import Navbar from '../../../components/Navbar/Navbar';
 import veterinarioImg from '../../../assets/register/formulario-veterinario.png';
 
 export default function RegistroVeterinario() {
@@ -64,13 +63,13 @@ const handleSubmit = async (e) => {
       servicios:              form.servicios,
       horarios:               form.horarios,
     });
-    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+    alert('¡Registro exitoso! Tu cuenta está pendiente de aprobación por el administrador. Te notificaremos cuando puedas iniciar sesión.');
     navigate('/login');
   } catch (error) {
     if (error.response?.status === 409) {
       setError('Este correo ya está registrado.');
     } else {
-      setError('Ocurrió un error. Intenta de nuevo.');
+      setError('Este correo ya está registrado.');
     }
   }
 };
@@ -79,18 +78,8 @@ const handleSubmit = async (e) => {
     <div className="rv-wrapper">
 
       {/* NAVBAR */}
-      <header className="rv-navbar">
-        <div className="rv-navbar__brand" onClick={() => navigate('/')}>
-          <img src={logo} alt="AllyPet" className="rv-navbar__logo" />
-          <span className="rv-navbar__name"><strong>Ally</strong>Pet</span>
-        </div>
-        <nav className="rv-navbar__links">
-          <a href="#">Servicios</a>
-          <a href="#">Paseadores</a>
-          <a href="#">Veterinarios</a>
-          <a href="#">Sobre Nosotros</a>
-        </nav>
-      </header>
+      
+      <Navbar showActions={false} />
 
       {/* FONDO BLOB */}
       <div className="rv-bg">

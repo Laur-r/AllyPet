@@ -1,5 +1,3 @@
-/* frontend/src/pages/RegistroPaseador.css */
-
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
 * {
@@ -12,55 +10,7 @@
   font-family: 'Nunito', sans-serif;
   background: #faf8fc;
   min-height: 100vh;
-}
-
-/* NAVBAR */
-.rp-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 60px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.rp-navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.rp-navbar__logo {
-  width: 90px;
-  height: 60px;
-  object-fit: contain;
-}
-
-.rp-navbar__name {
-  font-size: 24px;
-  color: #7B2D8B;
-}
-
-.rp-navbar__name strong {
-  font-weight: 900;
-}
-
-.rp-navbar__links {
-  display: flex;
-  gap: 36px;
-}
-
-.rp-navbar__links a {
-  text-decoration: none;
-  color: #2d2d2d;
-  font-size: 15px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.rp-navbar__links a:hover {
-  color: #7B2D8B;
+  padding-top: 68px;
 }
 
 /* FONDO */
@@ -80,7 +30,7 @@
   transform: translateX(-50%);
   width: 110%;
   height: 340px;
-  background: #f0e6f8;
+  background: #e6f7f8;
   border-radius: 0 0 50% 50%;
   z-index: 0;
 }
@@ -92,17 +42,17 @@
   background: #ffffff;
   border-radius: 20px;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.10);
   overflow: hidden;
-  margin-top: 0.5px;
+  margin-top: 10px;
 }
 
 /* IMAGEN SUPERIOR */
 .rp-card__img-wrap {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 280px;
   overflow: hidden;
 }
 
@@ -110,7 +60,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 40%;
+  object-position: center 25%;
 }
 
 .rp-card__img-overlay {
@@ -127,15 +77,15 @@
 }
 
 .rp-card__title {
-  font-size: 35px;
+  font-size: 24px;
   font-weight: 900;
   color: #2d2d2d;
   line-height: 1.3;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
 
 .rp-card__subtitle {
-  font-size: 15px;
+  font-size: 13px;
   color: #6b6b6b;
   font-weight: 600;
   line-height: 1.5;
@@ -174,11 +124,11 @@
 .rp-form__group input,
 .rp-form__group textarea {
   padding: 10px 14px;
-  border: 1.5px solid #e0d8f0;
+  border: 1.5px solid #c8eef1;
   border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  background: #f7f3ff;
+  background: #f0fbfc;
   color: #2d2d2d;
   outline: none;
   transition: border 0.2s;
@@ -192,7 +142,7 @@
 
 .rp-form__group input::placeholder,
 .rp-form__group textarea::placeholder {
-  color: #b0a8c0;
+  color: #a0cdd2;
 }
 
 /* INPUT CON OJO */
@@ -256,7 +206,7 @@
   background: #5BC8D4;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 10px;
   font-family: 'Nunito', sans-serif;
   font-size: 16px;
   font-weight: 800;
@@ -279,8 +229,6 @@
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  .rp-navbar { padding: 10px 20px; }
-  .rp-navbar__links { display: none; }
   .rp-form { padding: 20px; }
   .rp-form__row { flex-direction: column; gap: 0; }
   .rp-card__img-wrap { height: 160px; }

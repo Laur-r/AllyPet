@@ -3,8 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import './MenuRegistro.css';
 
-import logo from '../../../assets/logo-allypet.png';
-
+import Navbar from '../../../components/Navbar/Navbar';
 import imgDueno    from '../../../assets/register/dueno.png';
 import imgVet      from '../../../assets/register/Veterinario.png';
 import imgPaseador from '../../../assets/register/Paseador.png';
@@ -19,14 +18,14 @@ const CARDS = [
     accent: '#5aaa5e',
     img: imgDueno,
   },
-  {
-    rol: 'veterinario',
-    label: 'Veterinaria',
-    ruta: '/register/veterinario',
-    color: '#F5A623',
-    accent: '#d48b12',
-    img: imgVet,
-  },
+{
+  rol: 'veterinario',
+  label: 'Veterinaria',
+  ruta: '/register/veterinario',
+  color: '#7B2D8B',
+  accent: '#a44db8',
+  img: imgVet,
+},
   {
     rol: 'paseador',
     label: 'Paseador',
@@ -44,25 +43,12 @@ export default function MenuRegistro() {
     <div className="mr-wrapper">
 
       {/* NAVBAR */}
-      <header className="mr-navbar">
-        <div className="mr-navbar__brand" onClick={() => navigate('/')}>
-          <img src={logo} alt="AllyPet logo" className="mr-navbar__logo" />
-          <span className="mr-navbar__name">
-            <strong>Ally</strong>Pet
-          </span>
-        </div>
-        <nav className="mr-navbar__links">
-          <a href="#">Servicios</a>
-          <a href="#">Paseadores</a>
-          <a href="#">Veterinarios</a>
-          <a href="#">Contacto</a>
-        </nav>
-      </header>
+
+      <Navbar showActions={false} />
 
       {/* HERO */}
       <section className="mr-hero">
         <div className="mr-hero__blob" />
-        <img src={logo} alt="AllyPet" className="mr-hero__logo" />
         <h1 className="mr-hero__title">¿Qué tipo de usuario eres?</h1>
         <p className="mr-hero__subtitle">
           Regístrate según tu perfil para acceder a los servicios de AllyPet

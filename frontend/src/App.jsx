@@ -7,17 +7,16 @@ import RegistroDueno       from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador    from './pages/Registro/RegistroPaseador/RegistroPaseador';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 
-import MenuDueno      from './pages/Menu/MenuDueno/MenuDueno';
-import MenuPaseador   from './pages/Menu/MenuPaseador/MenuPaseador';
+import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
+import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
 import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
 
 import Mascotas          from './pages/Mascotas/Mascotas';
 import PerfilVeterinario from './pages/PerfilVeterinario/PerfilVeterinario';
 import PerfilPaseador    from './pages/PerfilPaseador/PerfilPaseador';
-import PerfilDueno from './pages/Profiles/ProfileOwner/Profilepage';
+import PerfilDueno       from './pages/Profiles/ProfileOwner/Profilepage';
 
-// Nuevas páginas admin
-import MenuAdmin from './pages/MenuAdmin/MenuAdmin';
+import MenuAdmin     from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -29,8 +28,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
 
         {/* Acceso */}
-        <Route path="/login" element={<Login />} />
-      <Route path="/profile" element={<PerfilDueno />} />
+        <Route path="/login"   element={<Login />} />
+        <Route path="/profile" element={<PerfilDueno />} />
 
         {/* Registro */}
         <Route path="/register"             element={<MenuRegistro />} />
@@ -38,13 +37,13 @@ function App() {
         <Route path="/register/paseador"    element={<RegistroPaseador />} />
         <Route path="/register/veterinario" element={<RegistroVeterinario />} />
 
-        {/* Menú Dueño con rutas anidadas */}
+        {/* Menú Dueño */}
         <Route path="/menu/dueno" element={<MenuDueno />}>
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
         </Route>
 
-        {/* Menú Paseador con rutas anidadas */}
+        {/* Menú Paseador */}
         <Route path="/menu/paseador" element={<MenuPaseador />}>
           <Route index element={<h2>Bienvenido paseador</h2>} />
           <Route path="perfil"        element={<PerfilPaseador />} />
@@ -53,7 +52,7 @@ function App() {
           <Route path="configuracion" element={<h2>Configuración</h2>} />
         </Route>
 
-        {/* Menú Veterinario con rutas anidadas */}
+        {/* Menú Veterinario */}
         <Route path="/menu/veterinario" element={<MenuVeterinario />}>
           <Route index element={<h2>Bienvenido veterinario</h2>} />
           <Route path="perfil"        element={<PerfilVeterinario />} />
@@ -62,16 +61,17 @@ function App() {
           <Route path="configuracion" element={<h2>Configuración</h2>} />
         </Route>
 
-        <Route 
-          path="/menu/admin" 
+        {/* Admin */}
+        <Route
+          path="/menu/admin"
           element={
             <ProtectedRoute requireAdmin={true}>
               <MenuAdmin />
             </ProtectedRoute>
-          } 
+          }
         />
 
-        {/* Redirección Dashboard genérico */}
+        {/* Redirección */}
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
 
       </Routes>
