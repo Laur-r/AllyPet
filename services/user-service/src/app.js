@@ -14,7 +14,7 @@ app.use('/api/users', userRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.send('User Service funcionando 👤');
+  res.send('Useree Service funcionando 👤');
 });
 
 const PORT = process.env.PORT || 3004;

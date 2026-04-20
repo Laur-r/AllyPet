@@ -1,18 +1,28 @@
-require('dotenv').config();
-const express  = require('express');
-const cors     = require('cors');
-const petRoutes = require('./routes/pet.routes');
+const express = require('express');
+const cors = require('cors');
 const path = require('path');
+require('dotenv').config(); // ← aquí
 
+const petRoutes = require('./routes/pet.routes');
 
-const app  = express();
-const PORT = process.env.PORT || 3003;
+const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/mascotas', petRoutes);
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (_, res) => res.json({ ok: true, service: 'pet-service' }));
+// Archivos estáticos (fotos subidas)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.listen(PORT, () => console.log(`🐾 Pet-service corriendo en puerto ${PORT}`));
+// Rutas
+app.use('/api/pets', petRoutes);
+
+// Health check
+app.get('/health', (req, res) => res.json({ ok: true, service: 'pet-service' }));
+
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => {
+  console.log(`🐾 pet-service corriendo en puerto ${PORT}`);
+});
+
+module.exports = app;
