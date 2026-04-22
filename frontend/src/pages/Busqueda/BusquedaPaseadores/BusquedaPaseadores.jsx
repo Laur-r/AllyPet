@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './Busqueda.css';
+import './BusquedaPaseadores.css';
 
 const API_PAS = 'http://localhost:3006';
 

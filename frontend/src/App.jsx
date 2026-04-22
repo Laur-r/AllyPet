@@ -5,7 +5,7 @@ import Login               from './pages/Login/Login';
 import MenuRegistro        from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno       from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador    from './pages/Registro/RegistroPaseador/RegistroPaseador';
-import BusquedaPaseadores from './pages/Busqueda/Busqueda';
+import BusquedaPaseadores from './pages/Busqueda/BusquedaPaseadores/BusquedaPaseadores';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
