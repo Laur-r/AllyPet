@@ -80,6 +80,29 @@ const actualizarImagen = async (usuarioId, campo, ruta) => {
   return rows[0] || null;
 };
 
+/* ── H6.1 — Buscar paseadores por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  const { rows } = await pool.query(
+    `SELECT 
+      u.id,
+      u.nombre,
+      u.foto_perfil,
+      p.tarifa,
+      p.calificacion,
+      p.disponible,
+      p.ciudad
+    FROM perfil_paseador p
+    INNER JOIN usuarios u ON u.id = p.usuario_id
+    WHERE LOWER(p.ciudad) = LOWER($1)
+      AND p.aprobado = true
+      AND p.disponible = true
+      AND u.estado = true
+    ORDER BY p.calificacion DESC`,
+    [ciudad]
+  );
+  return rows;
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -88,4 +111,5 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   actualizarImagen,
+  buscarPorCiudad, 
 };

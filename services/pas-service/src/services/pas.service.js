@@ -60,6 +60,15 @@ const actualizarImagen = async (usuarioId, campo, filename) => {
   return await model.actualizarImagen(usuarioId, campo, ruta);
 };
 
+/* ──  Buscar paseadores por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  if (!ciudad || ciudad.trim() === '') {
+    throw new Error('La ciudad es requerida');
+  }
+  const paseadores = await model.buscarPorCiudad(ciudad.trim());
+  return paseadores;
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -68,4 +77,5 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   actualizarImagen,
+  buscarPorCiudad,
 };

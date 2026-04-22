@@ -113,6 +113,37 @@ const subirImagen = async (req, res) => {
   }
 };
 
+/* ─────────────────────────────────────────
+   GET /api/paseador/buscar?ciudad=Medellín
+   H6.1 — Buscar paseadores por ciudad
+───────────────────────────────────────── */
+const buscarPorCiudad = async (req, res) => {
+  try {
+    const { ciudad } = req.query;
+
+    if (!ciudad || ciudad.trim() === '') {
+      return res.status(400).json({ error: 'El parámetro ciudad es requerido' });
+    }
+
+    const paseadores = await service.buscarPorCiudad(ciudad);
+
+    if (paseadores.length === 0) {
+      return res.status(200).json({
+        message: 'No se encontraron paseadores disponibles en esta ciudad',
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Paseadores encontrados',
+      data: paseadores,
+    });
+  } catch (err) {
+    console.error('buscarPorCiudad:', err.message);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -121,4 +152,5 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   subirImagen,
+   buscarPorCiudad,
 };
