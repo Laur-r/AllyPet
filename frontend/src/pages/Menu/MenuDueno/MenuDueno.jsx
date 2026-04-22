@@ -1,22 +1,36 @@
 import { useState, useEffect } from "react";
 import "./MenuDueno.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 
-export default function MenuDueno() {
-  const [activeItem, setActiveItem] = useState("inicio");
-  const [serviciosOpen, setServiciosOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [search, setSearch] = useState("");
-  const [user, setUser] = useState(null);
 
-  const navigate = useNavigate();
+  export default function MenuDueno() {
+    const [serviciosOpen, setServiciosOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen]     = useState(true);
+    const [search, setSearch]               = useState("");
+    const [user, setUser]                   = useState(null);
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) setUser(JSON.parse(userData));
-  }, []);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const getActiveFromPath = (path) => {
+      if (path.includes('mascotas'))      return 'mascotas';
+      if (path.includes('configuracion')) return 'configuracion';
+      if (path.includes('reservas'))      return 'reservas';
+      return 'inicio';
+    };
+
+    const [activeItem, setActiveItem] = useState(() => getActiveFromPath(location.pathname));
+
+    useEffect(() => {
+      setActiveItem(getActiveFromPath(location.pathname));
+    }, [location.pathname]);
+
+    useEffect(() => {
+      const userData = localStorage.getItem("user");
+      if (userData) setUser(JSON.parse(userData));
+    }, []);
 
   const getRolNombre = (rol) => {
     const roles = {
@@ -90,7 +104,7 @@ export default function MenuDueno() {
                   } else {
                     setActiveItem(item.key);
                     setServiciosOpen(false);
-                    if (item.key === "mascotas") navigate("mascotas");
+                    if (item.key === "mascotas") navigate("/menu/dueno/mascotas");
                     if (item.key === "inicio")   navigate("/menu/dueno");
                   }
                 }}

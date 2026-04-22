@@ -19,6 +19,8 @@ import PerfilDueno       from './pages/Profiles/ProfileOwner/Profilepage';
 import MenuAdmin     from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
 
+import Carnet from './pages/Carnet/Carnet';
+
 function App() {
   return (
     <BrowserRouter>
@@ -41,6 +43,7 @@ function App() {
         <Route path="/menu/dueno" element={<MenuDueno />}>
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
+          <Route path="mascotas/:petId/carnet" element={<Carnet />} /> 
         </Route>
 
         {/* Menú Paseador */}

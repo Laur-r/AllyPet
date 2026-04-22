@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import {useNavigate} from 'react-router-dom';
 import './Mascotas.css';
 
 /* ══════════════════════════════════════════════════════════
@@ -84,6 +85,7 @@ const IcoCat = () => (
    COMPONENTE PRINCIPAL
    ════════════════════════════════════════════════════════════ */
 export default function Mascotas() {
+  const navigate = useNavigate();
   const [mascotas,   setMascotas]   = useState([]);
   const [cargando,   setCargando]   = useState(true);
   const [filtro,     setFiltro]     = useState('Todas');
@@ -204,6 +206,7 @@ export default function Mascotas() {
             style={{ animationDelay: `${i * 55}ms` }}
             onEditar={() => abrirEditar(m)}
             onEliminar={() => setConfirmDel(m)}
+            onVerPerfil={() => navigate(`/menu/dueno/mascotas/${m.id}/carnet`)}
           />
         ))}
         <TarjetaAgregar onClick={abrirCrear} />
@@ -260,7 +263,7 @@ export default function Mascotas() {
 /* ════════════════════════════════════════════════════════════
    TARJETA MASCOTA
    ════════════════════════════════════════════════════════════ */
-function Tarjeta({ mascota, style, onEditar, onEliminar }) {
+function Tarjeta({ mascota, style, onEditar, onEliminar , onVerPerfil}) {
   const { nombre, especie, raza, sexo, edad, peso, color, foto, recordatorio } = mascota;
   const diasClass = recordatorio ? (recordatorio.dias <= 7 ? 'urgent' : '') : '';
   const fotoUrl   = getFotoUrl(foto);
@@ -318,7 +321,7 @@ function Tarjeta({ mascota, style, onEditar, onEliminar }) {
         )}
 
         <div className="mas-card-btns-row">
-          <button className="mas-btn-ver">Ver Perfil</button>
+         <button className="mas-btn-ver" onClick={onVerPerfil}>Ver Perfil</button>
           <button className="mas-btn-historial">Historial</button>
         </div>
       </div>
