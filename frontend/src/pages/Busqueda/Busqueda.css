@@ -1,0 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ap-purple:        #7B2D8B;
+  --ap-purple-mid:    #9B4DAB;
+  --ap-purple-light:  #F3E8F7;
+  --ap-purple-xlight: #FAF5FC;
+  --ap-green:         #6CC04A;
+  --ap-green-light:   #EBF7E4;
+  --ap-green-dark:    #3A7A2A;
+  --ap-white:         #FFFFFF;
+  --ap-bg:            #F7F6FB;
+  --ap-border:        #EDE8F2;
+  --ap-text:          #1A1A2E;
+  --ap-text-soft:     #6B7280;
+  --ap-text-xsoft:    #9CA3AF;
+  --ap-shadow-sm:     0 1px 3px rgba(123, 45, 139, 0.06);
+  --ap-shadow-md:     0 4px 16px rgba(123, 45, 139, 0.08);
+  --tr:               .22s ease;
+}
+
+/* ══ PÁGINA ══ */
+.bq-page {
+  font-family: 'Inter', sans-serif;
+  padding: 0 0 48px;
+  min-height: 100%;
+}
+
+/* ══ ENCABEZADO ══ */
+.bq-head {
+  margin-bottom: 24px;
+}
+.bq-head h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ap-text);
+  margin-bottom: 4px;
+  letter-spacing: -.02em;
+}
+.bq-head p {
+  font-size: .845rem;
+  color: var(--ap-text-soft);
+}
+
+/* ══ BARRA DE BÚSQUEDA ══ */
+.bq-searchbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ap-white);
+  border: 1.5px solid var(--ap-border);
+  border-radius: 14px;
+  padding: 10px 10px 10px 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--ap-shadow-sm);
+  transition: border-color var(--tr), box-shadow var(--tr);
+}
+.bq-searchbar:focus-within {
+  border-color: var(--ap-purple);
+  box-shadow: 0 0 0 3px rgba(123, 45, 139, 0.08);
+}
+.bq-searchbar svg {
+  color: var(--ap-text-xsoft);
+  flex-shrink: 0;
+}
+.bq-searchbar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: .9rem;
+  color: var(--ap-text);
+  outline: none;
+}
+.bq-searchbar input::placeholder {
+  color: var(--ap-text-xsoft);
+}
+.bq-searchbar button {
+  background: var(--ap-purple);
+  color: var(--ap-white);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 22px;
+  font-family: 'Inter', sans-serif;
+  font-size: .845rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--tr);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.bq-searchbar button:hover:not(:disabled) {
+  background: var(--ap-purple-mid);
+}
+.bq-searchbar button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* ══ LABEL RESULTADO ══ */
+.bq-resultado-label {
+  font-size: .82rem;
+  color: var(--ap-text-soft);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* ══ GRID DE TARJETAS ══ */
+.bq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ══ TARJETA PASEADOR ══ */
+.bq-card {
+  background: var(--ap-white);
+  border: 1px solid var(--ap-border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--ap-shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--tr), transform var(--tr), border-color var(--tr);
+}
+.bq-card:hover {
+  box-shadow: var(--ap-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--ap-purple-light);
+}
+
+.bq-card-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ap-purple) 0%, var(--ap-green) 100%);
+}
+
+.bq-card-foto {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--ap-purple-light);
+  flex-shrink: 0;
+}
+.bq-card-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bq-card-avatar {
+  width: 100%;
+  height: 100%;
+  background: var(--ap-purple-light);
+  color: var(--ap-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.bq-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  width: 100%;
+}
+.bq-card-info h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--ap-text);
+}
+.bq-card-ciudad {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  color: var(--ap-text-soft);
+}
+.bq-card-ciudad svg {
+  color: var(--ap-purple);
+  flex-shrink: 0;
+}
+.bq-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.bq-card-tarifa {
+  background: var(--ap-purple-light);
+  color: var(--ap-purple);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(123, 45, 139, 0.15);
+}
+.bq-card-cal {
+  background: var(--ap-green-light);
+  color: var(--ap-green-dark);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(108, 192, 74, 0.2);
+}
+
+.bq-card-btn {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1.5px solid var(--ap-purple);
+  border-radius: 10px;
+  color: var(--ap-purple);
+  font-family: 'Inter', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--tr), color var(--tr);
+}
+.bq-card-btn:hover {
+  background: var(--ap-purple);
+  color: var(--ap-white);
+}
+
+/* ══ ERROR ══ */
+.bq-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FEE2E2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: .83rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* ══ ESTADO INICIAL / VACÍO ══ */
+.bq-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--ap-text-xsoft);
+}
+.bq-empty svg {
+  color: var(--ap-border);
+}
+.bq-empty p {
+  font-size: .845rem;
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 640px) {
+  .bq-grid {
+    grid-template-columns: 1fr;
+  }
+  .bq-searchbar {
+    flex-wrap: wrap;
+  }
+  .bq-searchbar button {
+    width: 100%;
+    padding: 10px;
+  }
+}

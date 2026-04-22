@@ -5,6 +5,7 @@ import Login               from './pages/Login/Login';
 import MenuRegistro        from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno       from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador    from './pages/Registro/RegistroPaseador/RegistroPaseador';
+import BusquedaPaseadores from './pages/Busqueda/Busqueda';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
@@ -41,6 +42,7 @@ function App() {
         <Route path="/menu/dueno" element={<MenuDueno />}>
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
+          <Route path="buscar/paseadores" element={<BusquedaPaseadores />} />
         </Route>
 
         {/* Menú Paseador */}

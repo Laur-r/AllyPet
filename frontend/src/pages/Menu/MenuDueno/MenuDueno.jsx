@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./MenuDueno.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 
 export default function MenuDueno() {
@@ -37,10 +37,10 @@ export default function MenuDueno() {
   ];
 
   const subServicios = [
-    { key: "veterinario", label: "Veterinario" },
-    { key: "paseador",    label: "Paseador" },
-    { key: "cuidador",    label: "Cuidador" },
-  ];
+    { key: "veterinario", label: "Veterinario", path: null },
+    { key: "paseador",    label: "Paseador",    path: "/menu/dueno/buscar/paseadores" },
+    { key: "cuidador",    label: "Cuidador",    path: null },
+];
 
   const isServicioActive =
     activeItem === "servicios" || subServicios.some((s) => s.key === activeItem);
@@ -104,7 +104,10 @@ export default function MenuDueno() {
                     <button
                       key={sub.key}
                       className={`md-sub-item ${activeItem === sub.key ? "active" : ""}`}
-                      onClick={() => setActiveItem(sub.key)}
+                      onClick={() => {
+                        setActiveItem(sub.key);
+                        if (sub.path) navigate(sub.path);
+                      }}
                     >
                       {sub.label}
                     </button>
