@@ -9,7 +9,7 @@ const getPerfil = async (usuario_id) => {
     perfil = await VetModel.create(usuario_id);
   }
 
-  // 🔥 PARCHE CLAVE
+  //  PARCHE CLAVE
   if (perfil.servicios && typeof perfil.servicios === 'string') {
     try { perfil.servicios = JSON.parse(perfil.servicios); } catch { perfil.servicios = []; }
   }
@@ -32,7 +32,17 @@ const actualizarPerfil = async (usuario_id, datos) => {
   return perfil;
 };
 
+/* ──  Buscar veterinarias por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  if (!ciudad || ciudad.trim() === '') {
+    throw new Error('La ciudad es requerida');
+  }
+  const veterinarias = await model.buscarPorCiudad(ciudad.trim());
+  return veterinarias;
+};
+
 module.exports = {
   getPerfil,
-  actualizarPerfil
+  actualizarPerfil,
+  buscarPorCiudad,
 };

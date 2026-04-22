@@ -116,4 +116,25 @@ const horariosSeguro  = typeof horarios === 'object' && horarios !== null ? hora
   }
 };
 
-module.exports = { getByUsuario, create, update };
+/* ──  Buscar veterinarias por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  const { rows } = await pool.query(
+    `SELECT
+      u.id,
+      p.nombre_establecimiento,
+      p.direccion,
+      p.servicios,
+      p.ciudad
+    FROM perfil_veterinario p
+    INNER JOIN usuarios u ON u.id = p.usuario_id
+    WHERE LOWER(p.ciudad) = LOWER($1)
+      AND p.aprobado = true
+      AND p.disponible = true
+      AND u.estado = true
+    ORDER BY p.nombre_establecimiento ASC`,
+    [ciudad]
+  );
+  return rows;
+};
+
+module.exports = { getByUsuario, create, update, buscarPorCiudad };
