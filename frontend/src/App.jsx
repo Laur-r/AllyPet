@@ -7,6 +7,7 @@ import RegistroDueno       from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador    from './pages/Registro/RegistroPaseador/RegistroPaseador';
 import BusquedaPaseadores from './pages/Busqueda/BusquedaPaseadores/BusquedaPaseadores';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
+import BusquedaVeterinarias from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -43,6 +44,7 @@ function App() {
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
           <Route path="buscar/paseadores" element={<BusquedaPaseadores />} />
+          <Route path="buscar/veterinarias"  element={<BusquedaVeterinarias />} />
         </Route>
 
         {/* Menú Paseador */}

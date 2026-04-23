@@ -36,10 +36,10 @@ export default function MenuDueno() {
     { key: "configuracion", label: "Configuración" },
   ];
 
-  const subServicios = [
-    { key: "veterinario", label: "Veterinario", path: null },
-    { key: "paseador",    label: "Paseador",    path: "/menu/dueno/buscar/paseadores" },
-    { key: "cuidador",    label: "Cuidador",    path: null },
+const subServicios = [
+  { key: "veterinario", label: "Veterinario", path: "/menu/dueno/buscar/veterinarias" },
+  { key: "paseador",    label: "Paseador",    path: "/menu/dueno/buscar/paseadores" },
+  { key: "cuidador",    label: "Cuidador",    path: null },
 ];
 
   const isServicioActive =
