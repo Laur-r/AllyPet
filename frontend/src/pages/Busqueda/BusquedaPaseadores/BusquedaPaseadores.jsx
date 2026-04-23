@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './BusquedaPaseadores.css';
+
 
 const API_PAS = 'http://localhost:3006';
 
@@ -103,7 +105,8 @@ export default function BusquedaPaseadores() {
 
 /* ── Tarjeta de cada paseador ── */
 function TarjetaPaseador({ paseador }) {
-  const { nombre, foto_perfil, tarifa, calificacion, ciudad } = paseador;
+  const { id, nombre, foto_perfil, tarifa, calificacion, ciudad } = paseador;
+  const navigate = useNavigate();
 
   return (
     <div className="bq-card">
@@ -132,7 +135,12 @@ function TarjetaPaseador({ paseador }) {
         </div>
       </div>
 
-      <button className="bq-card-btn">Ver perfil</button>
+      <button
+        className="bq-card-btn"
+        onClick={() => navigate(`/menu/dueno/paseador/${id}`)}
+      >
+        Ver perfil
+      </button>
     </div>
   );
 }
