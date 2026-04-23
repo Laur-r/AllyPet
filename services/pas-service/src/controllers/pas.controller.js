@@ -114,8 +114,8 @@ const subirImagen = async (req, res) => {
 };
 
 /* ─────────────────────────────────────────
-   GET /api/paseador/buscar?ciudad=Medellín
-   H6.1 — Buscar paseadores por ciudad
+   GET /api/paseador/buscar?ciudad=Buga
+    Buscar paseadores por ciudad
 ───────────────────────────────────────── */
 const buscarPorCiudad = async (req, res) => {
   try {
@@ -144,6 +144,35 @@ const buscarPorCiudad = async (req, res) => {
   }
 };
 
+/* ─────────────────────────────────────────
+   GET /api/perfil-paseador/publico/:usuarioId
+  — Ver perfil público del paseador
+───────────────────────────────────────── */
+const obtenerPerfilPublico = async (req, res) => {
+  try {
+    const perfil = await service.obtenerPerfilPublico(req.params.usuarioId);
+    return res.status(200).json({ message: 'Perfil encontrado', data: perfil });
+  } catch (err) {
+    console.error('obtenerPerfilPublico:', err.message);
+    const status = err.message === 'Paseador no encontrado o no disponible' ? 404 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* ─────────────────────────────────────────
+   GET /api/perfil-paseador/:usuarioId/resenas
+    Ver reseñas del paseador
+───────────────────────────────────────── */
+const obtenerResenas = async (req, res) => {
+  try {
+    const resenas = await service.obtenerResenas(req.params.usuarioId);
+    return res.status(200).json({ message: 'Reseñas encontradas', data: resenas });
+  } catch (err) {
+    console.error('obtenerResenas:', err.message);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -152,5 +181,7 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   subirImagen,
-   buscarPorCiudad,
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
 };
