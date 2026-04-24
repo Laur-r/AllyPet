@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { buscarPaseadores } from '../../../services/paseador.service';
 import './BusquedaPaseadores.css';
-
-const API_PAS = 'http://localhost:3006';
 
 export default function BusquedaPaseadores() {
   const [ciudad, setCiudad]         = useState('');
@@ -12,8 +11,8 @@ export default function BusquedaPaseadores() {
   const [error, setError]           = useState(null);
 
   // Filtros
-  const [tarifaMin, setTarifaMin]   = useState('');
-  const [tarifaMax, setTarifaMax]   = useState('');
+  const [tarifaMin, setTarifaMin]           = useState('');
+  const [tarifaMax, setTarifaMax]           = useState('');
   const [soloDisponibles, setSoloDisponibles] = useState(false);
 
   const buscar = async () => {
@@ -23,9 +22,7 @@ export default function BusquedaPaseadores() {
     setBuscado(false);
 
     try {
-      const res  = await fetch(`${API_PAS}/api/perfil-paseador/buscar?ciudad=${encodeURIComponent(ciudad.trim())}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error al buscar');
+      const data = await buscarPaseadores(ciudad.trim());
       setPaseadores(data.data);
       setBuscado(true);
     } catch (err) {
@@ -39,15 +36,12 @@ export default function BusquedaPaseadores() {
     if (e.key === 'Enter') buscar();
   };
 
-  // Filtros en tiempo real con useMemo
   const paseadoresFiltrados = useMemo(() => {
     return paseadores.filter(p => {
       const tarifa = Number(p.tarifa) || 0;
-
       if (tarifaMin !== '' && tarifa < Number(tarifaMin)) return false;
       if (tarifaMax !== '' && tarifa > Number(tarifaMax)) return false;
       if (soloDisponibles && !p.disponible) return false;
-
       return true;
     });
   }, [paseadores, tarifaMin, tarifaMax, soloDisponibles]);
@@ -87,7 +81,7 @@ export default function BusquedaPaseadores() {
         </button>
       </div>
 
-      {/* FILTROS — solo se muestran si ya hay resultados */}
+      {/* FILTROS */}
       {buscado && paseadores.length > 0 && (
         <div className="bq-filtros">
           <div className="bq-filtros-header">
@@ -101,7 +95,6 @@ export default function BusquedaPaseadores() {
               </button>
             )}
           </div>
-
           <div className="bq-filtros-body">
             <div className="bq-filtro-grupo">
               <label>Tarifa mínima</label>
@@ -112,7 +105,6 @@ export default function BusquedaPaseadores() {
                 onChange={(e) => setTarifaMin(e.target.value)}
               />
             </div>
-
             <div className="bq-filtro-grupo">
               <label>Tarifa máxima</label>
               <input
@@ -122,7 +114,6 @@ export default function BusquedaPaseadores() {
                 onChange={(e) => setTarifaMax(e.target.value)}
               />
             </div>
-
             <div className="bq-filtro-grupo bq-filtro-check">
               <label className="bq-check-label">
                 <input
@@ -149,7 +140,6 @@ export default function BusquedaPaseadores() {
               : `No se encontraron paseadores con los filtros aplicados`
             }
           </p>
-
           <div className="bq-grid">
             {paseadoresFiltrados.map((pas) => (
               <TarjetaPaseador key={pas.id} paseador={pas} />
@@ -181,14 +171,12 @@ function TarjetaPaseador({ paseador }) {
   return (
     <div className="bq-card">
       <div className="bq-card-accent" />
-
       <div className="bq-card-foto">
         {foto_perfil
           ? <img src={foto_perfil.startsWith('/uploads') ? `http://localhost:3006${foto_perfil}` : foto_perfil} alt={nombre} />
           : <div className="bq-card-avatar">{nombre?.[0]?.toUpperCase()}</div>
         }
       </div>
-
       <div className="bq-card-info">
         <h3>{nombre}</h3>
         <span className="bq-card-ciudad">
@@ -204,7 +192,6 @@ function TarjetaPaseador({ paseador }) {
           </span>
         </div>
       </div>
-
       <button
         className="bq-card-btn"
         onClick={() => navigate(`/menu/dueno/paseador/${id}`)}

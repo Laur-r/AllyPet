@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getPerfilPublicoVeterinaria, getResenasVeterinaria } from '../../../services/veterinario.service';
 import './PerfilPublicoVeterinaria.css';
 
 const API_VET = 'http://localhost:3005';
@@ -26,24 +27,19 @@ export default function PerfilPublicoVeterinaria() {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      try {
-        const [resPerfil, resResenas] = await Promise.all([
-          fetch(`${API_VET}/perfil-vet/publico/${usuarioId}`),
-          fetch(`${API_VET}/perfil-vet/${usuarioId}/resenas`),
+        try {
+        const [dataPerfil, dataResenas] = await Promise.all([
+            getPerfilPublicoVeterinaria(usuarioId),
+            getResenasVeterinaria(usuarioId),
         ]);
-
-        const dataPerfil  = await resPerfil.json();
-        const dataResenas = await resResenas.json();
-
-        if (!resPerfil.ok) throw new Error(dataPerfil.error || 'Error al cargar perfil');
 
         setPerfil(dataPerfil.data);
         setResenas(dataResenas.data || []);
-      } catch (err) {
+        } catch (err) {
         setError('No se pudo cargar el perfil. Intenta de nuevo.');
-      } finally {
+        } finally {
         setCargando(false);
-      }
+        }
     };
 
     cargarDatos();

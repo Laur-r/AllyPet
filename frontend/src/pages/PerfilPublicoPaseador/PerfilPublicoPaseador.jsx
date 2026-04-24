@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getPerfilPublicoPaseador, getResenasPaseador } from '../../../services/paseador.service';
 import './PerfilPublicoPaseador.css';
-
 
 const API_PAS = 'http://localhost:3006';
 
@@ -28,15 +28,10 @@ export default function PerfilPublicoPaseador() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [resPerfil, resResenas] = await Promise.all([
-          fetch(`${API_PAS}/api/perfil-paseador/publico/${usuarioId}`),
-          fetch(`${API_PAS}/api/perfil-paseador/${usuarioId}/resenas`),
+        const [dataPerfil, dataResenas] = await Promise.all([
+          getPerfilPublicoPaseador(usuarioId),
+          getResenasPaseador(usuarioId),
         ]);
-
-        const dataPerfil  = await resPerfil.json();
-        const dataResenas = await resResenas.json();
-
-        if (!resPerfil.ok) throw new Error(dataPerfil.error || 'Error al cargar perfil');
 
         setPerfil(dataPerfil.data);
         setResenas(dataResenas.data || []);

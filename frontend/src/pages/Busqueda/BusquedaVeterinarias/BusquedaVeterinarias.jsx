@@ -1,29 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { buscarVeterinarias } from '../../../services/veterinario.service';
 import './BusquedaVeterinarias.css';
 
-const API_VET = 'http://localhost:3005';
-
 export default function BusquedaVeterinarias() {
-  const [ciudad, setCiudad]           = useState('');
+  const [ciudad, setCiudad]             = useState('');
   const [veterinarias, setVeterinarias] = useState([]);
-  const [cargando, setCargando]       = useState(false);
-  const [buscado, setBuscado]         = useState(false);
-  const [error, setError]             = useState(null);
+  const [cargando, setCargando]         = useState(false);
+  const [buscado, setBuscado]           = useState(false);
+  const [error, setError]               = useState(null);
 
   const buscar = async () => {
     if (!ciudad.trim()) return;
-
     setCargando(true);
     setError(null);
     setBuscado(false);
 
     try {
-      const res  = await fetch(`${API_VET}/perfil-vet/buscar?ciudad=${encodeURIComponent(ciudad.trim())}`);
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || 'Error al buscar');
-
+      const data = await buscarVeterinarias(ciudad.trim());
       setVeterinarias(data.data);
       setBuscado(true);
     } catch (err) {
@@ -65,9 +59,7 @@ export default function BusquedaVeterinarias() {
       </div>
 
       {/* ERROR */}
-      {error && (
-        <div className="bv-error">{error}</div>
-      )}
+      {error && <div className="bv-error">{error}</div>}
 
       {/* RESULTADOS */}
       {buscado && !cargando && (
@@ -78,7 +70,6 @@ export default function BusquedaVeterinarias() {
               : `No se encontraron veterinarias disponibles en "${ciudad}"`
             }
           </p>
-
           <div className="bv-grid">
             {veterinarias.map((vet) => (
               <TarjetaVeterinaria key={vet.id} veterinaria={vet} />
@@ -115,13 +106,11 @@ function TarjetaVeterinaria({ veterinaria }) {
   return (
     <div className="bv-card">
       <div className="bv-card-accent" />
-
       <div className="bv-card-icon">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
         </svg>
       </div>
-
       <div className="bv-card-info">
         <h3>{nombre_establecimiento}</h3>
         <span className="bv-card-direccion">
@@ -133,7 +122,6 @@ function TarjetaVeterinaria({ veterinaria }) {
           {serviciosTexto}
         </span>
       </div>
-
       <button
         className="bv-card-btn"
         onClick={() => navigate(`/menu/dueno/veterinaria/${id}`)}
