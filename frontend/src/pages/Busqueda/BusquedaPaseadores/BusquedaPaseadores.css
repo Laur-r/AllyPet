@@ -269,6 +269,108 @@
   max-width: 260px;
 }
 
+/* ══ FILTROS ══ */
+.bq-filtros {
+  background: var(--ap-white);
+  border: 1.5px solid var(--ap-border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--ap-shadow-sm);
+}
+
+.bq-filtros-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.bq-filtros-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .845rem;
+  font-weight: 700;
+  color: var(--ap-text);
+}
+.bq-filtros-titulo svg {
+  color: var(--ap-purple);
+}
+
+.bq-filtros-limpiar {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--ap-purple);
+  cursor: pointer;
+  transition: color var(--tr);
+}
+.bq-filtros-limpiar:hover {
+  color: var(--ap-purple-mid);
+  text-decoration: underline;
+}
+
+.bq-filtros-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.bq-filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 140px;
+}
+.bq-filtro-grupo label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--ap-text-soft);
+}
+.bq-filtro-grupo input[type="number"] {
+  padding: 8px 12px;
+  border: 1.5px solid var(--ap-border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: .845rem;
+  color: var(--ap-text);
+  background: var(--ap-bg);
+  outline: none;
+  transition: border-color var(--tr), box-shadow var(--tr);
+}
+.bq-filtro-grupo input[type="number"]:focus {
+  border-color: var(--ap-purple);
+  background: var(--ap-white);
+  box-shadow: 0 0 0 3px rgba(123, 45, 139, 0.08);
+}
+
+.bq-filtro-check {
+  justify-content: flex-end;
+  min-width: auto;
+  flex: 0;
+}
+.bq-check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .845rem;
+  font-weight: 500;
+  color: var(--ap-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bq-check-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ap-purple);
+  cursor: pointer;
+}
+
 /* ══ RESPONSIVE ══ */
 @media (max-width: 640px) {
   .bq-grid {

@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BusquedaPaseadores.css';
-
 
 const API_PAS = 'http://localhost:3006';
 
 export default function BusquedaPaseadores() {
-  const [ciudad, setCiudad]       = useState('');
+  const [ciudad, setCiudad]         = useState('');
   const [paseadores, setPaseadores] = useState([]);
-  const [cargando, setCargando]   = useState(false);
-  const [buscado, setBuscado]     = useState(false);
-  const [error, setError]         = useState(null);
+  const [cargando, setCargando]     = useState(false);
+  const [buscado, setBuscado]       = useState(false);
+  const [error, setError]           = useState(null);
+
+  // Filtros
+  const [tarifaMin, setTarifaMin]   = useState('');
+  const [tarifaMax, setTarifaMax]   = useState('');
+  const [soloDisponibles, setSoloDisponibles] = useState(false);
 
   const buscar = async () => {
     if (!ciudad.trim()) return;
-
     setCargando(true);
     setError(null);
     setBuscado(false);
@@ -22,9 +25,7 @@ export default function BusquedaPaseadores() {
     try {
       const res  = await fetch(`${API_PAS}/api/perfil-paseador/buscar?ciudad=${encodeURIComponent(ciudad.trim())}`);
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || 'Error al buscar');
-
       setPaseadores(data.data);
       setBuscado(true);
     } catch (err) {
@@ -36,6 +37,27 @@ export default function BusquedaPaseadores() {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') buscar();
+  };
+
+  // Filtros en tiempo real con useMemo
+  const paseadoresFiltrados = useMemo(() => {
+    return paseadores.filter(p => {
+      const tarifa = Number(p.tarifa) || 0;
+
+      if (tarifaMin !== '' && tarifa < Number(tarifaMin)) return false;
+      if (tarifaMax !== '' && tarifa > Number(tarifaMax)) return false;
+      if (soloDisponibles && !p.disponible) return false;
+
+      return true;
+    });
+  }, [paseadores, tarifaMin, tarifaMax, soloDisponibles]);
+
+  const hayFiltros = tarifaMin !== '' || tarifaMax !== '' || soloDisponibles;
+
+  const limpiarFiltros = () => {
+    setTarifaMin('');
+    setTarifaMax('');
+    setSoloDisponibles(false);
   };
 
   return (
@@ -65,23 +87,71 @@ export default function BusquedaPaseadores() {
         </button>
       </div>
 
-      {/* ERROR */}
-      {error && (
-        <div className="bq-error">{error}</div>
+      {/* FILTROS — solo se muestran si ya hay resultados */}
+      {buscado && paseadores.length > 0 && (
+        <div className="bq-filtros">
+          <div className="bq-filtros-header">
+            <span className="bq-filtros-titulo">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filtros
+            </span>
+            {hayFiltros && (
+              <button className="bq-filtros-limpiar" onClick={limpiarFiltros}>
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          <div className="bq-filtros-body">
+            <div className="bq-filtro-grupo">
+              <label>Tarifa mínima</label>
+              <input
+                type="number"
+                placeholder="Ej: 10000"
+                value={tarifaMin}
+                onChange={(e) => setTarifaMin(e.target.value)}
+              />
+            </div>
+
+            <div className="bq-filtro-grupo">
+              <label>Tarifa máxima</label>
+              <input
+                type="number"
+                placeholder="Ej: 50000"
+                value={tarifaMax}
+                onChange={(e) => setTarifaMax(e.target.value)}
+              />
+            </div>
+
+            <div className="bq-filtro-grupo bq-filtro-check">
+              <label className="bq-check-label">
+                <input
+                  type="checkbox"
+                  checked={soloDisponibles}
+                  onChange={(e) => setSoloDisponibles(e.target.checked)}
+                />
+                Solo disponibles
+              </label>
+            </div>
+          </div>
+        </div>
       )}
+
+      {/* ERROR */}
+      {error && <div className="bq-error">{error}</div>}
 
       {/* RESULTADOS */}
       {buscado && !cargando && (
         <>
           <p className="bq-resultado-label">
-            {paseadores.length > 0
-              ? `${paseadores.length} paseador${paseadores.length > 1 ? 'es' : ''} encontrado${paseadores.length > 1 ? 's' : ''} en "${ciudad}"`
-              : `No se encontraron paseadores disponibles en "${ciudad}"`
+            {paseadoresFiltrados.length > 0
+              ? `${paseadoresFiltrados.length} paseador${paseadoresFiltrados.length > 1 ? 'es' : ''} encontrado${paseadoresFiltrados.length > 1 ? 's' : ''} en "${ciudad}"`
+              : `No se encontraron paseadores con los filtros aplicados`
             }
           </p>
 
           <div className="bq-grid">
-            {paseadores.map((pas) => (
+            {paseadoresFiltrados.map((pas) => (
               <TarjetaPaseador key={pas.id} paseador={pas} />
             ))}
           </div>
