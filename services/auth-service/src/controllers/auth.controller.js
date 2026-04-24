@@ -22,15 +22,26 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales invalidas' });
     }
 
-    // Validación estricta: solo permite si estado es true
+
+    // Validación: cuenta activa
     const isActivo = user.estado === true || user.estado === 'true' || user.estado === 1;
-    
     if (!isActivo) {
       return res.status(403).json({
-        message: 'Tu cuenta está pendiente de aprobación por un administrador',
+        message: 'Tu cuenta ha sido desactivada. Contacta al administrador.',
       });
     }
 
+    // Validación: proveedor aprobado
+    if (user.rol === 'paseador' || user.rol === 'veterinario') {
+      const isAprobado = user.aprobado === true || user.aprobado === 'true';
+      if (!isAprobado) {
+        return res.status(403).json({
+          message: 'Tu cuenta está pendiente de aprobación por el administrador. Te notificaremos cuando puedas acceder.',
+        });
+      }
+    }
+
+    // Generar token y respuesta exitosa
     const payload = { sub: user.id, email: user.email };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
@@ -40,6 +51,7 @@ const login = async (req, res) => {
       email: user.email,
       rol: user.rol || 'usuario',
     };
+
     const successMessage = `Inicio de sesion exitoso. Bienvenido ${user.nombre || user.email} (${userResponse.rol}).`;
 
     return res.status(200).json({
@@ -47,6 +59,7 @@ const login = async (req, res) => {
       token,
       user: userResponse,
     });
+
   } catch (error) {
     console.error('auth.controller login error:', error);
     return res.status(500).json({ message: 'Error interno al iniciar sesion' });

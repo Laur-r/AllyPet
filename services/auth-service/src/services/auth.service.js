@@ -6,14 +6,21 @@ const getUserByEmail = async (email) => {
   const normalizedEmail = String(email || '').trim();
   const query = `
     SELECT
-      id,
-      nombre,
-      correo AS email,
-      contrasena AS password,
-      rol,
-      estado
-    FROM usuarios
-    WHERE LOWER(correo) = LOWER($1)
+      u.id,
+      u.nombre,
+      u.correo AS email,
+      u.contrasena AS password,
+      u.rol,
+      u.estado,
+      CASE
+        WHEN u.rol = 'paseador'    THEN pp.aprobado
+        WHEN u.rol = 'veterinario' THEN pv.aprobado
+        ELSE NULL
+      END AS aprobado
+    FROM usuarios u
+    LEFT JOIN perfil_paseador    pp ON pp.usuario_id = u.id AND u.rol = 'paseador'
+    LEFT JOIN perfil_veterinario pv ON pv.usuario_id = u.id AND u.rol = 'veterinario'
+    WHERE LOWER(u.correo) = LOWER($1)
     LIMIT 1
   `;
   const { rows } = await pool.query(query, [normalizedEmail]);
