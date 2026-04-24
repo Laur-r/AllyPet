@@ -98,7 +98,7 @@ export default function Mascotas() {
 
   /* ── Cargar mascotas al montar ─────────────────────────── */
   useEffect(() => {
-    authFetch('/mascotas')
+    authFetch('/api/pets')
       .then(res => { if (res.ok) setMascotas(res.data.map(normalizarMascota)); })
       .catch(() => notify('Error al cargar mascotas'))
       .finally(() => setCargando(false));
@@ -112,7 +112,7 @@ export default function Mascotas() {
   /* ── Guardar (crear o editar) ──────────────────────────── */
   const guardar = async (data) => {
     const esEdicion = !!editando;
-    const url    = esEdicion ? `/mascotas/${editando.id}` : '/mascotas';
+    const url = esEdicion ? `/api/pets/${editando.id}` : '/api/pets';
     const method = esEdicion ? 'PUT' : 'POST';
 
     try {
@@ -148,7 +148,7 @@ export default function Mascotas() {
   const eliminar = async () => {
     const { id, nombre } = confirmDel;
     try {
-      const res = await authFetch(`/mascotas/${id}`, { method: 'DELETE' });
+      const res = await authFetch(`/api/pets/${id}`, { method: 'DELETE' })
       if (res.ok) {
         setMascotas(ms => ms.filter(m => m.id !== id));
         notify(`${nombre} eliminada`);

@@ -4,7 +4,7 @@ const getByUsuario = async (usuario_id) => {
   const { rows } = await pool.query(
     `SELECT id, usuario_id, nombre, especie, raza, sexo, edad, peso, color, foto, notas, fecha_registro
      FROM mascotas
-     WHERE usuario_id = $1
+     WHERE usuario_id = $1 AND activo IS NOT FALSE
      ORDER BY fecha_registro DESC`,
     [usuario_id]
   );
@@ -15,7 +15,7 @@ const getById = async (id, usuario_id) => {
   const { rows } = await pool.query(
     `SELECT id, usuario_id, nombre, especie, raza, sexo, edad, peso, color, foto, notas, fecha_registro
      FROM mascotas
-     WHERE id = $1 AND usuario_id = $2`,
+     WHERE id = $1 AND usuario_id = $2 AND activo IS NOT FALSE`,
     [id, usuario_id]
   );
   return rows[0] || null;

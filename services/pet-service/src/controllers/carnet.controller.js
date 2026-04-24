@@ -6,6 +6,7 @@ const getCarnet = async (req, res) => {
     const data = await CarnetService.getCarnetCompleto(req.params.petId, req.usuario_id);
     res.json({ ok: true, data });
   } catch (err) {
+    console.error('ERROR CARNET:', err);
     res.status(err.status || 500).json({ ok: false, message: err.message });
   }
 };

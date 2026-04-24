@@ -5,10 +5,10 @@ const getCarnet = async (mascota_id) => {
   const { rows } = await pool.query(
     `SELECT m.id, m.nombre, m.especie, m.raza, m.sexo, m.edad, m.peso, 
             m.color, m.foto, m.notas, m.fecha_registro,
-            u.nombre AS dueno_nombre, u.telefono AS dueno_telefono, u.email AS dueno_email
+            u.nombre AS dueno_nombre, u.telefono AS dueno_telefono, u.correo AS dueno_email
      FROM mascotas m
      JOIN usuarios u ON u.id = m.usuario_id
-     WHERE m.id = $1 AND m.activo = TRUE`,
+     WHERE m.id = $1 AND m.activo IS NOT FALSE`,
     [mascota_id]
   );
   return rows[0] || null;
@@ -146,11 +146,11 @@ const getCarnetByToken = async (token) => {
   const { rows } = await pool.query(
     `SELECT m.id, m.nombre, m.especie, m.raza, m.sexo, m.edad, m.peso,
             m.color, m.foto, m.notas,
-            u.nombre AS dueno_nombre, u.telefono AS dueno_telefono
+            u.nombre AS dueno_nombre, u.telefono AS dueno_telefono, u.correo AS dueno_email
      FROM carnet_acceso ca
      JOIN mascotas m ON m.id = ca.mascota_id
      JOIN usuarios u ON u.id = m.usuario_id
-     WHERE ca.token = $1 AND ca.activo = TRUE AND m.activo = TRUE`,
+     WHERE ca.token = $1 AND ca.activo = TRUE AND m.activo IS NOT FALSE`,
     [token]
   );
   return rows[0] || null;
