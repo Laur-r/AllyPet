@@ -14,7 +14,7 @@ const verificarToken = (req, res, next) => {
 
     console.log('DECODED TOKEN:', decoded);
 
-    // ✅ CORRECTO SEGÚN TU TOKEN
+    //  CORRECTO SEGÚN TU TOKEN
     req.usuario_id = decoded.sub;
 
     if (!req.usuario_id) {

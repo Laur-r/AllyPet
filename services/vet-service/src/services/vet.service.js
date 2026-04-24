@@ -41,8 +41,30 @@ const buscarPorCiudad = async (ciudad) => {
   return veterinarias;
 };
 
+/* ── Obtener perfil público veterinaria ── */
+const obtenerPerfilPublico = async (usuario_id) => {
+  const perfil = await model.obtenerPerfilPublico(usuario_id);
+  if (!perfil) throw new Error('Veterinaria no encontrada o no disponible');
+
+  if (typeof perfil.servicios === 'string') {
+    try { perfil.servicios = JSON.parse(perfil.servicios); } catch { perfil.servicios = []; }
+  }
+  if (typeof perfil.horarios === 'string') {
+    try { perfil.horarios = JSON.parse(perfil.horarios); } catch { perfil.horarios = {}; }
+  }
+
+  return perfil;
+};
+
+/* ── Obtener reseñas de la veterinaria ── */
+const obtenerResenas = async (proveedorId) => {
+  return await model.obtenerResenas(proveedorId);
+};
+
 module.exports = {
   getPerfil,
   actualizarPerfil,
   buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
 };

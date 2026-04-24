@@ -137,4 +137,59 @@ const buscarPorCiudad = async (ciudad) => {
   return rows;
 };
 
-module.exports = { getByUsuario, create, update, buscarPorCiudad };
+/* ── H6.4 — Obtener perfil público veterinaria ── */
+const obtenerPerfilPublico = async (usuarioId) => {
+  const { rows } = await pool.query(
+    `SELECT
+      u.id,
+      p.nombre_establecimiento,
+      p.direccion,
+      p.ciudad,
+      p.servicios,
+      p.horarios,
+      p.foto_perfil,
+      p.banner,
+      p.descripcion,
+      p.especialidad,
+      p.experiencia,
+      p.disponible,
+      p.calificacion,
+      p.total_resenas
+    FROM perfil_veterinario p
+    INNER JOIN usuarios u ON u.id = p.usuario_id
+    WHERE p.usuario_id = $1
+      AND p.aprobado = true
+      AND u.estado = true`,
+    [usuarioId]
+  );
+  return rows[0] || null;
+};
+
+/* ── Obtener reseñas de la veterinaria ── */
+const obtenerResenas = async (proveedorId) => {
+  const { rows } = await pool.query(
+    `SELECT
+      r.id,
+      r.calificacion,
+      r.comentario,
+      r.fecha,
+      u.nombre AS dueno_nombre,
+      u.foto_perfil AS dueno_foto
+    FROM resenas r
+    INNER JOIN usuarios u ON u.id = r.dueno_id
+    WHERE r.proveedor_id = $1
+      AND r.tipo_proveedor = 'veterinario'
+    ORDER BY r.fecha DESC`,
+    [proveedorId]
+  );
+  return rows;
+};
+
+module.exports = { 
+  getByUsuario, 
+  create, 
+  update, 
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
+};

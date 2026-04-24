@@ -7,6 +7,12 @@ const VetController      = require('../controllers/vet.controller');
 /* ──  Buscar veterinarias por ciudad (pública) ── */
 router.get('/buscar', VetController.buscarPorCiudad);
 
+/* ── Perfil público veterinaria (pública) ── */
+router.get('/publico/:usuarioId', VetController.obtenerPerfilPublico);
+
+/* ── Reseñas de la veterinaria (pública) ── */
+router.get('/:usuarioId/resenas', VetController.obtenerResenas);
+
 router.use(verificarToken);
 
 router.get('/', VetController.getPerfil);

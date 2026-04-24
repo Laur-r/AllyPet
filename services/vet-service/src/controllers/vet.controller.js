@@ -53,7 +53,7 @@ const actualizarPerfil = async (req, res) => {
 }
 };
 
-/* ── H6.2 — Buscar veterinarias por ciudad ── */
+/* ── Buscar veterinarias por ciudad ── */
 const buscarPorCiudad = async (req, res) => {
   try {
     const { ciudad } = req.query;
@@ -81,4 +81,33 @@ const buscarPorCiudad = async (req, res) => {
   }
 };
 
-module.exports = { getPerfil, actualizarPerfil, buscarPorCiudad };
+/* —— Ver perfil público veterinaria —— */
+const obtenerPerfilPublico = async (req, res) => {
+  try {
+    const perfil = await VetService.obtenerPerfilPublico(req.params.usuarioId);
+    return res.status(200).json({ message: 'Perfil encontrado', data: perfil });
+  } catch (err) {
+    console.error('obtenerPerfilPublico:', err.message);
+    const status = err.message === 'Veterinaria no encontrada o no disponible' ? 404 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* —— Ver reseñas de la veterinaria —— */
+const obtenerResenas = async (req, res) => {
+  try {
+    const resenas = await VetService.obtenerResenas(req.params.usuarioId);
+    return res.status(200).json({ message: 'Reseñas encontradas', data: resenas });
+  } catch (err) {
+    console.error('obtenerResenas:', err.message);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+module.exports = { 
+  getPerfil, 
+  actualizarPerfil, 
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
+};
