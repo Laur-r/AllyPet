@@ -471,6 +471,16 @@
 .ma-btn--activate   { background: var(--ap-green); }
 .ma-btn--deactivate { background: #f59e0b; }
 
+* ── Chips adicionales para aprobación de proveedores ── */
+.ma-chip--warn { background: #fff3cd; color: #7a4500; }
+.ma-chip--na   { background: #f0f0f0; color: #9ca3af; }
+
+/* ── Botones de aprobación/rechazo de proveedores ── */
+.ma-btn--approve { background: #6CC04A; }
+.ma-btn--approve:hover:not(:disabled) { background: #559030; }
+.ma-btn--reject  { background: #e0467a; }
+.ma-btn--reject:hover:not(:disabled)  { background: #c93767; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .ma-sidebar {

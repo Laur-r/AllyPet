@@ -54,9 +54,69 @@ const deactivateUser = async (req, res) => {
   }
 };
 
+const aprobarPaseador = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.aprobarPaseador(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de paseador no encontrado' });
+    }
+    res.json({ message: 'Paseador aprobado exitosamente' });
+  } catch (error) {
+    console.error('aprobarPaseador controller error:', error);
+    res.status(500).json({ message: 'Error interno al aprobar paseador' });
+  }
+};
+
+const desaprobarPaseador = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.desaprobarPaseador(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de paseador no encontrado' });
+    }
+    res.json({ message: 'Paseador desaprobado exitosamente' });
+  } catch (error) {
+    console.error('desaprobarPaseador controller error:', error);
+    res.status(500).json({ message: 'Error interno al desaprobar paseador' });
+  }
+};
+
+const aprobarVeterinario = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.aprobarVeterinario(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de veterinario no encontrado' });
+    }
+    res.json({ message: 'Veterinario aprobado exitosamente' });
+  } catch (error) {
+    console.error('aprobarVeterinario controller error:', error);
+    res.status(500).json({ message: 'Error interno al aprobar veterinario' });
+  }
+};
+
+const desaprobarVeterinario = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.desaprobarVeterinario(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de veterinario no encontrado' });
+    }
+    res.json({ message: 'Veterinario desaprobado exitosamente' });
+  } catch (error) {
+    console.error('desaprobarVeterinario controller error:', error);
+    res.status(500).json({ message: 'Error interno al desaprobar veterinario' });
+  }
+};
+
 module.exports = {
   getDashboard,
   getUsers,
   activateUser,
   deactivateUser,
+  aprobarPaseador,
+  desaprobarPaseador,
+  aprobarVeterinario,
+  desaprobarVeterinario,
 };

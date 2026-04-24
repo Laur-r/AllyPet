@@ -22,26 +22,26 @@ const readStoredUser = () => {
 const getRoleCategory = (roleValue) => {
   const role = String(roleValue || '').toLowerCase();
   if (role === 'admin') return 'admin';
-  if (role === 'proveedor' || role === 'paseador' || role === 'veterinario') return 'proveedor';
+  if (role === 'paseador' || role === 'veterinario') return 'proveedor';
   return 'user';
 };
 
 export default function MenuAdmin() {
   const navigate = useNavigate();
 
-  const [activeSection,    setActiveSection]    = useState('usuarios');
-  const [users,            setUsers]            = useState([]);
-  const [loadingUsers,     setLoadingUsers]     = useState(true);
-  const [actionLoadingId,  setActionLoadingId]  = useState(null);
-  const [searchValue,      setSearchValue]      = useState('');
-  const [roleFilter,       setRoleFilter]       = useState('all');
-  const [statusFilter,     setStatusFilter]     = useState('all');
-  const [errorMessage,     setErrorMessage]     = useState('');
-  const [successMessage,   setSuccessMessage]   = useState('');
-  const [sidebarOpen,      setSidebarOpen]      = useState(true);
+  const [activeSection,   setActiveSection]   = useState('usuarios');
+  const [users,           setUsers]           = useState([]);
+  const [loadingUsers,    setLoadingUsers]     = useState(true);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [searchValue,     setSearchValue]     = useState('');
+  const [roleFilter,      setRoleFilter]      = useState('all');
+  const [statusFilter,    setStatusFilter]    = useState('all');
+  const [errorMessage,    setErrorMessage]    = useState('');
+  const [successMessage,  setSuccessMessage]  = useState('');
+  const [sidebarOpen,     setSidebarOpen]     = useState(true);
 
-  const token = localStorage.getItem('token');
-  const user  = useMemo(() => readStoredUser(), []);
+  const token    = localStorage.getItem('token');
+  const user     = useMemo(() => readStoredUser(), []);
   const userRole = String(user?.role || user?.rol || '').toLowerCase();
 
   const logout = () => {
@@ -119,6 +119,44 @@ export default function MenuAdmin() {
     }
   };
 
+  const aprobarProveedor = async (userId, rol) => {
+    setActionLoadingId(userId);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      const ruta = rol === 'paseador'
+        ? `/api/admin/paseador/${userId}/aprobar`
+        : `/api/admin/veterinario/${userId}/aprobar`;
+      const response = await requestAdmin(ruta, { method: 'PATCH' });
+      updateUserLocalState(userId, { aprobado: true });
+      setSuccessMessage(response?.message || 'Proveedor aprobado');
+    } catch (error) {
+      setErrorMessage(error.message || 'No fue posible aprobar al proveedor');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const desaprobarProveedor = async (userId, rol) => {
+    const confirmed = window.confirm('¿Deseas desaprobar este proveedor?');
+    if (!confirmed) return;
+    setActionLoadingId(userId);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      const ruta = rol === 'paseador'
+        ? `/api/admin/paseador/${userId}/desaprobar`
+        : `/api/admin/veterinario/${userId}/desaprobar`;
+      const response = await requestAdmin(ruta, { method: 'PATCH' });
+      updateUserLocalState(userId, { aprobado: false });
+      setSuccessMessage(response?.message || 'Proveedor desaprobado');
+    } catch (error) {
+      setErrorMessage(error.message || 'No fue posible desaprobar al proveedor');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   useEffect(() => {
     if (!token || userRole !== 'admin') {
       navigate('/login');
@@ -141,18 +179,15 @@ export default function MenuAdmin() {
     });
   }, [users, searchValue, roleFilter, statusFilter]);
 
+  const esProveedor = (role) => role === 'paseador' || role === 'veterinario';
+
   return (
     <div className="ma-layout">
 
       {/* SIDEBAR */}
       <aside className={`ma-sidebar ${sidebarOpen ? '' : 'collapsed'}`}>
-
         <div className="ma-logo">
-          <img
-            src={logoNavbar}
-            alt="AllyPet"
-            className={sidebarOpen ? 'ma-logo-img' : 'ma-logo-img-small'}
-          />
+          <img src={logoNavbar} alt="AllyPet" className={sidebarOpen ? 'ma-logo-img' : 'ma-logo-img-small'} />
         </div>
 
         <div className="ma-profile">
@@ -192,8 +227,6 @@ export default function MenuAdmin() {
 
       {/* MAIN */}
       <div className="ma-main">
-
-        {/* NAVBAR */}
         <header className="ma-navbar">
           <div className="ma-navbar-left">
             <button className="ma-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -216,7 +249,6 @@ export default function MenuAdmin() {
               />
             </div>
           </div>
-
           <div className="ma-navbar-right">
             <div className="ma-user-chip">
               <img className="ma-avatar" src={avatarDefault} alt="avatar" />
@@ -225,10 +257,7 @@ export default function MenuAdmin() {
           </div>
         </header>
 
-        {/* CONTENIDO */}
         <main className="ma-content">
-
-          {/* FILTROS */}
           <div className="ma-filters">
             <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
               <option value="all">Todos los roles</option>
@@ -259,13 +288,17 @@ export default function MenuAdmin() {
                     <th>Correo</th>
                     <th>Rol</th>
                     <th>Estado</th>
+                    <th>Aprobación</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((item) => {
-                    const isActive    = Boolean(item.estado);
+                    const isActive     = Boolean(item.estado);
+                    const isAprobado   = Boolean(item.aprobado);
                     const isLoadingRow = actionLoadingId === item.id;
+                    const rol          = String(item.role || '').toLowerCase();
+
                     return (
                       <tr key={item.id}>
                         <td>{item.nombre || '-'}</td>
@@ -275,6 +308,15 @@ export default function MenuAdmin() {
                           <span className={`ma-chip ${isActive ? 'ma-chip--ok' : 'ma-chip--off'}`}>
                             {isActive ? 'activo' : 'inactivo'}
                           </span>
+                        </td>
+                        <td>
+                          {esProveedor(rol) ? (
+                            <span className={`ma-chip ${isAprobado ? 'ma-chip--ok' : 'ma-chip--warn'}`}>
+                              {isAprobado ? 'aprobado' : 'pendiente'}
+                            </span>
+                          ) : (
+                            <span className="ma-chip ma-chip--na">—</span>
+                          )}
                         </td>
                         <td>
                           <div className="ma-actions">
@@ -296,6 +338,28 @@ export default function MenuAdmin() {
                               >
                                 Activar
                               </button>
+                            )}
+
+                            {esProveedor(rol) && (
+                              isAprobado ? (
+                                <button
+                                  className="ma-btn ma-btn--reject"
+                                  type="button"
+                                  disabled={isLoadingRow}
+                                  onClick={() => desaprobarProveedor(item.id, rol)}
+                                >
+                                  Desaprobar
+                                </button>
+                              ) : (
+                                <button
+                                  className="ma-btn ma-btn--approve"
+                                  type="button"
+                                  disabled={isLoadingRow}
+                                  onClick={() => aprobarProveedor(item.id, rol)}
+                                >
+                                  Aprobar
+                                </button>
+                              )
                             )}
                           </div>
                         </td>

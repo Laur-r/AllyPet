@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPerfilPublicoVeterinaria, getResenasVeterinaria } from '../../../services/veterinario.service';
+import { getPerfilPublicoVeterinaria, getResenasVeterinaria } from "../../services/veterinario.service";
 import './PerfilPublicoVeterinaria.css';
 
 const API_VET = 'http://localhost:3005';

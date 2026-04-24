@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPerfilPublicoPaseador, getResenasPaseador } from '../../../services/paseador.service';
+import { getPerfilPublicoPaseador, getResenasPaseador } from "../../services/paseador.service";
 import './PerfilPublicoPaseador.css';
 
 const API_PAS = 'http://localhost:3006';

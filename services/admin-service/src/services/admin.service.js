@@ -71,10 +71,50 @@ const deactivateUser = async (userId) => {
   return rows.length > 0;
 };
 
+/**
+ * Aprueba un paseador.
+ */
+const aprobarPaseador = async (usuarioId) => {
+  const query = 'UPDATE perfil_paseador SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Desaprueba un paseador.
+ */
+const desaprobarPaseador = async (usuarioId) => {
+  const query = 'UPDATE perfil_paseador SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Aprueba un veterinario.
+ */
+const aprobarVeterinario = async (usuarioId) => {
+  const query = 'UPDATE perfil_veterinario SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Desaprueba un veterinario.
+ */
+const desaprobarVeterinario = async (usuarioId) => {
+  const query = 'UPDATE perfil_veterinario SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
 module.exports = {
   getUserRoleById,
   getAllUsers,
   getDashboardStats,
   activateUser,
   deactivateUser,
+  aprobarPaseador,
+  desaprobarPaseador,
+  aprobarVeterinario,
+  desaprobarVeterinario,
 };
