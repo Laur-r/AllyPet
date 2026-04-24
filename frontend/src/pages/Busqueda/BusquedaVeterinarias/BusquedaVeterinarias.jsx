@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './BusquedaVeterinarias.css';
 
 const API_VET = 'http://localhost:3005';
@@ -102,10 +103,11 @@ export default function BusquedaVeterinarias() {
 
 /* ── Tarjeta de cada veterinaria ── */
 function TarjetaVeterinaria({ veterinaria }) {
-  const { nombre_establecimiento, direccion, servicios, ciudad } = veterinaria;
+  const { id, nombre_establecimiento, direccion, servicios, ciudad } = veterinaria;
+  const navigate = useNavigate();
 
   const serviciosTexto = Array.isArray(servicios) && servicios.length > 0
-    ? servicios.slice(0, 3).join(', ')
+    ? servicios.slice(0, 3).map(s => s.nombre || s).join(', ')
     : typeof servicios === 'string' && servicios
     ? servicios
     : 'Sin servicios registrados';
@@ -132,7 +134,12 @@ function TarjetaVeterinaria({ veterinaria }) {
         </span>
       </div>
 
-      <button className="bv-card-btn">Ver perfil</button>
+      <button
+        className="bv-card-btn"
+        onClick={() => navigate(`/menu/dueno/veterinaria/${id}`)}
+      >
+        Ver perfil
+      </button>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import BusquedaPaseadores from './pages/Busqueda/BusquedaPaseadores/BusquedaPase
 import PerfilPublicoPaseador from './pages/PerfilPublicoPaseador/PerfilPublicoPaseador';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 import BusquedaVeterinarias from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
+import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -47,6 +48,7 @@ function App() {
           <Route path="buscar/paseadores" element={<BusquedaPaseadores />} />
           <Route path="buscar/veterinarias"  element={<BusquedaVeterinarias />} />
           <Route path="paseador/:usuarioId" element={<PerfilPublicoPaseador />} />
+          <Route path="veterinaria/:usuarioId" element={<PerfilPublicoVeterinaria />} />
         </Route>
 
         {/* Menú Paseador */}
