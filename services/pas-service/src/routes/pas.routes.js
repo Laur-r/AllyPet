@@ -4,6 +4,15 @@ const controller     = require("../controllers/pas.controller");
 const verificarToken = require("../middlewares/auth.middleware");
 const upload         = require("../middlewares/upload.middleware");
 
+/* ── Buscar paseadores por ciudad (pública) ── */
+router.get("/buscar", controller.buscarPorCiudad);
+
+/* ── Perfil público del paseador (pública) ── */
+router.get("/publico/:usuarioId", controller.obtenerPerfilPublico);
+
+/* ── Reseñas del paseador (pública) ── */
+router.get("/:usuarioId/resenas", controller.obtenerResenas);
+
 /* ── Perfil completo ── */
 router.get("/:usuarioId",                        verificarToken, controller.obtenerPerfil);
 

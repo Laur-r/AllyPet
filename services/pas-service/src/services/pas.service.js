@@ -60,6 +60,37 @@ const actualizarImagen = async (usuarioId, campo, filename) => {
   return await model.actualizarImagen(usuarioId, campo, ruta);
 };
 
+/* ──  Buscar paseadores por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  if (!ciudad || ciudad.trim() === '') {
+    throw new Error('La ciudad es requerida');
+  }
+  const paseadores = await model.buscarPorCiudad(ciudad.trim());
+  return paseadores;
+};
+
+/* ── Obtener perfil público del paseador ── */
+const obtenerPerfilPublico = async (usuarioId) => {
+  const perfil = await model.obtenerPerfilPublico(usuarioId);
+  if (!perfil) throw new Error('Paseador no encontrado o no disponible');
+
+  ['servicios', 'zonas', 'razas'].forEach((campo) => {
+    if (typeof perfil[campo] === 'string') {
+      try { perfil[campo] = JSON.parse(perfil[campo]); }
+      catch { perfil[campo] = []; }
+    }
+    if (!Array.isArray(perfil[campo])) perfil[campo] = [];
+  });
+
+  return perfil;
+};
+
+/* ── Obtener reseñas del paseador ── */
+const obtenerResenas = async (proveedorId) => {
+  const resenas = await model.obtenerResenas(proveedorId);
+  return resenas;
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -68,4 +99,7 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   actualizarImagen,
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
 };

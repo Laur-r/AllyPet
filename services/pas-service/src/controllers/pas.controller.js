@@ -113,6 +113,66 @@ const subirImagen = async (req, res) => {
   }
 };
 
+/* ─────────────────────────────────────────
+   GET /api/paseador/buscar?ciudad=Buga
+    Buscar paseadores por ciudad
+───────────────────────────────────────── */
+const buscarPorCiudad = async (req, res) => {
+  try {
+    const { ciudad } = req.query;
+
+    if (!ciudad || ciudad.trim() === '') {
+      return res.status(400).json({ error: 'El parámetro ciudad es requerido' });
+    }
+
+    const paseadores = await service.buscarPorCiudad(ciudad);
+
+    if (paseadores.length === 0) {
+      return res.status(200).json({
+        message: 'No se encontraron paseadores disponibles en esta ciudad',
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Paseadores encontrados',
+      data: paseadores,
+    });
+  } catch (err) {
+    console.error('buscarPorCiudad:', err.message);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+/* ─────────────────────────────────────────
+   GET /api/perfil-paseador/publico/:usuarioId
+  — Ver perfil público del paseador
+───────────────────────────────────────── */
+const obtenerPerfilPublico = async (req, res) => {
+  try {
+    const perfil = await service.obtenerPerfilPublico(req.params.usuarioId);
+    return res.status(200).json({ message: 'Perfil encontrado', data: perfil });
+  } catch (err) {
+    console.error('obtenerPerfilPublico:', err.message);
+    const status = err.message === 'Paseador no encontrado o no disponible' ? 404 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* ─────────────────────────────────────────
+   GET /api/perfil-paseador/:usuarioId/resenas
+    Ver reseñas del paseador
+───────────────────────────────────────── */
+const obtenerResenas = async (req, res) => {
+  try {
+    const resenas = await service.obtenerResenas(req.params.usuarioId);
+    return res.status(200).json({ message: 'Reseñas encontradas', data: resenas });
+  } catch (err) {
+    console.error('obtenerResenas:', err.message);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -121,4 +181,7 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   subirImagen,
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
 };

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MenuAdmin.css';
-import logo from '../../assets/admin/logo_fondo_oscuro.png';
+import logoNavbar from '../../assets/menus/logonavbar.png';
+import avatarDefault from '../../assets/menus/menudefault.png';
 
 const ADMIN_SERVICE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:3002';
 
@@ -20,34 +21,27 @@ const readStoredUser = () => {
 
 const getRoleCategory = (roleValue) => {
   const role = String(roleValue || '').toLowerCase();
-  if (role === 'admin') {
-    return 'admin';
-  }
-  if (role === 'proveedor' || role === 'paseador' || role === 'veterinario') {
-    return 'proveedor';
-  }
+  if (role === 'admin') return 'admin';
+  if (role === 'paseador' || role === 'veterinario') return 'proveedor';
   return 'user';
 };
 
 export default function MenuAdmin() {
   const navigate = useNavigate();
 
-  const [activeSection, setActiveSection] = useState('usuarios');
-  const [users, setUsers] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [activeSection,   setActiveSection]   = useState('usuarios');
+  const [users,           setUsers]           = useState([]);
+  const [loadingUsers,    setLoadingUsers]     = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [searchValue,     setSearchValue]     = useState('');
+  const [roleFilter,      setRoleFilter]      = useState('all');
+  const [statusFilter,    setStatusFilter]    = useState('all');
+  const [errorMessage,    setErrorMessage]    = useState('');
+  const [successMessage,  setSuccessMessage]  = useState('');
+  const [sidebarOpen,     setSidebarOpen]     = useState(true);
 
-  const [searchValue, setSearchValue] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
-
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const token = localStorage.getItem('token');
-  const user = useMemo(() => readStoredUser(), []);
-
+  const token    = localStorage.getItem('token');
+  const user     = useMemo(() => readStoredUser(), []);
   const userRole = String(user?.role || user?.rol || '').toLowerCase();
 
   const logout = () => {
@@ -68,22 +62,17 @@ export default function MenuAdmin() {
 
     if (response.status === 401 || response.status === 403) {
       logout();
-      throw new Error('Sesion no autorizada');
+      throw new Error('Sesión no autorizada');
     }
 
     const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(payload?.message || 'Error en admin-service');
-    }
-
+    if (!response.ok) throw new Error(payload?.message || 'Error en admin-service');
     return payload;
   };
 
   const loadUsers = async () => {
     setLoadingUsers(true);
     setErrorMessage('');
-
     try {
       const data = await requestAdmin('/api/admin/users');
       setUsers(Array.isArray(data?.users) ? data.users : []);
@@ -98,40 +87,71 @@ export default function MenuAdmin() {
     setUsers((prev) => prev.map((item) => (item.id === userId ? { ...item, ...patch } : item)));
   };
 
-
-
   const activateUser = async (userId) => {
     setActionLoadingId(userId);
     setErrorMessage('');
     setSuccessMessage('');
-
     try {
-        const response = await requestAdmin(`/api/admin/users/${userId}/activate`, { method: 'PATCH' });
-        updateUserLocalState(userId, { estado: true, status: 'activo' });
-        setSuccessMessage(response?.message || 'Usuario activado');
+      const response = await requestAdmin(`/api/admin/users/${userId}/activate`, { method: 'PATCH' });
+      updateUserLocalState(userId, { estado: true });
+      setSuccessMessage(response?.message || 'Usuario activado');
     } catch (error) {
-        setErrorMessage(error.message || 'No fue posible activar la cuenta');
+      setErrorMessage(error.message || 'No fue posible activar la cuenta');
     } finally {
-        setActionLoadingId(null);
+      setActionLoadingId(null);
     }
   };
 
   const deactivateUser = async (userId) => {
-    const confirmed = window.confirm('Deseas desactivar esta cuenta?');
-    if (!confirmed) {
-      return;
-    }
-
+    const confirmed = window.confirm('¿Deseas desactivar esta cuenta?');
+    if (!confirmed) return;
     setActionLoadingId(userId);
     setErrorMessage('');
     setSuccessMessage('');
-
     try {
       const response = await requestAdmin(`/api/admin/users/${userId}/deactivate`, { method: 'PATCH' });
-      updateUserLocalState(userId, { estado: false, status: 'inactivo' });
+      updateUserLocalState(userId, { estado: false });
       setSuccessMessage(response?.message || 'Usuario desactivado');
     } catch (error) {
       setErrorMessage(error.message || 'No fue posible desactivar la cuenta');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const aprobarProveedor = async (userId, rol) => {
+    setActionLoadingId(userId);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      const ruta = rol === 'paseador'
+        ? `/api/admin/paseador/${userId}/aprobar`
+        : `/api/admin/veterinario/${userId}/aprobar`;
+      const response = await requestAdmin(ruta, { method: 'PATCH' });
+      updateUserLocalState(userId, { aprobado: true });
+      setSuccessMessage(response?.message || 'Proveedor aprobado');
+    } catch (error) {
+      setErrorMessage(error.message || 'No fue posible aprobar al proveedor');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const desaprobarProveedor = async (userId, rol) => {
+    const confirmed = window.confirm('¿Deseas desaprobar este proveedor?');
+    if (!confirmed) return;
+    setActionLoadingId(userId);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      const ruta = rol === 'paseador'
+        ? `/api/admin/paseador/${userId}/desaprobar`
+        : `/api/admin/veterinario/${userId}/desaprobar`;
+      const response = await requestAdmin(ruta, { method: 'PATCH' });
+      updateUserLocalState(userId, { aprobado: false });
+      setSuccessMessage(response?.message || 'Proveedor desaprobado');
+    } catch (error) {
+      setErrorMessage(error.message || 'No fue posible desaprobar al proveedor');
     } finally {
       setActionLoadingId(null);
     }
@@ -142,163 +162,216 @@ export default function MenuAdmin() {
       navigate('/login');
       return;
     }
-
     loadUsers();
   }, []);
 
   const filteredUsers = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
-
     return users.filter((item) => {
-      const fullName = String(item?.nombre || '').toLowerCase();
-      const email = String(item?.email || '').toLowerCase();
+      const fullName     = String(item?.nombre || '').toLowerCase();
+      const email        = String(item?.email  || '').toLowerCase();
       const roleCategory = getRoleCategory(item?.role);
-      const status = item?.estado ? 'activo' : 'inactivo';
-
-      const searchOk =
-        !normalizedSearch || fullName.includes(normalizedSearch) || email.includes(normalizedSearch);
-
-      const roleOk = roleFilter === 'all' || roleCategory === roleFilter;
-      const statusOk = statusFilter === 'all' || status === statusFilter;
-
+      const status       = item?.estado ? 'activo' : 'inactivo';
+      const searchOk     = !normalizedSearch || fullName.includes(normalizedSearch) || email.includes(normalizedSearch);
+      const roleOk       = roleFilter   === 'all' || roleCategory === roleFilter;
+      const statusOk     = statusFilter === 'all' || status       === statusFilter;
       return searchOk && roleOk && statusOk;
     });
   }, [users, searchValue, roleFilter, statusFilter]);
 
-  const showFilters = activeSection === 'filtros' || activeSection === 'usuarios';
-
-  const getSectionTitle = () => 'Gestión de usuarios';
+  const esProveedor = (role) => role === 'paseador' || role === 'veterinario';
 
   return (
-    <div className="menu-admin-layout">
-      <button className="menu-admin-mobile-toggle" type="button" onClick={() => setMenuOpen((prev) => !prev)}>
-        Menu
-      </button>
+    <div className="ma-layout">
 
-      <aside className={`menu-admin-sidebar ${menuOpen ? 'menu-admin-sidebar--open' : ''}`}>
-        <div className="menu-admin-brand">
-          <img src={logo} alt="AllyPet" className="menu-admin-brand__logo" />
-          <span>Panel administrador</span>
+      {/* SIDEBAR */}
+      <aside className={`ma-sidebar ${sidebarOpen ? '' : 'collapsed'}`}>
+        <div className="ma-logo">
+          <img src={logoNavbar} alt="AllyPet" className={sidebarOpen ? 'ma-logo-img' : 'ma-logo-img-small'} />
         </div>
 
-        <nav className="menu-admin-nav">
+        <div className="ma-profile">
+          <div className="ma-avatar-wrap">
+            <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+            <span className="ma-avatar-dot" />
+          </div>
+          {sidebarOpen && (
+            <div className="ma-profile-info">
+              <span className="ma-profile-name">{user?.nombre || user?.email || 'Admin'}</span>
+              <span className="ma-profile-role">Administrador</span>
+            </div>
+          )}
+        </div>
+
+        {sidebarOpen && <span className="ma-nav-section-label">NAVEGACIÓN</span>}
+
+        <nav className="ma-nav">
           {MENU_OPTIONS.map((option) => (
             <button
               key={option.id}
               type="button"
-              className={`menu-admin-nav__btn ${activeSection === option.id ? 'menu-admin-nav__btn--active' : ''}`}
-              onClick={() => {
-                setActiveSection(option.id);
-                setMenuOpen(false);
-              }}
+              className={`ma-nav-item ${activeSection === option.id ? 'active' : ''}`}
+              onClick={() => setActiveSection(option.id)}
             >
-              {option.label}
+              {sidebarOpen && <span className="ma-nav-label">{option.label}</span>}
             </button>
           ))}
         </nav>
 
-        <button className="menu-admin-logout" type="button" onClick={logout}>
-          Cerrar sesion
-        </button>
+        <div className="ma-sidebar-footer">
+          <button className="ma-logout" type="button" onClick={logout}>
+            {sidebarOpen && <span>Cerrar Sesión</span>}
+          </button>
+        </div>
       </aside>
 
-      <main className="menu-admin-content">
-        <header className="menu-admin-content__header">
-          <h1>{getSectionTitle()}</h1>
-          <p>
-            Admin: <strong>{user?.email || 'sin-email'}</strong>
-          </p>
+      {/* MAIN */}
+      <div className="ma-main">
+        <header className="ma-navbar">
+          <div className="ma-navbar-left">
+            <button className="ma-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+            <div className="ma-searchbar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar por nombre o correo..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="ma-navbar-right">
+            <div className="ma-user-chip">
+              <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+              <span>{user?.nombre || user?.email || 'Admin'}</span>
+            </div>
+          </div>
         </header>
 
-        {showFilters && (
-          <section className="menu-admin-filters">
-            <input
-              type="text"
-              placeholder="Buscar por nombre o correo"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-
+        <main className="ma-content">
+          <div className="ma-filters">
             <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
               <option value="all">Todos los roles</option>
-              <option value="user">User</option>
+              <option value="user">Usuario</option>
               <option value="admin">Admin</option>
               <option value="proveedor">Proveedor</option>
             </select>
-
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="all">Todos los estados</option>
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
-          </section>
-        )}
-
-        {successMessage && <div className="menu-admin-alert menu-admin-alert--success">{successMessage}</div>}
-        {errorMessage && <div className="menu-admin-alert menu-admin-alert--error">{errorMessage}</div>}
-
-        {loadingUsers ? (
-          <p className="menu-admin-content__hint">Cargando usuarios...</p>
-        ) : filteredUsers.length === 0 ? (
-          <p className="menu-admin-content__hint">No hay usuarios para mostrar con los filtros actuales.</p>
-        ) : (
-          <div className="menu-admin-table-wrap">
-            <table className="menu-admin-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Correo</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((item) => {
-                  const isActive = Boolean(item.estado);
-                  const isLoadingRow = actionLoadingId === item.id;
-
-                  return (
-                    <tr key={item.id}>
-                      <td>{item.nombre || '-'}</td>
-                      <td>{item.email || '-'}</td>
-                      <td>{item.role || '-'}</td>
-                      <td>
-                        <span className={`menu-admin-chip ${isActive ? 'menu-admin-chip--ok' : 'menu-admin-chip--off'}`}>
-                          {isActive ? 'activo' : 'inactivo'}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="menu-admin-actions">
-                          {isActive ? (
-                            <button
-                              className="menu-admin-btn menu-admin-btn--deactivate"
-                              type="button"
-                              disabled={isLoadingRow}
-                              onClick={() => deactivateUser(item.id)}
-                            >
-                              Desactivar
-                            </button>
-                          ) : (
-                            <button
-                              className="menu-admin-btn menu-admin-btn--approve"
-                              type="button"
-                              disabled={isLoadingRow}
-                              onClick={() => activateUser(item.id)}
-                            >
-                              Activar
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </div>
-        )}
-      </main>
+
+          {successMessage && <div className="ma-alert ma-alert--success">{successMessage}</div>}
+          {errorMessage   && <div className="ma-alert ma-alert--error">{errorMessage}</div>}
+
+          {loadingUsers ? (
+            <p className="ma-hint">Cargando usuarios...</p>
+          ) : filteredUsers.length === 0 ? (
+            <p className="ma-hint">No hay usuarios para mostrar con los filtros actuales.</p>
+          ) : (
+            <div className="ma-table-wrap">
+              <table className="ma-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Aprobación</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((item) => {
+                    const isActive     = Boolean(item.estado);
+                    const isAprobado   = Boolean(item.aprobado);
+                    const isLoadingRow = actionLoadingId === item.id;
+                    const rol          = String(item.role || '').toLowerCase();
+
+                    return (
+                      <tr key={item.id}>
+                        <td>{item.nombre || '-'}</td>
+                        <td>{item.email  || '-'}</td>
+                        <td>{item.role   || '-'}</td>
+                        <td>
+                          <span className={`ma-chip ${isActive ? 'ma-chip--ok' : 'ma-chip--off'}`}>
+                            {isActive ? 'activo' : 'inactivo'}
+                          </span>
+                        </td>
+                        <td>
+                          {esProveedor(rol) ? (
+                            <span className={`ma-chip ${isAprobado ? 'ma-chip--ok' : 'ma-chip--warn'}`}>
+                              {isAprobado ? 'aprobado' : 'pendiente'}
+                            </span>
+                          ) : (
+                            <span className="ma-chip ma-chip--na">—</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="ma-actions">
+                            {isActive ? (
+                              <button
+                                className="ma-btn ma-btn--deactivate"
+                                type="button"
+                                disabled={isLoadingRow}
+                                onClick={() => deactivateUser(item.id)}
+                              >
+                                Desactivar
+                              </button>
+                            ) : (
+                              <button
+                                className="ma-btn ma-btn--activate"
+                                type="button"
+                                disabled={isLoadingRow}
+                                onClick={() => activateUser(item.id)}
+                              >
+                                Activar
+                              </button>
+                            )}
+
+                            {esProveedor(rol) && (
+                              isAprobado ? (
+                                <button
+                                  className="ma-btn ma-btn--reject"
+                                  type="button"
+                                  disabled={isLoadingRow}
+                                  onClick={() => desaprobarProveedor(item.id, rol)}
+                                >
+                                  Desaprobar
+                                </button>
+                              ) : (
+                                <button
+                                  className="ma-btn ma-btn--approve"
+                                  type="button"
+                                  disabled={isLoadingRow}
+                                  onClick={() => aprobarProveedor(item.id, rol)}
+                                >
+                                  Aprobar
+                                </button>
+                              )
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

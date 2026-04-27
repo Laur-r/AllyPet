@@ -16,5 +16,11 @@ router.get('/users', requireAdmin, adminController.getUsers);
 router.patch('/users/:id/activate', requireAdmin, adminController.activateUser);
 router.patch('/users/:id/deactivate', requireAdmin, adminController.deactivateUser);
 
+// Aprobación de proveedores
+router.patch('/paseador/:id/aprobar',      requireAdmin, adminController.aprobarPaseador);
+router.patch('/paseador/:id/desaprobar',   requireAdmin, adminController.desaprobarPaseador);
+router.patch('/veterinario/:id/aprobar',   requireAdmin, adminController.aprobarVeterinario);
+router.patch('/veterinario/:id/desaprobar',requireAdmin, adminController.desaprobarVeterinario);
+
 module.exports = router;
 

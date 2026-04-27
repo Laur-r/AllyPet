@@ -322,7 +322,10 @@ function Tarjeta({ mascota, style, onEditar, onEliminar , onVerPerfil}) {
 
         <div className="mas-card-btns-row">
          <button className="mas-btn-ver" onClick={onVerPerfil}>Ver Perfil</button>
-          <button className="mas-btn-historial">Historial</button>
+         <button className="mas-btn-historial"onClick={() => navigate(`/menu/dueno/mascotas/${mascota.id}/historial`)}
+        >
+          Historial
+        </button>
         </div>
       </div>
     </div>

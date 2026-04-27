@@ -80,6 +80,80 @@ const actualizarImagen = async (usuarioId, campo, ruta) => {
   return rows[0] || null;
 };
 
+/* ── Buscar paseadores por ciudad ── */
+const buscarPorCiudad = async (ciudad) => {
+  const { rows } = await pool.query(
+    `SELECT 
+      u.id,
+      u.nombre,
+      u.foto_perfil,
+      p.tarifa,
+      p.calificacion,
+      p.disponible,
+      p.ciudad
+    FROM perfil_paseador p
+    INNER JOIN usuarios u ON u.id = p.usuario_id
+    WHERE LOWER(p.ciudad) = LOWER($1)
+      AND p.aprobado = true
+      AND p.disponible = true
+      AND u.estado = true
+    ORDER BY p.calificacion DESC`,
+    [ciudad]
+  );
+  return rows;
+};
+
+/* ── Obtener perfil público del paseador ── */
+const obtenerPerfilPublico = async (usuarioId) => {
+  const { rows } = await pool.query(
+    `SELECT 
+      u.id,
+      u.nombre,
+      p.foto_perfil,
+      p.banner,
+      p.descripcion,
+      p.tarifa,
+      p.disponibilidad,
+      p.disponible,
+      p.calificacion,
+      p.total_resenas,
+      p.experiencia,
+      p.especialidad,
+      p.ciudad,
+      p.zonas,
+      p.razas,
+      p.servicios,
+      p.mascotas_max
+    FROM perfil_paseador p
+    INNER JOIN usuarios u ON u.id = p.usuario_id
+    WHERE p.usuario_id = $1
+      AND p.aprobado = true
+      AND u.estado = true`,
+    [usuarioId]
+  );
+  return rows[0] || null;
+};
+
+/* ── Obtener reseñas del paseador ── */
+const obtenerResenas = async (proveedorId) => {
+  const { rows } = await pool.query(
+    `SELECT 
+      r.id,
+      r.calificacion,
+      r.comentario,
+      r.fecha,
+      u.nombre AS dueno_nombre,
+      u.foto_perfil AS dueno_foto
+    FROM resenas r
+    INNER JOIN usuarios u ON u.id = r.dueno_id
+    WHERE r.proveedor_id = $1
+      AND r.tipo_proveedor = 'paseador'
+    ORDER BY r.fecha DESC`,
+    [proveedorId]
+  );
+  return rows;
+};
+
 module.exports = {
   obtenerPerfil,
   actualizarPerfil,
@@ -88,4 +162,7 @@ module.exports = {
   actualizarRazas,
   cambiarDisponibilidad,
   actualizarImagen,
+  buscarPorCiudad, 
+  obtenerPerfilPublico,
+  obtenerResenas,
 };

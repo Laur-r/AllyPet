@@ -5,7 +5,11 @@ import Login               from './pages/Login/Login';
 import MenuRegistro        from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno       from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador    from './pages/Registro/RegistroPaseador/RegistroPaseador';
+import BusquedaPaseadores from './pages/Busqueda/BusquedaPaseadores/BusquedaPaseadores';
+import PerfilPublicoPaseador from './pages/PerfilPublicoPaseador/PerfilPublicoPaseador';
 import RegistroVeterinario from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
+import BusquedaVeterinarias from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
+import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -18,6 +22,8 @@ import PerfilDueno       from './pages/Profiles/ProfileOwner/Profilepage';
 
 import MenuAdmin     from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
+
+import HistorialMedico from './pages/HistorialMedico/HistorialMedico';
 
 import Carnet from './pages/Carnet/Carnet';
 
@@ -44,6 +50,13 @@ function App() {
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
           <Route path="mascotas/:petId/carnet" element={<Carnet />} /> 
+          
+          <Route path="buscar/paseadores" element={<BusquedaPaseadores />} />
+          <Route path="buscar/veterinarias"  element={<BusquedaVeterinarias />} />
+          <Route path="paseador/:usuarioId" element={<PerfilPublicoPaseador />} />
+          <Route path="veterinaria/:usuarioId" element={<PerfilPublicoVeterinaria />} />
+
+          <Route path="mascotas/:petId/historial" element={<HistorialMedico />} />
         </Route>
 
         {/* Menú Paseador */}

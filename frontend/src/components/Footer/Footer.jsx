@@ -35,7 +35,7 @@ export default function Footer() {
       </div>
 
       <div className="footer__bottom">
-        © 2025 AllyPet
+        © 2026 AllyPet
       </div>
     </footer>
   );
