@@ -67,12 +67,17 @@ const eliminarVacuna = async (mascota_id, usuario_id, vacuna_id) => {
 };
 
 // ─── HISTORIAL ───────────────────────────────────────────────────
-const agregarHistorial = async (mascota_id, usuario_id, datos) => {
+const getHistorial = async (mascota_id, usuario_id) => {
+  await verificarPropietario(mascota_id, usuario_id);
+  return CarnetModel.getHistorial(mascota_id);
+};
+
+const agregarHistorial = async (mascota_id, usuario_id, datos) => {  
   await verificarPropietario(mascota_id, usuario_id);
   return CarnetModel.createHistorial({ ...datos, mascota_id });
 };
 
-const eliminarHistorial = async (mascota_id, usuario_id, entrada_id) => {
+const eliminarHistorial = async (mascota_id, usuario_id, entrada_id) => { 
   await verificarPropietario(mascota_id, usuario_id);
   const ok = await CarnetModel.deleteHistorial(entrada_id, mascota_id);
   if (!ok) {
@@ -112,7 +117,7 @@ const revocarToken = async (mascota_id, usuario_id) => {
 module.exports = {
   getCarnetCompleto, getCarnetPublico,
   agregarVacuna, editarVacuna, eliminarVacuna,
-  agregarHistorial, eliminarHistorial,
+  getHistorial, agregarHistorial, eliminarHistorial,
   agregarRecordatorio, eliminarRecordatorio,
   generarToken, revocarToken
 };

@@ -202,12 +202,13 @@ export default function Mascotas() {
       <div className="mas-grid">
         {visibles.map((m, i) => (
           <Tarjeta
-            key={m.id} mascota={m}
-            style={{ animationDelay: `${i * 55}ms` }}
-            onEditar={() => abrirEditar(m)}
-            onEliminar={() => setConfirmDel(m)}
-            onVerPerfil={() => navigate(`/menu/dueno/mascotas/${m.id}/carnet`)}
-          />
+          key={m.id} mascota={m}
+          style={{ animationDelay: `${i * 55}ms` }}
+          onEditar={() => abrirEditar(m)}
+          onEliminar={() => setConfirmDel(m)}
+          onVerPerfil={() => navigate(`/menu/dueno/mascotas/${m.id}/carnet`)}
+          onVerHistorial={() => navigate(`/menu/dueno/mascotas/${m.id}/historial`)} 
+        />
         ))}
         <TarjetaAgregar onClick={abrirCrear} />
       </div>
@@ -263,7 +264,7 @@ export default function Mascotas() {
 /* ════════════════════════════════════════════════════════════
    TARJETA MASCOTA
    ════════════════════════════════════════════════════════════ */
-function Tarjeta({ mascota, style, onEditar, onEliminar , onVerPerfil}) {
+function Tarjeta({ mascota, style, onEditar, onEliminar , onVerPerfil, onVerHistorial}) {
   const { nombre, especie, raza, sexo, edad, peso, color, foto, recordatorio } = mascota;
   const diasClass = recordatorio ? (recordatorio.dias <= 7 ? 'urgent' : '') : '';
   const fotoUrl   = getFotoUrl(foto);
@@ -321,11 +322,10 @@ function Tarjeta({ mascota, style, onEditar, onEliminar , onVerPerfil}) {
         )}
 
         <div className="mas-card-btns-row">
-         <button className="mas-btn-ver" onClick={onVerPerfil}>Ver Perfil</button>
-         <button className="mas-btn-historial"onClick={() => navigate(`/menu/dueno/mascotas/${mascota.id}/historial`)}
-        >
-          Historial
-        </button>
+          <button className="mas-btn-ver" onClick={onVerPerfil}>Ver Perfil</button>
+          <button className="mas-btn-historial" onClick={onVerHistorial}> 
+            Historial
+          </button>
         </div>
       </div>
     </div>

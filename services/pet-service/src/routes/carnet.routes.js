@@ -10,15 +10,16 @@ router.get('/public/:token', CarnetController.getCarnetPublico);
 // ─── PROTEGIDAS ──────────────────────────────────────────────────
 router.use(verificarToken);
 
-router.get('/:petId/carnet',                    CarnetController.getCarnet);
-router.post('/:petId/vacunas',                  CarnetController.agregarVacuna);
-router.put('/:petId/vacunas/:vacunaId',         CarnetController.editarVacuna);
-router.delete('/:petId/vacunas/:vacunaId',      CarnetController.eliminarVacuna);
-router.post('/:petId/historial',                CarnetController.agregarHistorial);
-router.delete('/:petId/historial/:entradaId',   CarnetController.eliminarHistorial);
-router.post('/:petId/recordatorios',            CarnetController.agregarRecordatorio);
-router.delete('/:petId/recordatorios/:recordatorioId', CarnetController.eliminarRecordatorio);
-router.post('/:petId/carnet/token',             CarnetController.generarToken);
-router.delete('/:petId/carnet/token',           CarnetController.revocarToken);
+router.get('/:petId/carnet',                              CarnetController.getCarnet);
+router.get('/:petId/historial',                           CarnetController.getHistorial);
+router.post('/:petId/historial',                          CarnetController.agregarHistorial);
+router.delete('/:petId/historial/:entradaId',             CarnetController.eliminarHistorial);
+router.post('/:petId/vacunas',                            CarnetController.agregarVacuna);
+router.put('/:petId/vacunas/:vacunaId',                   CarnetController.editarVacuna);
+router.delete('/:petId/vacunas/:vacunaId',                CarnetController.eliminarVacuna);
+router.post('/:petId/recordatorios',                      CarnetController.agregarRecordatorio);
+router.delete('/:petId/recordatorios/:recordatorioId',    CarnetController.eliminarRecordatorio);
+router.post('/:petId/carnet/token',                       CarnetController.generarToken);
+router.delete('/:petId/carnet/token',                     CarnetController.revocarToken);
 
 module.exports = router;

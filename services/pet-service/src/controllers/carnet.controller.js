@@ -11,6 +11,15 @@ const getCarnet = async (req, res) => {
   }
 };
 
+const getHistorial = async (req, res) => {
+  try {
+    const data = await CarnetService.getHistorial(req.params.petId, req.usuario_id);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
 const getCarnetPublico = async (req, res) => {
   try {
     const data = await CarnetService.getCarnetPublico(req.params.token);
@@ -108,7 +117,7 @@ const revocarToken = async (req, res) => {
 module.exports = {
   getCarnet, getCarnetPublico,
   agregarVacuna, editarVacuna, eliminarVacuna,
-  agregarHistorial, eliminarHistorial,
-  agregarRecordatorio, eliminarRecordatorio,
+  getHistorial, agregarHistorial, eliminarHistorial,
+  agregarRecordatorio, eliminarRecordatorio,   
   generarToken, revocarToken
 };
