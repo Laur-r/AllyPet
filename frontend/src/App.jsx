@@ -24,8 +24,8 @@ import MenuAdmin     from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import HistorialMedico from './pages/HistorialMedico/HistorialMedico';
-
 import Carnet from './pages/Carnet/Carnet';
+import Calificaciones from './pages/Calificaciones/Calificaciones';
 
 function App() {
   return (
@@ -57,6 +57,7 @@ function App() {
           <Route path="veterinaria/:usuarioId" element={<PerfilPublicoVeterinaria />} />
 
           <Route path="mascotas/:petId/historial" element={<HistorialMedico />} />
+          <Route path="calificaciones" element={<Calificaciones />} />
         </Route>
 
         {/* Menú Paseador */}

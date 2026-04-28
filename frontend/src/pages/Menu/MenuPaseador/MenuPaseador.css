@@ -65,6 +65,9 @@
 .mp-profile-info { display: flex; flex-direction: column; overflow: hidden; }
 .mp-profile-name { font-size: .825rem; font-weight: 600; color: var(--ap-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mp-profile-role { font-size: .7rem; color: var(--ap-green-dark); font-weight: 600; margin-top: 1px; }
+.mp-profile-ciudad { font-size: .67rem; color: var(--ap-text-soft); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mp-profile-stats { font-size: .7rem; color: var(--ap-purple); font-weight: 600; margin-top: 3px; }
+.mp-resenas-count { font-weight: 400; color: var(--ap-text-soft); }
 
 .mp-nav-section-label { display: block; padding: 14px 18px 6px; font-size: .62rem; font-weight: 700; letter-spacing: .08em; color: var(--ap-text-xsoft); }
 

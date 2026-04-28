@@ -46,6 +46,8 @@ import avatarDefault from "../../../assets/menus/menudefault.png";
     { key: "mascotas",      label: "Mascotas" },
     { key: "servicios",     label: "Servicios", hasChildren: true },
     { key: "reservas",      label: "Reservas" },
+    /* Opción añadida para acceder al sistema de calificación de servicios completados */
+    { key: "calificar",     label: "Calificar" },
     { key: "mensajes",      label: "Mensajes" },
     { key: "configuracion", label: "Configuración" },
   ];
@@ -106,6 +108,8 @@ const subServicios = [
                     setServiciosOpen(false);
                     if (item.key === "mascotas") navigate("/menu/dueno/mascotas");
                     if (item.key === "inicio")   navigate("/menu/dueno");
+                    /* Navegación hacia la página de calificaciones para dueños */
+                    if (item.key === "calificar") navigate("calificaciones");
                   }
                 }}
               >
