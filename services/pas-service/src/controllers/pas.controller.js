@@ -151,7 +151,7 @@ const buscarPorCiudad = async (req, res) => {
 const obtenerPerfilPublico = async (req, res) => {
   try {
     const perfil = await service.obtenerPerfilPublico(req.params.usuarioId);
-    return res.status(200).json({ message: 'Perfil encontrado', data: perfil });
+    return res.status(200).json(perfil);
   } catch (err) {
     console.error('obtenerPerfilPublico:', err.message);
     const status = err.message === 'Paseador no encontrado o no disponible' ? 404 : 500;

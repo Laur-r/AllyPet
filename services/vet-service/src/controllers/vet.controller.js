@@ -2,12 +2,7 @@ const VetService = require('../services/vet.service');
 
 const getPerfil = async (req, res) => {
   try {
-    console.log(" ENTRA AL CONTROLLER");
-
     const perfil = await VetService.getPerfil(req.usuario_id);
-
-    console.log("PERFIL:", perfil);
-
     res.json({ ok: true, data: perfil });
 
   } catch (err) {
@@ -17,7 +12,7 @@ const getPerfil = async (req, res) => {
 };
 
 const actualizarPerfil = async (req, res) => {
-  try {console.log('usuario_id:', req.usuario_id);
+  try {
 
     const foto_perfil = req.files?.foto_perfil?.[0]
       ? `/uploads/${req.files.foto_perfil[0].filename}`
@@ -85,7 +80,7 @@ const buscarPorCiudad = async (req, res) => {
 const obtenerPerfilPublico = async (req, res) => {
   try {
     const perfil = await VetService.obtenerPerfilPublico(req.params.usuarioId);
-    return res.status(200).json({ message: 'Perfil encontrado', data: perfil });
+    return res.status(200).json(perfil);
   } catch (err) {
     console.error('obtenerPerfilPublico:', err.message);
     const status = err.message === 'Veterinaria no encontrada o no disponible' ? 404 : 500;
