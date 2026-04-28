@@ -1,230 +1,135 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPerfilPublicoVeterinaria, getResenasVeterinaria } from "../../services/veterinario.service";
+import Estrellas from '../../components/Estrellas/Estrellas';
+import ListaResenas from '../../components/Resenas/ListaResenas';
+import { getResenasUsuario } from '../../services/resenas.service';
+import ModalCalificar from '../../components/ModalCalificar/ModalCalificar';
 import './PerfilPublicoVeterinaria.css';
 
-const API_VET = 'http://localhost:3005';
-
-function Estrellas({ valor, size = 15 }) {
-  return (
-    <span className="ppv-stars" style={{ fontSize: size }}>
-      {[1,2,3,4,5].map(i => (
-        <span key={i} className={i <= Math.round(valor) ? 'star on' : 'star'}>★</span>
-      ))}
-    </span>
-  );
-}
+const PUERTO = 3005; // Puerto de vet-service
 
 export default function PerfilPublicoVeterinaria() {
   const { usuarioId } = useParams();
   const navigate      = useNavigate();
 
-  const [perfil,   setPerfil]   = useState(null);
-  const [resenas,  setResenas]  = useState([]);
+  const [perfil, setPerfil] = useState(null);
+  const [resenas, setResenas] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [tab,      setTab]      = useState('info');
-  const [error,    setError]    = useState(null);
+  const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const obtenerPerfil = async () => {
+    try {
+      console.log("Cargando perfil veterinaria para ID:", usuarioId);
+      
+      const res = await fetch(`http://localhost:${PUERTO}/api/veterinarios/publico/${usuarioId}`);
+      const data = await res.json();
+
+      console.log("Respuesta backend (Veterinaria):", data);
+
+      if (!res.ok) throw new Error(data.error || 'Error al cargar perfil');
+      
+      setPerfil(data);
+    } catch (error) {
+      console.error("Error cargando perfil veterinario:", error);
+      setError(error.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  /* ── SECCIÓN DE REPUTACIÓN ──
+     Carga las experiencias de otros usuarios con esta veterinaria.
+     Es clave para demostrar profesionalismo y calidad médica. */
+  const obtenerResenas = async () => {
+    try {
+      const data = await getResenasUsuario(usuarioId);
+      setResenas(data || []);
+    } catch (err) {
+      console.error("Error cargando reseñas:", err);
+    }
+  };
 
   useEffect(() => {
-    const cargarDatos = async () => {
-        try {
-        const [dataPerfil, dataResenas] = await Promise.all([
-            getPerfilPublicoVeterinaria(usuarioId),
-            getResenasVeterinaria(usuarioId),
-        ]);
-
-        setPerfil(dataPerfil.data);
-        setResenas(dataResenas.data || []);
-        } catch (err) {
-        setError('No se pudo cargar el perfil. Intenta de nuevo.');
-        } finally {
-        setCargando(false);
-        }
-    };
-
-    cargarDatos();
+    obtenerPerfil();
+    obtenerResenas();
   }, [usuarioId]);
 
-  if (cargando) return (
+  if (cargando) return <div className="ppv-loading"><p>Cargando veterinaria...</p></div>;
+  if (error || !perfil) return (
     <div className="ppv-loading">
-      <div className="ppv-spinner" />
-      <span>Cargando perfil...</span>
-    </div>
-  );
-
-  if (error) return (
-    <div className="ppv-loading">
-      <p>{error}</p>
-      <button className="ppv-btn-volver" onClick={() => navigate(-1)}>Volver</button>
-    </div>
-  );
-
-  if (!perfil) return (
-    <div className="ppv-loading">
-      <p>Veterinaria no encontrada.</p>
-      <button className="ppv-btn-volver" onClick={() => navigate(-1)}>Volver</button>
+      <p>{error || 'Veterinaria no encontrada'}</p>
+      <button onClick={() => navigate(-1)}>Volver</button>
     </div>
   );
 
   const fotoUrl = perfil.foto_perfil
-    ? perfil.foto_perfil.startsWith('/uploads') ? `${API_VET}${perfil.foto_perfil}` : perfil.foto_perfil
+    ? perfil.foto_perfil.startsWith('/uploads') ? `http://localhost:${PUERTO}${perfil.foto_perfil}` : perfil.foto_perfil
     : null;
-
-  const bannerUrl = perfil.banner
-    ? perfil.banner.startsWith('/uploads') ? `${API_VET}${perfil.banner}` : perfil.banner
-    : 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=1200&q=80';
-
-  const serviciosLista = Array.isArray(perfil.servicios)
-    ? perfil.servicios
-    : typeof perfil.servicios === 'string'
-    ? perfil.servicios.split(',').map(s => s.trim())
-    : [];
 
   return (
     <div className="ppv-page">
+      <button className="ppv-btn-back" onClick={() => navigate(-1)}>← Volver</button>
 
-      {/* BOTÓN VOLVER */}
-      <button className="ppv-btn-volver" onClick={() => navigate(-1)}>
-        ← Volver a resultados
-      </button>
+      {/* DEBUG VISUAL TEMPORAL */}
+      <details style={{ background: '#eee', padding: '10px', marginBottom: '20px' }}>
+        <summary>Debug Data (JSON)</summary>
+        <pre>{JSON.stringify(perfil, null, 2)}</pre>
+      </details>
 
-      {/* HERO */}
-      <div className="ppv-hero">
-        <div className="ppv-banner">
-          <img src={bannerUrl} alt="banner" />
-          <div className="ppv-banner-overlay" />
-        </div>
-
-        <div className="ppv-foto-wrap">
-          {fotoUrl
-            ? <img className="ppv-foto" src={fotoUrl} alt={perfil.nombre_establecimiento} />
-            : <div className="ppv-foto-placeholder">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-              </div>
-          }
-          <span className={`ppv-disponible ${perfil.disponible ? 'on' : 'off'}`}>
-            <span className="ppv-dot" />
-            {perfil.disponible ? 'Abierto' : 'Cerrado'}
-          </span>
-        </div>
-      </div>
-
-      {/* INFO PRINCIPAL */}
-      <div className="ppv-header-info">
-        <div className="ppv-header-left">
-          <h1>{perfil.nombre_establecimiento}</h1>
-          <p className="ppv-especialidad">{perfil.especialidad}</p>
-          <div className="ppv-meta">
-            <span>📍 {perfil.direccion || perfil.ciudad}</span>
-            <span>🏙 {perfil.ciudad}</span>
-            <span>⏱ {perfil.experiencia} años de experiencia</span>
+      <div className="ppv-card-main">
+        <div className="ppv-header-flex">
+          <div className="ppv-avatar-section">
+            {fotoUrl ? (
+              <img src={fotoUrl} alt={perfil.nombre} className="ppv-avatar-img" />
+            ) : (
+              <div className="ppv-avatar-initials">{perfil.nombre?.[0]?.toUpperCase()}</div>
+            )}
+          </div>
+          
+          <div className="ppv-info-section">
+            <h2>{perfil.nombre}</h2>
+            <p className="ppv-type">{perfil.nombre_establecimiento || 'Clínica Veterinaria'}</p>
+            <p>📍 {perfil.ciudad}</p>
+            <p>📞 {perfil.telefono || 'Sin teléfono'}</p>
+            <p>🏠 {perfil.direccion || 'Sin dirección'}</p>
+            
+            {/* Resumen de Estrellas:
+                Componente visual que resume la satisfacción de los clientes. */}
+            <div className="ppv-rating-summary">
+              <Estrellas calificacion={perfil.promedio_estrellas} size={18} />
+              <span className="ppv-count">({perfil.total_resenas || 0} reseñas)</span>
+            </div>
           </div>
         </div>
-        <div className="ppv-rating-box">
-          <span className="ppv-rating-num">{perfil.calificacion ?? '—'}</span>
-          <Estrellas valor={perfil.calificacion || 0} size={17} />
-          <span className="ppv-rating-count">{perfil.total_resenas || 0} reseñas</span>
+
+        <div className="ppv-actions">
+          <button className="ppv-btn-primary">Agendar Cita</button>
+          <button className="ppv-btn-secondary" onClick={() => setModalOpen(true)}>Calificar</button>
         </div>
       </div>
 
-      {/* TABS */}
-      <div className="ppv-tabs">
-        {[
-          { key: 'info',    label: 'Información' },
-          { key: 'resenas', label: `Reseñas (${resenas.length})` },
-        ].map(t => (
-          <button
-            key={t.key}
-            className={`ppv-tab ${tab === t.key ? 'activa' : ''}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="ppv-details-grid">
+        <div className="ppv-detail-card">
+          <h3>Sobre nosotros</h3>
+          <p>{perfil.descripcion || 'Sin descripción disponible.'}</p>
+        </div>
+
+        <ListaResenas resenas={resenas} nombreProveedor={perfil.nombre_establecimiento || perfil.nombre} />
       </div>
 
-      {/* CONTENIDO */}
-      <div className="ppv-body">
-
-        {/* INFO */}
-        {tab === 'info' && (
-          <div className="ppv-tab-info">
-
-            <div className="ppv-card">
-              <h3>Sobre nosotros</h3>
-              <p>{perfil.descripcion || 'Sin descripción.'}</p>
-            </div>
-
-            <div className="ppv-card">
-              <h3>Servicios</h3>
-              <div className="ppv-chips">
-                {serviciosLista.length > 0
-                  ? serviciosLista.map((s, i) => (
-                      <span key={i} className="ppv-chip">
-                        {typeof s === 'object' ? s.nombre : s}
-                      </span>
-                    ))
-                  : <em>Sin servicios registrados</em>
-                }
-              </div>
-            </div>
-
-            <div className="ppv-card">
-              <h3>Horarios</h3>
-            {perfil.horarios && typeof perfil.horarios === 'object' && Object.keys(perfil.horarios).length > 0
-            ? <div className="ppv-horarios">
-                {Object.entries(perfil.horarios).map(([dia, hora]) => (
-                    <div key={dia} className="ppv-horario-row">
-                    <span className="ppv-dia">{dia}</span>
-                    <span className="ppv-hora">
-                        {typeof hora === 'object' 
-                        ? `${hora.desde || ''} - ${hora.hasta || ''}` 
-                        : hora}
-                    </span>
-                    </div>
-                ))}
-                </div>
-            : <p>Sin horarios registrados.</p>
-            }
-            </div>
-
-          </div>
-        )}
-
-        {/* RESEÑAS */}
-        {tab === 'resenas' && (
-          <div className="ppv-tab-resenas">
-            {resenas.length > 0
-              ? resenas.map((r) => (
-                  <div key={r.id} className="ppv-resena-card">
-                    <div className="ppv-resena-header">
-                      <div className="ppv-resena-avatar">
-                        {r.dueno_foto
-                          ? <img src={r.dueno_foto} alt={r.dueno_nombre} />
-                          : <span>{r.dueno_nombre?.[0]?.toUpperCase()}</span>
-                        }
-                      </div>
-                      <div className="ppv-resena-meta">
-                        <strong>{r.dueno_nombre}</strong>
-                        <Estrellas valor={r.calificacion} size={13} />
-                      </div>
-                      <span className="ppv-resena-fecha">
-                        {new Date(r.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </span>
-                    </div>
-                    {r.comentario && <p className="ppv-resena-comentario">{r.comentario}</p>}
-                  </div>
-                ))
-              : (
-                <div className="ppv-empty-resenas">
-                  <p>Esta veterinaria aún no tiene reseñas.</p>
-                </div>
-              )
-            }
-          </div>
-        )}
-
-      </div>
+      {/* Modal para permitir calificar a la veterinaria. 
+          Al completarse, dispara el onSuccess para refrescar la información y las reseñas en pantalla. */}
+      <ModalCalificar 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)}
+        objetivoId={usuarioId}
+        tipoObjetivo="veterinaria"
+        onSuccess={() => {
+          obtenerPerfil();
+          obtenerResenas();
+        }}
+      />
     </div>
   );
 }

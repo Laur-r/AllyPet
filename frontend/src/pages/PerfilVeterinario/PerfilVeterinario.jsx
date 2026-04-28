@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ListaResenas from "../../components/Resenas/ListaResenas";
 import "./PerfilVeterinario.css";
 
 /* ── CONFIG ── */
@@ -48,6 +49,9 @@ const IcoCamera = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="no
 const IcoPlus   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
 const IcoTrash  = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 
+/* ── Componente de Estrellas ──
+   Este componente muestra visualmente el prestigio de la veterinaria/clínica.
+   El promedio de estrellas es el factor decisivo para que los dueños confíen sus mascotas. */
 function Estrellas({ valor, size = 15 }) {
   return (
     <span className="pv-stars" style={{ fontSize: size }}>
@@ -106,7 +110,7 @@ export default function PerfilVeterinario() {
         const d = res.data;
         setVet({
           ...VET_VACIO,
-          nombre: d.nombre_establecimiento || '',
+          nombre: d.nombre || '',
           nombre_establecimiento: d.nombre_establecimiento || '',
           especialidad: d.especialidad || '',
           foto_perfil: d.foto_perfil || null,
@@ -115,6 +119,8 @@ export default function PerfilVeterinario() {
           estado: d.estado || '',
           direccion: d.direccion || '',
           disponible: d.disponible ?? true,
+          /* Las estrellas y total de reseñas aquí vienen del modelo de la veterinaria,
+             pero se actualizan sincrónicamente con el servicio de reseñas. */
           calificacion: parseFloat(d.calificacion) || 0,
           totalResenas: d.total_resenas || 0,
           experiencia: d.experiencia || 0,
@@ -137,6 +143,7 @@ export default function PerfilVeterinario() {
       if (fileBanner) fd.append('banner',       fileBanner);
 
       const campos = { ...vet, ...camposExtra };
+      fd.append('nombre',      campos.nombre_establecimiento || '');
       fd.append('nombre_establecimiento', campos.nombre_establecimiento || '');
       fd.append('direccion',   campos.direccion   || '');
       fd.append('ciudad',      campos.ciudad      || '');
@@ -177,6 +184,15 @@ export default function PerfilVeterinario() {
     setVet(nuevo);
     setEditHero(false);
     await guardarEnBackend(nuevo);
+
+    // Sincronizar con localStorage para que el sidebar/navbar se actualicen
+    if (draftHero.nombre_establecimiento) {
+      const u = JSON.parse(localStorage.getItem("user") || "{}");
+      u.nombre = draftHero.nombre_establecimiento;
+      localStorage.setItem("user", JSON.stringify(u));
+      window.dispatchEvent(new Event("storage"));
+    }
+
     notify('Información principal actualizada');
   };
   const cancelarHero = () => { setEditHero(false); setFileFoto(null); setFileBanner(null); };
@@ -539,42 +555,9 @@ export default function PerfilVeterinario() {
           </div>
         )}
 
-        {/* ── RESEÑAS ── */}
         {tab === 'resenas' && (
           <div className="pv-tab-resenas">
-            <div className="pv-resenas-notice">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Las reseñas son generadas por los dueños de mascotas y no pueden editarse.
-            </div>
-            {vet.resenas.length === 0
-              ? <div className="pv-empty-state">Aún no tienes reseñas. Cuando los dueños te caliquen, aparecerán aquí.</div>
-              : (
-                <>
-                  <div className="pv-rating-summary">
-                    <div className="pv-rating-big">
-                      <span className="pv-rating-big-num">{vet.calificacion}</span>
-                      <Estrellas valor={vet.calificacion} size={20} />
-                      <span className="pv-rating-big-sub">{vet.totalResenas} reseñas</span>
-                    </div>
-                  </div>
-                  <div className="pv-resenas-list">
-                    {vet.resenas.map(r => (
-                      <div className="pv-resena" key={r.id}>
-                        <div className="pv-resena-head">
-                          <img className="pv-resena-avatar" src={r.avatar} alt={r.cliente} />
-                          <div className="pv-resena-meta">
-                            <span className="pv-resena-nombre">{r.cliente}</span>
-                            <span className="pv-resena-fecha">{r.fecha}</span>
-                          </div>
-                          <Estrellas valor={r.estrellas} size={13} />
-                        </div>
-                        <p className="pv-resena-txt">{r.comentario}</p>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )
-            }
+            <ListaResenas resenas={vet.resenas} nombreProveedor={vet.nombre_establecimiento || vet.nombre} />
           </div>
         )}
       </div>

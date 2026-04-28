@@ -147,7 +147,7 @@
 .pv-stars .star.on { color: #F59E0B; }
 
 /* ══════ TABS ══════ */
-.pv-tabs { background: var(--w); border-bottom: 1px solid var(--bd); display: flex; padding: 0 40px; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(123,45,139,.06); }
+.pv-tabs { background: var(--w); border-bottom: 1px solid var(--bd); display: flex; padding: 0 40px; position: sticky; top: -28px; z-index: 10; box-shadow: 0 2px 10px rgba(123,45,139,.06); }
 .pv-tab { padding: 14px 22px; border: none; border-bottom: 2.5px solid transparent; background: transparent; font-family: 'Inter', sans-serif; font-size: .835rem; font-weight: 500; color: var(--ts); cursor: pointer; transition: color var(--tr), border-color var(--tr); white-space: nowrap; margin-bottom: -1px; }
 .pv-tab:hover { color: var(--p); }
 .pv-tab.activa { color: var(--p); border-bottom-color: var(--p); font-weight: 700; }
