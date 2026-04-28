@@ -1,0 +1,382 @@
+.resenas-panel-container {
+  width: 100%;
+}
+
+.resenas-header-section {
+  margin-bottom: 24px;
+}
+
+.resenas-title-main {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #2D3748;
+  margin: 0 0 8px 0;
+}
+
+.resenas-title-underline {
+  width: 50px;
+  height: 4px;
+  background: #6CC04A;
+  border-radius: 2px;
+}
+
+/* —— Panel de Reseñas —— */
+.resenas-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #2D3748;
+}
+
+/* —— SECCIÓN 1: RESUMEN —— */
+.resenas-summary-card {
+  display: grid;
+  grid-template-columns: 220px 1fr 300px;
+  gap: 30px;
+  background: #FFFFFF;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid #EDF2F7;
+  align-items: center;
+}
+
+/* Aviso Verde */
+.resenas-notice-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #EBF7E4;
+  color: #3A7A2A;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #D1E9C8;
+}
+
+.resenas-notice-box svg {
+  flex-shrink: 0;
+}
+
+/* Caja de Puntuación Grande */
+.resenas-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #EBF7E4;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid #D1E9C8;
+}
+
+.resenas-score-big {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #3A7A2A;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.resenas-score-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  color: #4A5568;
+}
+
+.resenas-score-count {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 4px;
+}
+
+/* Barras Detalladas */
+.resenas-detailed-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resenas-detailed-bars h4 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  color: #4A5568;
+  font-weight: 600;
+}
+
+.resena-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.resena-bar-num {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #718096;
+  width: 30px;
+}
+
+.resena-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #EDF2F7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.resena-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6CC04A 0%, #3A7A2A 100%);
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.resena-bar-count {
+  font-size: 0.8rem;
+  color: #A0AEC0;
+  width: 25px;
+  text-align: right;
+}
+
+/* Tarjeta Lateral de Confianza (Verde) */
+.resenas-trust-card {
+  background: #EBF7E4;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid #D1E9C8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.resenas-trust-icon-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.resenas-trust-icon {
+  font-size: 2.5rem;
+}
+
+.resenas-trust-check {
+  position: absolute;
+  bottom: -2px;
+  right: -5px;
+  background: #6CC04A;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.resenas-trust-info h5 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3A7A2A;
+}
+
+.resenas-trust-info p {
+  font-size: 0.85rem;
+  color: #2F855A;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* —— SECCIÓN 2: FILTROS —— */
+.resenas-filters {
+  display: flex;
+  gap: 16px;
+}
+
+.resenas-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.resenas-filter-item svg {
+  color: #718096;
+}
+
+.resenas-filter-item select {
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4A5568;
+  cursor: pointer;
+  outline: none;
+}
+
+/* —— SECCIÓN 3: LISTADO —— */
+.resenas-lista-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resena-card-modern {
+  display: flex;
+  gap: 20px;
+  background: #FFFFFF;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  border: 1px solid #EDF2F7;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.resena-card-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+.resena-user-avatar {
+  flex-shrink: 0;
+}
+
+.resena-user-avatar img {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px; /* Bordes redondeados pero no círculo total */
+  object-fit: cover;
+}
+
+.resena-avatar-initial {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: #6CC04A;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.resena-content {
+  flex: 1;
+}
+
+.resena-top-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.resena-author {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1A202C;
+}
+
+.resena-dot {
+  color: #CBD5E0;
+}
+
+.resena-date {
+  font-size: 0.8rem;
+  color: #A0AEC0;
+}
+
+.resena-mid-line {
+  margin-bottom: 12px;
+}
+
+.resena-text {
+  margin: 0 0 16px 0;
+  font-size: 0.95rem;
+  color: #4A5568;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.resena-tag-service {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #EBF7E4;
+  color: #3A7A2A;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.resena-tag-icon {
+  font-size: 0.9rem;
+}
+
+/* Estados Vacíos */
+.resenas-vacias {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 24px;
+  border: 2px dashed #E2E8F0;
+}
+
+.resenas-vacias-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.resenas-vacias p {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #4A5568;
+  margin: 0;
+}
+
+.resenas-vacias span {
+  color: #A0AEC0;
+  font-size: 0.9rem;
+}
+
+.resenas-no-match {
+  text-align: center;
+  padding: 40px;
+  color: #A0AEC0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .resenas-summary-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .resena-card-modern {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .resena-top-line {
+    justify-content: center;
+  }
+  .resena-mid-line {
+    display: flex;
+    justify-content: center;
+  }
+}
+

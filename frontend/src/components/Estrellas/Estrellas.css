@@ -1,0 +1,22 @@
+.estrellas-container {
+  display: flex;
+  gap: 4px;
+  color: #ddd;
+}
+
+.estrella {
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.estrella.activa {
+  color: #ffc107;
+}
+
+.estrella.editable {
+  cursor: pointer;
+}
+
+.estrella.editable:hover {
+  transform: scale(1.2);
+}
