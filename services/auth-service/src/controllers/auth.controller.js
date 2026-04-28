@@ -187,6 +187,7 @@ const googleCallbackHandler = (req, res) => {
     'message',
     `Inicio de sesion exitoso. Bienvenido ${user.nombre || user.email} (${user.rol || 'usuario'}).`
   );
+  redirectUrl.searchParams.set('id', user.id);
   redirectUrl.searchParams.set('name', user.nombre || user.email);
   redirectUrl.searchParams.set('role', user.rol || 'usuario');
   redirectUrl.searchParams.set('email', user.email);

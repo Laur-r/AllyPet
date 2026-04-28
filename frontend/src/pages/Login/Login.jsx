@@ -97,6 +97,7 @@ export default function Login() {
 
     const roleStr = params.get('role') || 'usuario';
     const user = {
+      id:     params.get('id')    || '',
       nombre: params.get('name')  || '',
       email:  params.get('email') || '',
       rol:    roleStr,

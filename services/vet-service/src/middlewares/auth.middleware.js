@@ -8,14 +8,15 @@ const verificarToken = (req, res, next) => {
       return res.status(401).json({ ok: false, message: 'Token requerido' });
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1].trim();
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET || 'allypet_secret_key_2026';
+    const decoded = jwt.verify(token, secret);
 
     console.log('DECODED TOKEN:', decoded);
 
     //  CORRECTO SEGÚN TU TOKEN
-    req.usuario_id = decoded.sub;
+    req.usuario_id = decoded.id;
 
     if (!req.usuario_id) {
       return res.status(401).json({
