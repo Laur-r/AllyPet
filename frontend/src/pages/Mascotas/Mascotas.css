@@ -357,3 +357,23 @@
   .mas-form-grid { grid-template-columns: 1fr; }
   .mas-fg.full   { grid-column: 1; }
 }
+
+/* ── Placeholder mejorado ────────────────────────────────────────── */
+.mas-placeholder {
+  height: 100%; display: none; /* ← Oculto por defecto */
+  flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  color: var(--purple-mid);
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+}
+
+.mas-card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s ease;
+}
+
+/* Cuando imagen falla, mostrar placeholder */
+.mas-card-img:has(img:not([src])) .mas-placeholder,
+.mas-card-img:has(img[style*="display: none"]) .mas-placeholder {
+  display: flex !important;
+}
