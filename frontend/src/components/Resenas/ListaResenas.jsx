@@ -185,7 +185,7 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El pasea
 
                     <div className="resena-tag-service">
                       <span className="resena-tag-icon">🐾</span>
-                      Paseo de perros
+                      Paseo
                     </div>
                   </div>
                 </div>
