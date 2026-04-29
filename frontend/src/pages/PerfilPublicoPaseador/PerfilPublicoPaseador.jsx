@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Estrellas from '../../components/Estrellas/Estrellas';
 import { getResenasUsuario } from '../../services/resenas.service';
-import ModalCalificar from '../../components/ModalCalificar/ModalCalificar';
 import './PerfilPublicoPaseador.css';
 
 const API_PAS = 'http://localhost:3006';
@@ -16,7 +15,6 @@ export default function PerfilPublicoPaseador() {
   const [cargando, setCargando] = useState(true);
   const [tab,      setTab]      = useState('info');
   const [error,    setError]    = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   const cargarDatos = async () => {
     try {
@@ -109,11 +107,6 @@ export default function PerfilPublicoPaseador() {
         </div>
       </div>
 
-      {/* ACCIONES */}
-      <div className="ppp-solicitar-wrap">
-        <button className="ppp-btn-solicitar" onClick={() => setModalOpen(true)}>Calificar Paseador</button>
-      </div>
-
       {/* TABS */}
       <div className="ppp-tabs">
         {[
@@ -161,13 +154,13 @@ export default function PerfilPublicoPaseador() {
                   <div key={r.id} className="ppp-resena-card">
                     <div className="ppp-resena-header">
                       <div className="ppp-resena-avatar">
-                        {r.dueno_foto
-                          ? <img src={r.dueno_foto} alt={r.dueno_nombre} />
-                          : <span>{r.dueno_nombre?.[0]?.toUpperCase()}</span>
+                        {r.usuario_dueno?.foto_perfil
+                          ? <img src={r.usuario_dueno.foto_perfil} alt={r.usuario_dueno.nombre} />
+                          : <span>{r.usuario_dueno?.nombre?.[0]?.toUpperCase()}</span>
                         }
                       </div>
                       <div className="ppp-resena-meta">
-                        <strong>{r.dueno_nombre}</strong>
+                        <strong>{r.usuario_dueno?.nombre || 'Usuario de AllyPet'}</strong>
                         <Estrellas calificacion={r.calificacion} size={13} />
                       </div>
                       <span className="ppp-resena-fecha">
@@ -183,15 +176,6 @@ export default function PerfilPublicoPaseador() {
         )}
       </div>
 
-      <ModalCalificar 
-        isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)}
-        objetivoId={usuarioId}
-        tipoObjetivo="paseador"
-        onSuccess={() => {
-          cargarDatos();
-        }}
-      />
     </div>
   );
 }

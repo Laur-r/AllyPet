@@ -3,14 +3,28 @@ const pool = require('../config/db');
 const ResenaModel = {
   // Crear una nueva reseña y actualizar el perfil del proveedor
   async crearResena(datos) {
-    const { id_servicio, id_dueno, id_proveedor, calificacion, comentario, tipo_objetivo } = datos;
+    const { 
+      id_servicio, 
+      id_dueno, dueno_id, 
+      id_proveedor, proveedor_id, 
+      calificacion, 
+      comentario, 
+      tipo_objetivo 
+    } = datos;
     
     const queryInsert = `
       INSERT INTO resenas (id_servicio, dueno_id, proveedor_id, tipo_proveedor, calificacion, comentario)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
-    const valuesInsert = [id_servicio, id_dueno, id_proveedor, tipo_objetivo, calificacion, comentario];
+    const valuesInsert = [
+      id_servicio || null, 
+      id_dueno || dueno_id, 
+      id_proveedor || proveedor_id, 
+      tipo_objetivo, 
+      calificacion, 
+      comentario
+    ];
     const result = await pool.query(queryInsert, valuesInsert);
     return result.rows[0];
   },
