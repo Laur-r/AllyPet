@@ -156,11 +156,7 @@ const obtenerPerfilPublico = async (usuarioId) => {
        SET promedio_estrellas = sub.promedio,
            total_resenas = sub.total
        FROM (
-<<<<<<< HEAD
-      SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
-=======
          SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
->>>>>>> defd835 (Sincronización con la nueva tabla de reseñas y corrección de errores en la base de datos para búsqueda y calificaciones)
          FROM resenas
          WHERE proveedor_id = $1
          GROUP BY proveedor_id

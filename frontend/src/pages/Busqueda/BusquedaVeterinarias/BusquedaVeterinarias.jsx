@@ -114,12 +114,10 @@ function TarjetaVeterinaria({ veterinaria }) {
       <div className="bv-card-info">
         <h3>{nombre_establecimiento}</h3>
         <span className="bv-card-direccion">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {direccion || ciudad || 'Sin dirección'}
+          📍 {direccion || ciudad || 'Sin dirección'}
         </span>
         <span className="bv-card-servicios">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          {serviciosTexto}
+          📋 {serviciosTexto}
         </span>
       </div>
       <button
