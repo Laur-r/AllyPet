@@ -3,6 +3,7 @@ const router = express.Router({ mergeParams: true }); // mergeParams para accede
 
 const { verificarToken } = require('../middlewares/auth.middleware');
 const CarnetController = require('../controllers/carnet.controller');
+const { verificarVeterinario } = require('../middlewares/auth.middleware');
 
 // ─── PÚBLICA (sin auth) ──────────────────────────────────────────
 router.get('/public/:token', CarnetController.getCarnetPublico);
@@ -21,5 +22,11 @@ router.post('/:petId/recordatorios',                      CarnetController.agreg
 router.delete('/:petId/recordatorios/:recordatorioId',    CarnetController.eliminarRecordatorio);
 router.post('/:petId/carnet/token',                       CarnetController.generarToken);
 router.delete('/:petId/carnet/token',                     CarnetController.revocarToken);
+
+// Buscar mascota por ID (sin verificar que sea el dueño)
+router.get('/:petId/carnet/vet',              verificarVeterinario, CarnetController.getCarnetVet);
+router.get('/:petId/historial/vet',           verificarVeterinario, CarnetController.getHistorialVet);
+router.post('/:petId/historial/vet',          verificarVeterinario, CarnetController.agregarHistorialVet);
+router.post('/:petId/recordatorios/vet',      verificarVeterinario, CarnetController.agregarRecordatorioVet);
 
 module.exports = router;

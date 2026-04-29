@@ -15,6 +15,9 @@ import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
 import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
 
+import Pacientes  from './pages/Pacientes/Pacientes';
+import CarnetVet  from './pages/Pacientes/CarnetVet';
+
 import Mascotas          from './pages/Mascotas/Mascotas';
 import PerfilVeterinario from './pages/PerfilVeterinario/PerfilVeterinario';
 import PerfilPaseador    from './pages/PerfilPaseador/PerfilPaseador';
@@ -72,6 +75,8 @@ function App() {
         <Route path="/menu/veterinario" element={<MenuVeterinario />}>
           <Route index element={<h2>Bienvenido veterinario</h2>} />
           <Route path="perfil"        element={<PerfilVeterinario />} />
+          <Route path="pacientes"        element={<Pacientes />} />
+          <Route path="pacientes/:petId" element={<CarnetVet />} />
           <Route path="citas"         element={<h2>Citas</h2>} />
           <Route path="mensajes"      element={<h2>Mensajes</h2>} />
           <Route path="configuracion" element={<h2>Configuración</h2>} />

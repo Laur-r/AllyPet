@@ -42,7 +42,7 @@ const login = async (req, res) => {
     }
 
     // Generar token y respuesta exitosa
-    const payload = { sub: user.id, email: user.email };
+   const payload = { sub: user.id, email: user.email, rol: user.rol };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     const userResponse = {

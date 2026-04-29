@@ -21,6 +21,7 @@ export default function MenuVeterinario() {
   const getActive = () => {
     const path = location.pathname;
     if (path.includes("perfil"))        return "perfil";
+    if (path.includes("pacientes")) return "pacientes";
     if (path.includes("citas"))         return "citas";
     if (path.includes("mensajes"))      return "mensajes";
     if (path.includes("configuracion")) return "configuracion";
@@ -35,6 +36,16 @@ export default function MenuVeterinario() {
     {
       key: "perfil", label: "Mi Perfil", tag: "Comercial", route: "/menu/veterinario/perfil",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    },
+    {
+      key: "pacientes", label: "Pacientes", route: "/menu/veterinario/pacientes",
+      icon: <svg width="20" height="20" viewBox="0 0 100 100" fill="currentColor">
+      <ellipse cx="50" cy="85" rx="18" ry="12"/>
+      <ellipse cx="20" cy="60" rx="10" ry="14" transform="rotate(-20 20 60)"/>
+      <ellipse cx="80" cy="60" rx="10" ry="14" transform="rotate(20 80 60)"/>
+      <ellipse cx="32" cy="42" rx="9" ry="13" transform="rotate(-10 32 42)"/>
+      <ellipse cx="68" cy="42" rx="9" ry="13" transform="rotate(10 68 42)"/>
+    </svg>,
     },
     {
       key: "citas", label: "Citas", badge: 4, route: "/menu/veterinario/citas",
