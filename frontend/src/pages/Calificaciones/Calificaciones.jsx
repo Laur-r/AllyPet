@@ -254,11 +254,12 @@ export default function Calificaciones() {
                             </span>
                           </div>
                           <p className="cal-service-meta">
-                            Calificado el {new Date(s.fecha_resena).toLocaleDateString()}
+                            Calificado el {s.fecha_resena ? new Date(s.fecha_resena.toString().replace(' ', 'T')).toLocaleDateString() : 'Recientemente'}
                           </p>
                         </div>
                       </div>
                       <div className="cal-score-badge">
+                        <span className="cal-score-num">{Number(s.calificacion).toFixed(1)}</span>
                         <Estrellas calificacion={s.calificacion} size={14} />
                       </div>
                     </div>

@@ -127,18 +127,27 @@
 
 .ppv-rating-box {
   display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
+  align-items: center; justify-content: center;
+  gap: 2px;
   background: var(--ap-purple-xlight);
   border: 1px solid var(--ap-purple-light);
-  border-radius: 12px; padding: 14px 20px;
-  min-width: 130px;
+  border-radius: 18px; padding: 18px 24px;
+  min-width: 140px;
 }
 .ppv-rating-num {
   font-family: 'Poppins', sans-serif;
-  font-size: 2.2rem; font-weight: 800;
+  font-size: 3rem; font-weight: 800;
   color: var(--ap-purple); line-height: 1;
+  margin-bottom: 2px;
 }
-.ppv-rating-count { font-size: .7rem; color: var(--ap-text-xsoft); }
+.ppv-rating-count { 
+  font-size: .75rem; 
+  font-weight: 600;
+  color: var(--ap-text-soft); 
+  margin-top: 4px;
+  text-transform: lowercase;
+}
+
 
 /* ══ ACCIONES ══ */
 .ppv-solicitar-wrap {

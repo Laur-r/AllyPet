@@ -548,7 +548,7 @@ export default function PerfilPaseador() {
             {cargandoResenas ? (
               <div className="pp-loading" style={{ padding: '20px' }}><div className="pp-spinner" /><span>Cargando reseñas…</span></div>
             ) : (
-              <ListaResenas resenas={resenas} nombreProveedor={pas.nombre} />
+              <ListaResenas resenas={resenas} nombreProveedor={pas.nombre} rol="paseador" />
             )}
           </div>
         )}

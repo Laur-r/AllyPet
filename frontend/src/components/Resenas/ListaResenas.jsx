@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import Estrellas from '../Estrellas/Estrellas';
 import './ListaResenas.css';
 
-export default function ListaResenas({ resenas = [], nombreProveedor = 'El paseador' }) {
+export default function ListaResenas({ resenas = [], nombreProveedor = '', rol = 'paseador' }) {
   const [filtroCalificacion, setFiltroCalificacion] = useState('todas');
   const [filtroOrden, setFiltroOrden] = useState('recientes');
 
@@ -26,31 +26,36 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El pasea
   // —— Lógica Mensaje Dinámico ——
   const getMensajeConfianza = (avg) => {
     const val = parseFloat(avg);
+    const articulos = rol === 'veterinaria' ? 'Esta' : 'Este';
+    const sujeto = rol === 'veterinaria' ? 'veterinaria' : 'paseador';
+    const proveedorFinal = nombreProveedor || `${articulos} ${sujeto}`;
+
     if (val >= 4.5) return { 
       label: "Excelente", 
-      title: `${nombreProveedor} es un paseador altamente confiable`, 
+      title: `${proveedorFinal} es altamente confiable`, 
       desc: "Sus excelentes reseñas reflejan un servicio seguro y de calidad",
       icon: "🛡️" 
     };
     if (val >= 4.0) return { 
       label: "Muy bueno", 
-      title: `${nombreProveedor} es un paseador bien valorado`, 
+      title: `${proveedorFinal} es un servicio bien valorado`, 
       desc: "Los clientes destacan su buen trato y responsabilidad",
       icon: "🐾" 
     };
     if (val >= 3.0) return { 
       label: "Bueno", 
-      title: `${nombreProveedor} tiene valoraciones positivas`, 
+      title: `${proveedorFinal} tiene valoraciones positivas`, 
       desc: "Sigue mejorando su servicio con cada experiencia",
       icon: "✨" 
     };
     return { 
       label: "Regular", 
-      title: `${nombreProveedor} está en proceso de mejorar`, 
+      title: `${proveedorFinal} está en proceso de mejorar`, 
       desc: "Las opiniones ayudan a fortalecer su servicio",
       icon: "📈" 
     };
   };
+
 
   const mensaje = getMensajeConfianza(promedio);
 
@@ -93,7 +98,7 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El pasea
         {/* ── SECCIÓN 1: RESUMEN Y ESTADÍSTICAS ── */}
         <div className="resenas-summary-card">
           <div className="resenas-score-box">
-            <div className="resenas-score-big">{promedio}</div>
+            <div className="resenas-score-big">{Number(promedio).toFixed(1)}</div>
             <Estrellas calificacion={parseFloat(promedio)} size={20} />
             <div className="resenas-score-label">
               {mensaje.label} {parseFloat(promedio) >= 4.5 && "🎉"}
@@ -184,8 +189,10 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El pasea
                     <p className="resena-text">"{r.comentario}"</p>
 
                     <div className="resena-tag-service">
-                      <span className="resena-tag-icon">🐾</span>
-                      Paseo
+                      <span className="resena-tag-icon">
+                        {r.tipo_servicio === 'veterinaria' ? '🩺' : '🐾'}
+                      </span>
+                      {r.tipo_servicio === 'veterinaria' ? 'Veterinaria' : 'Paseo'}
                     </div>
                   </div>
                 </div>

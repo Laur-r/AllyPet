@@ -119,7 +119,14 @@ function TarjetaVeterinaria({ veterinaria }) {
         <span className="bv-card-servicios">
           📋 {serviciosTexto}
         </span>
+        <div className="bv-card-stats">
+          <span className="bv-card-cal">
+            ★ {veterinaria.calificacion ? Number(veterinaria.calificacion).toFixed(1) : '0.0'}
+          </span>
+        </div>
       </div>
+
+
       <button
         className="bv-card-btn"
         onClick={() => navigate(`/menu/dueno/veterinaria/${id}`)}

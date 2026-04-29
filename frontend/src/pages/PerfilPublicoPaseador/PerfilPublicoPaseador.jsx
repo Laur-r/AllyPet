@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Estrellas from '../../components/Estrellas/Estrellas';
 import { getResenasUsuario } from '../../services/resenas.service';
+import ListaResenas from '../../components/Resenas/ListaResenas';
 import './PerfilPublicoPaseador.css';
 
 const API_PAS = 'http://localhost:3006';
@@ -100,7 +101,7 @@ export default function PerfilPublicoPaseador() {
         </div>
         <div className="ppp-rating-box">
           <span className="ppp-rating-num">
-            {Number(perfil.promedio_estrellas || 0).toFixed(2)}
+            {Number(perfil.promedio_estrellas || 0).toFixed(1)}
           </span>
           <Estrellas calificacion={perfil.promedio_estrellas} size={17} />
           <span className="ppp-rating-count">{perfil.total_resenas || 0} reseñas</span>
@@ -148,32 +149,9 @@ export default function PerfilPublicoPaseador() {
         )}
 
         {tab === 'resenas' && (
-          <div className="ppp-tab-resenas">
-            {resenas.length > 0
-              ? resenas.map((r) => (
-                  <div key={r.id} className="ppp-resena-card">
-                    <div className="ppp-resena-header">
-                      <div className="ppp-resena-avatar">
-                        {r.usuario_dueno?.foto_perfil
-                          ? <img src={r.usuario_dueno.foto_perfil} alt={r.usuario_dueno.nombre} />
-                          : <span>{r.usuario_dueno?.nombre?.[0]?.toUpperCase()}</span>
-                        }
-                      </div>
-                      <div className="ppp-resena-meta">
-                        <strong>{r.usuario_dueno?.nombre || 'Usuario de AllyPet'}</strong>
-                        <Estrellas calificacion={r.calificacion} size={13} />
-                      </div>
-                      <span className="ppp-resena-fecha">
-                        {new Date(r.fecha).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {r.comentario && <p className="ppp-resena-comentario">{r.comentario}</p>}
-                  </div>
-                ))
-              : <div className="ppp-empty-resenas">Aún no hay reseñas.</div>
-            }
-          </div>
+          <ListaResenas resenas={resenas} nombreProveedor={perfil?.nombre} rol="paseador" />
         )}
+
       </div>
 
     </div>

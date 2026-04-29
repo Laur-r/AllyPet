@@ -182,15 +182,21 @@
 .pp-hero-row .pp-hero-input { flex: 1; min-width: 120px; }
 
 .pp-rating-box {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  background: var(--gl); border: 1px solid rgba(108,192,74,.2); border-radius: var(--rs);
-  padding: 14px 24px; flex-shrink: 0; min-width: 130px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+  background: var(--gl); padding: 12px 18px; border-radius: var(--rs);
+  border: 1px solid rgba(108,192,74,.15); flex-shrink: 0;
 }
 .pp-rating-num {
   font-family: 'Poppins', sans-serif;
-  font-size: 2.4rem; font-weight: 800; color: var(--gd); line-height: 1;
+  font-size: 3rem; font-weight: 800; color: var(--gd); line-height: 1;
 }
-.pp-rating-count { font-size: .7rem; color: var(--tx2); }
+.pp-rating-count { 
+  font-size: .75rem; 
+  font-weight: 600; 
+  color: var(--ts); 
+  text-transform: lowercase; 
+  letter-spacing: .02em; 
+}
 
 .pp-stars { display: inline-flex; gap: 1px; line-height: 1; }
 .pp-stars .star    { color: #D1D5DB; }

@@ -1,27 +1,25 @@
 const pool = require('../config/db');
 
 const ResenaModel = {
-  // Crear una nueva reseña y actualizar el perfil del proveedor
+  // Crear una nueva reseña
   async crearResena(datos) {
     const { 
-      id_servicio, 
-      id_dueno, dueno_id, 
-      id_proveedor, proveedor_id, 
+      dueno_id, 
+      proveedor_id, 
       calificacion, 
       comentario, 
-      tipo_objetivo 
+      tipo_proveedor 
     } = datos;
     
     const queryInsert = `
-      INSERT INTO resenas (id_servicio, dueno_id, proveedor_id, tipo_proveedor, calificacion, comentario)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO resenas (dueno_id, proveedor_id, tipo_proveedor, calificacion, comentario)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
     const valuesInsert = [
-      id_servicio || null, 
-      id_dueno || dueno_id, 
-      id_proveedor || proveedor_id, 
-      tipo_objetivo, 
+      dueno_id, 
+      proveedor_id, 
+      tipo_proveedor, 
       calificacion, 
       comentario
     ];
@@ -29,43 +27,51 @@ const ResenaModel = {
     return result.rows[0];
   },
 
-  // Verificar si ya existe una reseña para este servicio
-  async existeResenaServicio(id_servicio) {
-    const query = `SELECT id FROM resenas WHERE id_servicio = $1;`;
-    const result = await pool.query(query, [id_servicio]);
-    return result.rows.length > 0;
-  },
-
-  // Obtener servicios completados y calificables para un dueño
-  async obtenerServiciosCalificables(dueno_id) {
+  // REGLA 3: CONSULTA CORRECTA HISTORIAL (DUEÑO)
+  async obtenerHistorial(dueno_id) {
     const query = `
       SELECT 
-        s.id as id_servicio,
-        s.id_proveedor as proveedor_id,
-        s.tipo_servicio,
-        s.fecha as fecha_servicio,
-        u.nombre as proveedor_nombre,
-        u.foto_perfil as proveedor_foto,
-        r.id as id_resena,
+        r.id,
         r.calificacion,
         r.comentario,
-        r.fecha as fecha_resena
-      FROM servicios s
-      JOIN usuarios u ON s.id_proveedor = u.id
-      LEFT JOIN resenas r ON s.id = r.id_servicio
-      WHERE s.id_dueno = $1 AND s.estado = 'completado'
-      ORDER BY s.fecha DESC;
+        r.fecha,
+        r.tipo_proveedor,
+        u.nombre,
+        u.foto_perfil
+      FROM resenas r
+      JOIN usuarios u ON u.id = r.proveedor_id
+      WHERE r.dueno_id = $1
+      ORDER BY r.fecha DESC;
     `;
     const result = await pool.query(query, [dueno_id]);
     return result.rows;
   },
 
-  // Obtener todas las reseñas de un proveedor
+  // REGLA 4: CONSULTA CORRECTA PERFIL PROVEEDOR
   async obtenerPorProveedor(proveedor_id) {
     const query = `
-      SELECT r.*, u.nombre as nombre_dueno, u.foto_perfil as foto_dueno
+      SELECT 
+        r.id,
+        r.calificacion,
+        r.comentario,
+        r.fecha,
+        u.nombre AS nombre_dueno,
+        u.foto_perfil AS foto_dueno,
+        COALESCE(s.tipo_servicio, 
+          CASE 
+            WHEN p.rol = 'paseador' THEN 'paseo'
+            WHEN p.rol = 'veterinario' THEN 'veterinaria'
+            ELSE 'servicio'
+          END
+        ) AS tipo_servicio
       FROM resenas r
-      JOIN usuarios u ON r.dueno_id = u.id
+      JOIN usuarios u ON u.id = r.dueno_id
+      JOIN usuarios p ON p.id = r.proveedor_id
+      LEFT JOIN servicios s ON (
+        s.id_dueno = r.dueno_id 
+        AND s.id_proveedor = r.proveedor_id 
+        AND DATE(s.fecha) = DATE(r.fecha)
+      )
       WHERE r.proveedor_id = $1
       ORDER BY r.fecha DESC;
     `;
@@ -73,11 +79,38 @@ const ResenaModel = {
     return result.rows;
   },
 
-  // Obtener el promedio de calificaciones de un proveedor
+  // Obtener servicios por calificar (Detección inteligente por fecha/dueno/proveedor)
+  async obtenerServiciosCalificables(dueno_id) {
+    const query = `
+      SELECT 
+        s.id AS id_servicio,
+        s.id_proveedor AS proveedor_id,
+        s.tipo_servicio,
+        s.fecha AS fecha_servicio,
+        u.nombre AS proveedor_nombre,
+        u.foto_perfil AS proveedor_foto,
+        r.id AS id_resena,
+        r.calificacion,
+        r.comentario,
+        r.fecha AS fecha_resena
+      FROM servicios s
+      JOIN usuarios u ON s.id_proveedor = u.id
+      LEFT JOIN resenas r ON (
+        r.dueno_id = s.id_dueno 
+        AND r.proveedor_id = s.id_proveedor 
+        AND DATE(r.fecha) = DATE(s.fecha)
+      )
+      WHERE s.id_dueno = $1 AND s.estado = 'completado'
+      ORDER BY s.fecha DESC;
+    `;
+    const result = await pool.query(query, [dueno_id]);
+    return result.rows;
+  },
+
   async obtenerPromedio(proveedor_id) {
     const query = `
       SELECT 
-        AVG(calificacion)::NUMERIC(10,1) as promedio,
+        COALESCE(AVG(calificacion), 0)::NUMERIC(10,1) as promedio,
         COUNT(*) as total_resenas
       FROM resenas
       WHERE proveedor_id = $1;

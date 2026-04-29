@@ -355,3 +355,23 @@
   .cal-provider-info { flex-direction: column; align-items: flex-start; }
   .cal-illustration-top { display: none; }
 }
+
+/* Estilos para el número de calificación en el historial */
+.cal-score-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cal-purple-xlight);
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--cal-purple-light);
+}
+
+.cal-score-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--cal-purple);
+  line-height: 1;
+}
+

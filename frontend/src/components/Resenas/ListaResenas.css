@@ -355,10 +355,114 @@
 
 .resenas-no-match {
   text-align: center;
-  padding: 40px;
-  color: #A0AEC0;
-  font-style: italic;
+  padding: 10px;
 }
+
+/* —— TEMA VIOLETA (Para Veterinarias) —— */
+.tema-violeta .resenas-title-underline {
+  background: #7B2D8B;
+}
+
+/* Caja de puntaje grande (Izquierda) */
+.tema-violeta .resenas-score-box {
+  background: #F3E8F7;
+  border-color: #EDE8F2;
+  border-radius: 18px;
+}
+
+
+.tema-violeta .resenas-score-big {
+  color: #7B2D8B;
+}
+
+
+/* Barras de progreso */
+.tema-violeta .resena-bar-fill {
+  background: #7B2D8B !important;
+}
+
+/* Caja de confianza (Derecha) */
+.tema-violeta .resenas-trust-card {
+  background: #F3E8F7;
+  color: #7B2D8B;
+  border-color: #EDE8F2;
+}
+
+/* Aviso superior */
+.tema-violeta .resenas-notice-box {
+  background: #F3E8F7;
+  color: #7B2D8B;
+  border-color: #EDE8F2;
+}
+
+.tema-violeta .resenas-notice-box svg {
+  color: #7B2D8B;
+}
+
+
+.tema-violeta .resenas-trust-info h5,
+.tema-violeta .resenas-trust-info p {
+  color: #7B2D8B;
+}
+
+.tema-violeta .resenas-trust-check {
+  background: #7B2D8B;
+  color: #FFFFFF;
+}
+
+/* Avatar del usuario (Círculo con letra) */
+.tema-violeta .resena-avatar-initial {
+  background: #7B2D8B;
+  color: #FFFFFF;
+}
+
+/* Etiqueta de servicio (Paseo/Veterinaria) */
+.tema-violeta .resena-tag-service {
+  background: #F3E8F7;
+  color: #7B2D8B;
+  border-color: #EDE8F2;
+}
+
+
+
+/* Iconos y estrellas */
+.tema-violeta .resena-card-star.filled {
+  color: #7B2D8B;
+}
+
+.tema-violeta .resenas-title-main,
+.tema-violeta .resena-card-nombre,
+.tema-violeta .resenas-score-label {
+  color: #7B2D8B;
+}
+
+.tema-violeta .resenas-stat-label,
+.tema-violeta .resenas-sort-label {
+  color: #7B2D8B;
+}
+
+
+/* Detalles adicionales que podrían ser verdes */
+.tema-violeta .resenas-stat-bar-fill {
+  background: #7B2D8B !important;
+}
+
+.tema-violeta .resenas-percentage {
+  color: #7B2D8B;
+}
+
+.tema-violeta .resenas-check-icon,
+.tema-violeta .resenas-verified-badge {
+  color: #7B2D8B;
+}
+
+.tema-violeta .resenas-empty-icon {
+  color: #F3E8F7;
+  background: #7B2D8B;
+}
+
+
+
 
 /* Responsive */
 @media (max-width: 850px) {

@@ -77,6 +77,8 @@ export default function PerfilVeterinario() {
   const [tab,          setTab]          = useState('info');
   const [toast,        setToast]        = useState(null);
   const [guardando,    setGuardando]    = useState(false);
+  const [resenas,      setResenas]      = useState([]);
+  const [cargandoResenas, setCargandoResenas] = useState(false);
 
   const [editHero,     setEditHero]     = useState(false);
   const [editDesc,     setEditDesc]     = useState(false);
@@ -97,42 +99,63 @@ export default function PerfilVeterinario() {
   const bannerRef = useRef();
   const fotoRef   = useRef();
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const usuarioId = user.id || user.usuario_id;
+
   const notify = msg => { setToast(msg); setTimeout(() => setToast(null), 2800); };
 
   /* ── Cargar perfil al montar ── */
   useEffect(() => {
-  const token = getToken();
-  if (!token) return;
+    const token = getToken();
+    if (!token) return;
 
-  authFetch('/perfil-vet')
-    .then(res => {
-      if (res.ok && res.data) {
-        const d = res.data;
+    authFetch('/perfil-vet')
+      .then(async (res) => {
+        // El backend suele devolver { ok: true, data: {...} } o el objeto directamente
+        const d = res.data || res;
+        if (!d || Object.keys(d).length === 0) return;
+
+        // --- Obtener reputación real del review-service (Puerto 3007) ---
+        let promedioReal = 0;
+        let totalReal = 0;
+        
+        try {
+          const resPromedio = await fetch(`http://localhost:3007/api/resenas/promedio/${usuarioId}`);
+          const dataPromedio = await resPromedio.json();
+          promedioReal = parseFloat(dataPromedio.promedio) || 0;
+          totalReal    = parseInt(dataPromedio.total_resenas) || 0;
+        } catch (e) { 
+          console.error("Error cargando promedio:", e); 
+        }
+
         setVet({
           ...VET_VACIO,
+          ...d,
           nombre: d.nombre || '',
           nombre_establecimiento: d.nombre_establecimiento || '',
-          especialidad: d.especialidad || '',
-          foto_perfil: d.foto_perfil || null,
-          banner: d.banner || null,
-          ciudad: d.ciudad || '',
-          estado: d.estado || '',
-          direccion: d.direccion || '',
-          disponible: d.disponible ?? true,
-          /* Las estrellas y total de reseñas aquí vienen del modelo de la veterinaria,
-             pero se actualizan sincrónicamente con el servicio de reseñas. */
-          calificacion: parseFloat(d.calificacion) || 0,
-          totalResenas: d.total_resenas || 0,
-          experiencia: d.experiencia || 0,
-          descripcion: d.descripcion || '',
-          servicios: Array.isArray(d.servicios) ? d.servicios : [],
-          horarios: d.horarios || HORARIO_VACIO,
+          calificacion: promedioReal || parseFloat(d.calificacion) || 0,
+          totalResenas: totalReal || d.total_resenas || 0,
+          resenas: []
         });
-      }
-    })
-    .catch(() => notify('Error al cargar perfil'))
-    .finally(() => setCargando(false));
-}, []);
+      })
+      .catch((err) => {
+        console.error('Error al cargar perfil:', err);
+        notify('Error al cargar perfil');
+      })
+      .finally(() => setCargando(false));
+  }, [usuarioId]);
+
+  // Cargar reseñas reales desde el microservicio (Puerto 3007)
+  useEffect(() => {
+    if (tab !== 'resenas' || !usuarioId) return;
+
+    setCargandoResenas(true);
+    fetch(`http://localhost:3007/api/resenas/${usuarioId}`)
+      .then(r => r.json())
+      .then(data => setResenas(Array.isArray(data) ? data : []))
+      .catch(() => setResenas([]))
+      .finally(() => setCargandoResenas(false));
+  }, [tab, usuarioId]);
 
   /* ── Guardar en backend ── */
   const guardarEnBackend = async (camposExtra = {}) => {
@@ -383,13 +406,11 @@ export default function PerfilVeterinario() {
           )}
         </div>
 
-        {vet.calificacion > 0 && (
-          <div className="pv-rating-box">
-            <span className="pv-rating-num">{vet.calificacion}</span>
-            <Estrellas valor={vet.calificacion} size={17} />
-            <span className="pv-rating-count">{vet.totalResenas} reseñas</span>
-          </div>
-        )}
+        <div className="pv-rating-box">
+          <span className="pv-rating-num">{parseFloat(vet.calificacion).toFixed(1)}</span>
+          <Estrellas valor={vet.calificacion} size={17} />
+          <span className="pv-rating-count">{vet.totalResenas} reseñas</span>
+        </div>
       </div>
 
       {/* ══════ TABS ══════ */}
@@ -398,7 +419,7 @@ export default function PerfilVeterinario() {
           { key: 'info',      label: 'Información' },
           { key: 'servicios', label: 'Servicios'   },
           { key: 'horarios',  label: 'Horarios'    },
-          { key: 'resenas',   label: `Reseñas (${vet.resenas.length})` },
+          { key: 'resenas',   label: `Reseñas (${vet.totalResenas})` },
         ].map(t => (
           <button key={t.key} className={`pv-tab ${tab === t.key ? 'activa' : ''}`} onClick={() => setTab(t.key)}>
             {t.label}
@@ -556,8 +577,12 @@ export default function PerfilVeterinario() {
         )}
 
         {tab === 'resenas' && (
-          <div className="pv-tab-resenas">
-            <ListaResenas resenas={vet.resenas} nombreProveedor={vet.nombre_establecimiento || vet.nombre} />
+          <div className="pv-tab-resenas tema-violeta">
+            {cargandoResenas ? (
+              <div className="pv-loading-mini">Cargando reseñas...</div>
+            ) : (
+              <ListaResenas resenas={resenas} nombreProveedor={vet.nombre_establecimiento || vet.nombre} rol="veterinaria" />
+            )}
           </div>
         )}
       </div>
