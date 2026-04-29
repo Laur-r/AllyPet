@@ -180,41 +180,6 @@ export default function Carnet() {
 
               <div className="carnet-divider" />
 
-              {/* Vacunas recientes */}
-              <div>
-                <p className="carnet-section-title">Vacunas recientes</p>
-                {vacunasRecientes.length === 0
-                  ? <p style={{ fontSize: '0.85rem', color: '#aaa' }}>Sin vacunas registradas</p>
-                  : vacunasRecientes.map(v => (
-                    <div className="vacuna-item" key={v.id}>
-                      <div className={`vacuna-dot ${v.fecha_proxima && new Date(v.fecha_proxima) >= new Date() ? 'proxima' : ''}`} />
-                      <span className="vacuna-nombre">{v.nombre}</span>
-                      <span className="vacuna-fecha">
-                        {v.fecha_proxima
-                          ? `Próxima: ${formatFecha(v.fecha_proxima)}`
-                          : `Aplicada: ${formatFecha(v.fecha_aplicacion)}`}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-
-              {/* Recordatorios próximos */}
-              {recordatoriosProximos.length > 0 && (
-                <>
-                  <div className="carnet-divider" />
-                  <div>
-                    <p className="carnet-section-title">Recordatorios próximos</p>
-                    <div className="recordatorios-chips">
-                      {recordatoriosProximos.map(r => (
-                        <div className="chip-recordatorio" key={r.id}>
-                          {r.nombre} · {formatFecha(r.fecha_programada)}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-
             </div>
           </div>
           {/* Fin del área PDF */}

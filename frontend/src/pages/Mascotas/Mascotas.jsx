@@ -262,9 +262,9 @@ export default function Mascotas() {
 }
 
 function Tarjeta({ mascota, style, onEditar, onEliminar, onVerPerfil, onVerHistorial }) {
-  const { nombre, especie, raza, sexo, edad, peso, color, foto, recordatorio } = mascota;
-  const diasClass = recordatorio ? (recordatorio.dias <= 7 ? 'urgent' : '') : '';
-  const fotoUrl   = getFotoUrl(foto);
+  const { nombre, especie, raza, sexo, edad, peso, color, foto } = mascota;
+  // ← ya no desestructuramos `recordatorio`
+  const fotoUrl = getFotoUrl(foto);
 
   return (
     <div className="mas-card" style={style}>
@@ -308,21 +308,6 @@ function Tarjeta({ mascota, style, onEditar, onEliminar, onVerPerfil, onVerHisto
             <div className="mas-stat-lbl">Raza</div>
           </div>
         </div>
-
-        {recordatorio && (
-          <div className="mas-reminder">
-            <div className="mas-reminder-left">
-              <span className="mas-reminder-dot" />
-              {recordatorio.texto}
-            </div>
-            <span className={`mas-reminder-days ${diasClass}`}>
-              {recordatorio.dias <= 30
-                ? `${recordatorio.dias} días`
-                : `${Math.round(recordatorio.dias/30)} mes`}
-            </span>
-          </div>
-        )}
-
         <div className="mas-card-btns-row">
           <button className="mas-btn-ver"       onClick={onVerPerfil}>Carnet Digital</button>
           <button className="mas-btn-historial" onClick={onVerHistorial}>Historial</button>
