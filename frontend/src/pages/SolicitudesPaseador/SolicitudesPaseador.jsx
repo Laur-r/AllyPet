@@ -56,8 +56,8 @@ export default function SolicitudesPaseador() {
       setSolicitudes(prev => prev.filter(s => s.id !== id));
       notify(
         estado === "aceptada"
-          ? "✅ Solicitud aceptada correctamente"
-          : "❌ Solicitud rechazada",
+          ? " Solicitud aceptada correctamente"
+          : " Solicitud rechazada",
         estado === "aceptada" ? "ok" : "error"
       );
     } catch (err) {
@@ -105,7 +105,7 @@ export default function SolicitudesPaseador() {
       {/* VACÍO */}
       {!error && solicitudes.length === 0 && (
         <div className="sp2-empty">
-          <div className="sp2-empty-icon">🐾</div>
+          <div className="sp2-empty-icon"></div>
           <h3>Sin solicitudes pendientes</h3>
           <p>Cuando un dueño te envíe una solicitud de paseo, aparecerá aquí.</p>
         </div>
@@ -147,7 +147,7 @@ export default function SolicitudesPaseador() {
               <div className="sp2-mascota-foto">
                 {s.mascota_foto
                   ? <img src={s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto} alt={s.mascota_nombre} />
-                  : <span>🐶</span>
+                  : <span></span>
                 }
               </div>
               <div className="sp2-mascota-info">

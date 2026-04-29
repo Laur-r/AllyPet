@@ -129,6 +129,26 @@ const obtenerHistorialPaseador = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+/* ─────────────────────────────────────────
+   PUT /api/solicitudes/:id/completar
+   Solo el paseador, solo aceptadas, solo si la fecha ya pasó o es hoy
+───────────────────────────────────────── */
+const completarServicio = async (req, res) => {
+  try {
+    const paseador_usuario_id = req.usuario.id;
+    const solicitud_id        = Number(req.params.id);
+
+    const solicitud = await service.completarServicio(solicitud_id, paseador_usuario_id);
+    return res.status(200).json({
+      message: "Servicio marcado como completado",
+      data: solicitud,
+    });
+  } catch (err) {
+    console.error("completarServicio:", err.message);
+    const status = err.message.includes("No se puede") ? 400 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientes,
@@ -136,4 +156,5 @@ module.exports = {
   cancelarSolicitud,
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
+  completarServicio,
 };

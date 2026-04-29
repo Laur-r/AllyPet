@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { obtenerHistorialPaseador } from "../../services/solicitud.service";
+import { obtenerHistorialPaseador, completarServicio } from "../../services/solicitud.service";
 import "./HistorialPaseador.css";
 
 const PET_API = "http://localhost:3003";
 
 const ESTADOS = [
-  { value: "",            label: "Todas"      },
-  { value: "pendiente",   label: "Pendientes" },
-  { value: "aceptada",    label: "Aceptadas"  },
-  { value: "completada",  label: "Completadas"},
-  { value: "cancelada",   label: "Canceladas" },
-  { value: "rechazada",   label: "Rechazadas" },
+  { value: "",            label: "Todas"       },
+  { value: "pendiente",   label: "Pendientes"  },
+  { value: "aceptada",    label: "Aceptadas"   },
+  { value: "completada",  label: "Completadas" },
+  { value: "cancelada",   label: "Canceladas"  },
+  { value: "rechazada",   label: "Rechazadas"  },
 ];
 
 const COLORES_ESTADO = {
@@ -34,12 +34,21 @@ function formatDuracion(minutos) {
   return m > 0 ? `${h}h ${m}min` : `${h} hora${h > 1 ? "s" : ""}`;
 }
 
+function puedeCompletar(fechaServicio) {
+  const hoy   = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fecha = new Date(fechaServicio + "T00:00:00");
+  return fecha <= hoy;
+}
+
 export default function HistorialPaseador() {
   const token = localStorage.getItem("token");
 
   const [solicitudes,  setSolicitudes]  = useState([]);
   const [cargando,     setCargando]     = useState(true);
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [completando,  setCompletando]  = useState(null);
+  const [confirmId,    setConfirmId]    = useState(null);
   const [toast,        setToast]        = useState(null);
 
   const notify = (msg, tipo = "ok") => {
@@ -61,16 +70,30 @@ export default function HistorialPaseador() {
 
   useEffect(() => { cargar(filtroEstado); }, [filtroEstado]);
 
+  const handleCompletar = async (id) => {
+    setCompletando(id);
+    try {
+      await completarServicio(id, token);
+      setSolicitudes(prev =>
+        prev.map(s => s.id === id ? { ...s, estado: "completada" } : s)
+      );
+      notify("✅ Servicio marcado como completado");
+    } catch (err) {
+      notify(err.message, "error");
+    } finally {
+      setCompletando(null);
+      setConfirmId(null);
+    }
+  };
+
   return (
     <div className="hp-page">
 
-      {/* ENCABEZADO */}
       <div className="hp-head">
         <h1>Historial de servicios</h1>
         <p>Todas las solicitudes que has recibido como paseador</p>
       </div>
 
-      {/* FILTROS */}
       <div className="hp-filtros">
         {ESTADOS.map(e => (
           <button
@@ -83,7 +106,6 @@ export default function HistorialPaseador() {
         ))}
       </div>
 
-      {/* LOADING */}
       {cargando && (
         <div className="hp-loading">
           <div className="hp-spinner" />
@@ -91,7 +113,6 @@ export default function HistorialPaseador() {
         </div>
       )}
 
-      {/* VACÍO */}
       {!cargando && solicitudes.length === 0 && (
         <div className="hp-empty">
           <div className="hp-empty-icon">📋</div>
@@ -100,11 +121,12 @@ export default function HistorialPaseador() {
         </div>
       )}
 
-      {/* LISTA */}
       {!cargando && (
         <div className="hp-lista">
           {solicitudes.map(s => {
-            const est = COLORES_ESTADO[s.estado] || COLORES_ESTADO.pendiente;
+            const est      = COLORES_ESTADO[s.estado] || COLORES_ESTADO.pendiente;
+            const podemos  = s.estado === "aceptada" && puedeCompletar(s.fecha_servicio);
+
             return (
               <div key={s.id} className="hp-card">
 
@@ -148,18 +170,66 @@ export default function HistorialPaseador() {
                   <div className="hp-detalle">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="3" y="4" width="18" height="18" rx="2"/>
-                      <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
                       <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <span>{formatFecha(s.fecha_servicio)}</span>
                   </div>
                   <div className="hp-detalle">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
                     </svg>
                     <span>{s.hora_servicio?.slice(0, 5)} — {formatDuracion(s.duracion_minutos)}</span>
                   </div>
                 </div>
+
+                {/* Botón completar — solo si está aceptada y la fecha ya llegó */}
+                {s.estado === "aceptada" && (
+                  podemos ? (
+                    confirmId === s.id ? (
+                      <div className="hp-confirm">
+                        <p>¿Confirmas que el servicio fue realizado?</p>
+                        <div className="hp-confirm-btns">
+                          <button className="hp-btn-no" onClick={() => setConfirmId(null)}>
+                            Cancelar
+                          </button>
+                          <button
+                            className="hp-btn-si"
+                            onClick={() => handleCompletar(s.id)}
+                            disabled={completando === s.id}
+                          >
+                            {completando === s.id
+                              ? <div className="hp-spinner-sm" />
+                              : null
+                            }
+                            Sí, completar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        className="hp-btn-completar"
+                        onClick={() => setConfirmId(s.id)}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Marcar como completado
+                      </button>
+                    )
+                  ) : (
+                    <div className="hp-aviso-fecha">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                      Podrás completarlo el día del servicio o después
+                    </div>
+                  )
+                )}
 
               </div>
             );

@@ -18,6 +18,8 @@ import avatarDefault from "../../../assets/menus/menudefault.png";
       if (path.includes('mascotas'))      return 'mascotas';
       if (path.includes('configuracion')) return 'configuracion';
       if (path.includes('reservas'))      return 'reservas';
+      if (path.includes('historial-solicitudes')) return 'solicitudes';
+
       return 'inicio';
     };
 
@@ -44,6 +46,7 @@ import avatarDefault from "../../../assets/menus/menudefault.png";
   const navItems = [
     { key: "inicio",        label: "Inicio" },
     { key: "mascotas",      label: "Mascotas" },
+    { key: "solicitudes", label: "Mis Solicitudes" },
     { key: "servicios",     label: "Servicios", hasChildren: true },
     { key: "reservas",      label: "Reservas" },
     { key: "mensajes",      label: "Mensajes" },
@@ -98,16 +101,17 @@ const subServicios = [
                     : activeItem === item.key ? "active" : ""
                 }`}
                 onClick={() => {
-                  if (item.hasChildren) {
-                    setServiciosOpen(!serviciosOpen);
-                    setActiveItem("servicios");
-                  } else {
-                    setActiveItem(item.key);
-                    setServiciosOpen(false);
-                    if (item.key === "mascotas") navigate("/menu/dueno/mascotas");
-                    if (item.key === "inicio")   navigate("/menu/dueno");
-                  }
-                }}
+  if (item.hasChildren) {
+    setServiciosOpen(!serviciosOpen);
+    setActiveItem("servicios");
+  } else {
+    setActiveItem(item.key);
+    setServiciosOpen(false);
+    if (item.key === "mascotas")    navigate("/menu/dueno/mascotas");
+    if (item.key === "inicio")      navigate("/menu/dueno");
+    if (item.key === "solicitudes") navigate("/menu/dueno/historial-solicitudes");
+  }
+}}
               >
                 {sidebarOpen && <span className="md-nav-label">{item.label}</span>}
               </button>

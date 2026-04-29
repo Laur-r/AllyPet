@@ -64,3 +64,61 @@
 @keyframes hpToastIn { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 640px) { .hp-lista { grid-template-columns: 1fr; } }
+
+/* Botón completar */
+.hp-btn-completar {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; padding: 10px;
+  background: var(--p); border: none; color: #fff;
+  border-radius: 10px; font-family: 'Inter', sans-serif;
+  font-size: .84rem; font-weight: 600; cursor: pointer;
+  transition: background var(--tr);
+  box-shadow: 0 2px 8px rgba(123,45,139,.25);
+}
+.hp-btn-completar:hover { background: var(--pm); }
+
+/* Aviso fecha no llegó */
+.hp-aviso-fecha {
+  display: flex; align-items: center; gap: 7px;
+  background: #FEF9C3; border: 1px solid #FDE68A;
+  border-radius: 8px; padding: 9px 12px;
+  font-size: .76rem; color: #92400E; font-weight: 500;
+}
+.hp-aviso-fecha svg { flex-shrink: 0; }
+
+/* Confirmación */
+.hp-confirm {
+  background: #EBF7E4; border: 1px solid #C6EDBA;
+  border-radius: 10px; padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.hp-confirm p {
+  font-size: .81rem; color: #3A7A2A;
+  font-weight: 500; text-align: center;
+}
+.hp-confirm-btns { display: flex; gap: 8px; }
+.hp-btn-no {
+  flex: 1; padding: 8px; background: var(--w);
+  border: 1.5px solid var(--bd); color: var(--ts);
+  border-radius: 8px; font-family: 'Inter', sans-serif;
+  font-size: .8rem; font-weight: 600; cursor: pointer;
+  transition: all var(--tr);
+}
+.hp-btn-no:hover { border-color: var(--p); color: var(--p); }
+.hp-btn-si {
+  flex: 1; padding: 8px; background: var(--g);
+  border: none; color: #fff; border-radius: 8px;
+  font-family: 'Inter', sans-serif; font-size: .8rem;
+  font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background var(--tr);
+}
+.hp-btn-si:hover:not(:disabled) { background: var(--gd); }
+.hp-btn-si:disabled { opacity: .6; cursor: not-allowed; }
+.hp-spinner-sm {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  animation: hpSpin .7s linear infinite;
+  display: inline-block;
+}

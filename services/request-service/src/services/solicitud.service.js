@@ -73,6 +73,15 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
   }
   return await model.obtenerHistorialPaseador(paseador_usuario_id, estado);
 };
+const completarServicio = async (solicitud_id, paseador_usuario_id) => {
+  const solicitud = await model.completarServicio(solicitud_id, paseador_usuario_id);
+  if (!solicitud) {
+    throw new Error(
+      "No se puede completar esta solicitud. Verifica que esté aceptada y que la fecha del servicio ya haya llegado."
+    );
+  }
+  return solicitud;
+};
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientesPaseador,
@@ -80,4 +89,5 @@ module.exports = {
   cancelarSolicitud,
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
+  completarServicio,
 };

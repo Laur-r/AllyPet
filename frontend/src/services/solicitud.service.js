@@ -64,3 +64,15 @@ export const obtenerHistorialPaseador = async (token, estado = "") => {
   if (!res.ok) throw new Error(data.error || "Error al obtener historial");
   return data;
 };
+export const completarServicio = async (id, token) => {
+  const res = await fetch(`${API}/api/solicitudes/${id}/completar`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al completar el servicio");
+  return data;
+};

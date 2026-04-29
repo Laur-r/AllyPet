@@ -21,4 +21,7 @@ router.get("/dueno/historial", verificarToken, controller.obtenerHistorialDueno)
 /* H5.5 — Historial del paseador */
 router.get("/paseador/historial", verificarToken, controller.obtenerHistorialPaseador);
 
+/* H5.6 — Marcar como completado */
+router.put("/:id/completar", verificarToken, controller.completarServicio);
+
 module.exports = router;

@@ -97,12 +97,15 @@ export default function Mascotas() {
   const notify = msg => { setToast(msg); setTimeout(() => setToast(null), 2800); };
 
   /* ── Cargar mascotas al montar ─────────────────────────── */
-  useEffect(() => {
-    authFetch('/api/pets')
-      .then(res => { if (res.ok) setMascotas(res.data.map(normalizarMascota)); })
-      .catch(() => notify('Error al cargar mascotas'))
-      .finally(() => setCargando(false));
-  }, []);
+ useEffect(() => {
+  authFetch('/api/pets')
+    .then(res => {
+      console.log("Mascotas raw:", res.data); // ← agrega esto
+      if (res.ok) setMascotas(res.data.map(normalizarMascota));
+    })
+    .catch(() => notify('Error al cargar mascotas'))
+    .finally(() => setCargando(false));
+}, []);
 
   /* ── Abrir modales ─────────────────────────────────────── */
   const abrirCrear  = () => { setEditando(null); setModalForm(true); };

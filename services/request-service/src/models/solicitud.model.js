@@ -149,6 +149,23 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
   );
   return rows;
 };
+/* ── Marcar servicio como completado ── */
+const completarServicio = async (solicitud_id, paseador_usuario_id) => {
+  const hoy = new Date().toISOString().split("T")[0];
+  const { rows } = await pool.query(
+    `UPDATE solicitudes s
+     SET estado = 'completada', fecha_actualizacion = NOW()
+     FROM perfil_paseador pp
+     WHERE s.id = $1
+       AND pp.id = s.paseador_id
+       AND pp.usuario_id = $2
+       AND s.estado = 'aceptada'
+       AND s.fecha_servicio <= $3
+     RETURNING s.*`,
+    [solicitud_id, paseador_usuario_id, hoy]
+  );
+  return rows[0] || null;
+};
 module.exports = {
   crearSolicitud,
   verificarMascota,
@@ -158,4 +175,5 @@ module.exports = {
   cancelarSolicitud,
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
+  completarServicio,
 };
