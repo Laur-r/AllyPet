@@ -21,8 +21,8 @@ export default function ModalCalificar({ isOpen, onClose, objetivoId, tipoObjeti
       if (!user) throw new Error('Debes iniciar sesión para calificar');
 
       await crearResena({
-        id_usuario_dueno: user.id,
-        id_usuario_objetivo: objetivoId,
+        id_dueno: user.id,
+        id_proveedor: objetivoId,
         tipo_objetivo: tipoObjetivo,
         calificacion,
         comentario

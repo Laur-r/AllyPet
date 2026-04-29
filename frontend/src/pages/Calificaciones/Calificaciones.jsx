@@ -49,6 +49,7 @@ export default function Calificaciones() {
         id_servicio: servicioSeleccionado.id_servicio,
         id_dueno: user.id,
         id_proveedor: servicioSeleccionado.id_proveedor,
+        tipo_objetivo: servicioSeleccionado.tipo_servicio === 'veterinaria' ? 'veterinario' : 'paseador',
         calificacion: calificacionForm,
         comentario: comentarioForm
       });

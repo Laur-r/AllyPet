@@ -115,7 +115,9 @@ const buscarPorCiudad = async (ciudad) => {
       p.nombre_establecimiento,
       p.direccion,
       p.servicios,
-      p.ciudad
+      p.ciudad,
+      p.promedio_estrellas AS calificacion,
+      p.total_resenas
     FROM perfil_veterinario p
     INNER JOIN usuarios u ON u.id = p.usuario_id
     WHERE LOWER(p.ciudad) = LOWER($1)
@@ -132,12 +134,12 @@ const buscarPorCiudad = async (ciudad) => {
 const obtenerPerfilPublico = async (usuarioId) => {
   // ── Sincronizar reputación en tiempo real ──
   try {
-    await pool.query(
+     await pool.query(
       `UPDATE perfil_veterinario p
        SET promedio_estrellas = sub.promedio,
            total_resenas = sub.total
        FROM (
-      SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
+         SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
          FROM resenas
          WHERE proveedor_id = $1
          GROUP BY proveedor_id
@@ -179,7 +181,7 @@ const obtenerPerfilPublico = async (usuarioId) => {
 /* ── Obtener reseñas de la veterinaria ── */
 const obtenerResenas = async (proveedorId) => {
   const { rows } = await pool.query(
-    `SELECT
+     `SELECT
       r.id,
       r.calificacion,
       r.comentario,

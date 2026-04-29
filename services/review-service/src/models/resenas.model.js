@@ -3,48 +3,16 @@ const pool = require('../config/db');
 const ResenaModel = {
   // Crear una nueva reseña y actualizar el perfil del proveedor
   async crearResena(datos) {
-    const { id_servicio, dueno_id, proveedor_id, calificacion, comentario, tipo_objetivo } = datos;
-    const client = await pool.connect();
+    const { id_servicio, id_dueno, id_proveedor, calificacion, comentario, tipo_objetivo } = datos;
     
-    try {
-      await client.query('BEGIN');
-
-      const queryInsert = `
-        INSERT INTO resenas (id_servicio, dueno_id, proveedor_id, calificacion, comentario)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *;
-      `;
-      const valuesInsert = [id_servicio, dueno_id, proveedor_id, calificacion, comentario];
-      const result = await client.query(queryInsert, valuesInsert);
-      const nuevaResena = result.rows[0];
-
-      // Actualizar perfil_paseador o perfil_veterinario según el tipo
-      const tabla = tipo_objetivo === 'paseador' ? 'perfil_paseador' : 'perfil_veterinario';
-      
-      const queryUpdate = `
-        UPDATE ${tabla} t
-        SET 
-            promedio_estrellas = sub.promedio,
-            total_resenas = sub.total
-        FROM (
-            SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
-            FROM resenas
-            WHERE proveedor_id = $1
-            GROUP BY proveedor_id
-        ) sub
-        WHERE t.usuario_id = sub.proveedor_id;
-      `;
-      
-      await client.query(queryUpdate, [proveedor_id]);
-      
-      await client.query('COMMIT');
-      return nuevaResena;
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
-    }
+    const queryInsert = `
+      INSERT INTO resenas (id_servicio, dueno_id, proveedor_id, tipo_proveedor, calificacion, comentario)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *;
+    `;
+    const valuesInsert = [id_servicio, id_dueno, id_proveedor, tipo_objetivo, calificacion, comentario];
+    const result = await pool.query(queryInsert, valuesInsert);
+    return result.rows[0];
   },
 
   // Verificar si ya existe una reseña para este servicio
