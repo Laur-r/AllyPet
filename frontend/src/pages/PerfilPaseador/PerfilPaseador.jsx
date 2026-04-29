@@ -374,7 +374,7 @@ export default function PerfilPaseador() {
         </div>
         <div className="pp-rating-box">
           <span className="pp-rating-num">
-            {pas.promedio_estrellas ? Number(pas.promedio_estrellas).toFixed(1) : "—"}
+            {pas.promedio_estrellas ? Number(pas.promedio_estrellas).toFixed(1) : "0.0"}
           </span>
           <Estrellas valor={pas.promedio_estrellas || 0} size={17} />
           <span className="pp-rating-count">{pas.total_resenas || 0} reseñas</span>

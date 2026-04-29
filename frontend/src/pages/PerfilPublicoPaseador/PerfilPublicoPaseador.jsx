@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Estrellas from '../../components/Estrellas/Estrellas';
+import ListaResenas from '../../components/Resenas/ListaResenas';
 import { getResenasUsuario } from '../../services/resenas.service';
 import ListaResenas from '../../components/Resenas/ListaResenas';
 import './PerfilPublicoPaseador.css';
@@ -38,7 +39,9 @@ export default function PerfilPublicoPaseador() {
   };
 
   useEffect(() => {
-    cargarDatos();
+    if (usuarioId) {
+      cargarDatos();
+    }
   }, [usuarioId]);
 
   if (cargando) return (
@@ -149,7 +152,17 @@ export default function PerfilPublicoPaseador() {
         )}
 
         {tab === 'resenas' && (
+<<<<<<< HEAD
           <ListaResenas resenas={resenas} nombreProveedor={perfil?.nombre} rol="paseador" />
+=======
+          <div className="ppp-tab-resenas">
+            <ListaResenas 
+              resenas={resenas} 
+              nombreProveedor={perfil.nombre} 
+              tipo="paseador" 
+            />
+          </div>
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
         )}
 
       </div>

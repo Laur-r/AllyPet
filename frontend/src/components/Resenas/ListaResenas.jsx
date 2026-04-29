@@ -2,9 +2,21 @@ import { useState, useMemo } from 'react';
 import Estrellas from '../Estrellas/Estrellas';
 import './ListaResenas.css';
 
+<<<<<<< HEAD
 export default function ListaResenas({ resenas = [], nombreProveedor = '', rol = 'paseador' }) {
+=======
+/**
+ * Componente ListaResenas
+ * @param {string} tipo - 'paseador' o 'veterinario' para cambiar el tema de color.
+ */
+export default function ListaResenas({ resenas = [], nombreProveedor = 'El profesional', tipo = 'paseador' }) {
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
   const [filtroCalificacion, setFiltroCalificacion] = useState('todas');
   const [filtroOrden, setFiltroOrden] = useState('recientes');
+
+  // —— Determinar si es tema morado (veterinario) ——
+  const esVeterinario = tipo === 'veterinario' || tipo === 'veterinaria';
+  const themeClass = esVeterinario ? 'theme-violet' : 'theme-green';
 
   // —— Cálculos de Resumen ——
   const stats = useMemo(() => {
@@ -26,6 +38,7 @@ export default function ListaResenas({ resenas = [], nombreProveedor = '', rol =
   // —— Lógica Mensaje Dinámico ——
   const getMensajeConfianza = (avg) => {
     const val = parseFloat(avg);
+<<<<<<< HEAD
     const articulos = rol === 'veterinaria' ? 'Esta' : 'Este';
     const sujeto = rol === 'veterinaria' ? 'veterinaria' : 'paseador';
     const proveedorFinal = nombreProveedor || `${articulos} ${sujeto}`;
@@ -33,27 +46,42 @@ export default function ListaResenas({ resenas = [], nombreProveedor = '', rol =
     if (val >= 4.5) return { 
       label: "Excelente", 
       title: `${proveedorFinal} es altamente confiable`, 
+=======
+    const sujeto = esVeterinario ? "veterinario" : "paseador";
+    const iconBase = esVeterinario ? "🏥" : "🛡️";
+
+    if (val >= 4.5) return { 
+      label: "Excelente", 
+      title: `${nombreProveedor} es un ${sujeto} altamente confiable`, 
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
       desc: "Sus excelentes reseñas reflejan un servicio seguro y de calidad",
-      icon: "🛡️" 
+      icon: iconBase 
     };
     if (val >= 4.0) return { 
       label: "Muy bueno", 
+<<<<<<< HEAD
       title: `${proveedorFinal} es un servicio bien valorado`, 
+=======
+      title: `${nombreProveedor} es un ${sujeto} bien valorado`, 
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
       desc: "Los clientes destacan su buen trato y responsabilidad",
       icon: "🐾" 
     };
-    if (val >= 3.0) return { 
+    return { 
       label: "Bueno", 
       title: `${proveedorFinal} tiene valoraciones positivas`, 
       desc: "Sigue mejorando su servicio con cada experiencia",
       icon: "✨" 
     };
+<<<<<<< HEAD
     return { 
       label: "Regular", 
       title: `${proveedorFinal} está en proceso de mejorar`, 
       desc: "Las opiniones ayudan a fortalecer su servicio",
       icon: "📈" 
     };
+=======
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
   };
 
 
@@ -73,29 +101,29 @@ export default function ListaResenas({ resenas = [], nombreProveedor = '', rol =
 
   if (resenas.length === 0) {
     return (
-      <div className="resenas-vacias">
+      <div className={`resenas-vacias ${themeClass}`}>
         <div className="resenas-vacias-icon">💬</div>
-        <p>Aún no hay reseñas para este proveedor.</p>
+        <p>Aún no hay reseñas para este {esVeterinario ? 'veterinario' : 'paseador'}.</p>
         <span>Sé el primero en calificar su servicio.</span>
       </div>
     );
   }
 
   return (
-    <div className="resenas-panel-container">
+    <div className={`resenas-panel-container ${themeClass}`}>
       <div className="resenas-header-section">
         <h3 className="resenas-title-main">Reseñas de clientes</h3>
         <div className="resenas-title-underline" />
       </div>
 
       <div className="resenas-panel">
-        {/* Aviso Verde */}
+        {/* Aviso Dinámico */}
         <div className="resenas-notice-box">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Las reseñas son generadas por los dueños de mascotas y no pueden editarse.
         </div>
 
-        {/* ── SECCIÓN 1: RESUMEN Y ESTADÍSTICAS ── */}
+        {/* ── SECCIÓN 1: RESUMEN ── */}
         <div className="resenas-summary-card">
           <div className="resenas-score-box">
             <div className="resenas-score-big">{Number(promedio).toFixed(1)}</div>
@@ -143,37 +171,37 @@ export default function ListaResenas({ resenas = [], nombreProveedor = '', rol =
               <option value="antiguas">Más antiguas</option>
             </select>
           </div>
-
           <div className="resenas-filter-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <select value={filtroCalificacion} onChange={e => setFiltroCalificacion(e.target.value)}>
               <option value="todas">Todas las calificaciones</option>
               <option value="5">Solo 5 estrellas</option>
               <option value="4">4 estrellas o más</option>
-              <option value="3">3 estrellas o más</option>
             </select>
           </div>
         </div>
 
-        {/* ── SECCIÓN 3: LISTADO DE RESEÑAS ── */}
+        {/* ── SECCIÓN 3: LISTADO ── */}
         <div className="resenas-lista-items">
-          {resenasFiltradas.length > 0 ? (
-            resenasFiltradas.map((r) => {
-              const dueno = r.usuario_dueno || { nombre: r.nombre_dueno || 'Usuario' };
-              const inicial = dueno.nombre ? dueno.nombre[0].toUpperCase() : '?';
-              const fecha = new Date(r.fecha || r.fecha_creacion).toLocaleDateString('es-CO', {
-                day: 'numeric', month: 'long', year: 'numeric'
-              });
+          {resenasFiltradas.map((r) => {
+            const dueno = r.usuario_dueno || { nombre: r.nombre_dueno || 'Usuario' };
+            const inicial = dueno.nombre ? dueno.nombre[0].toUpperCase() : '?';
+            const fecha = new Date(r.fecha || r.fecha_creacion).toLocaleDateString('es-CO', {
+              day: 'numeric', month: 'long', year: 'numeric'
+            });
 
-              return (
-                <div key={r.id} className="resena-card-modern">
-                  <div className="resena-user-avatar">
-                    {dueno.foto_perfil ? (
-                      <img src={dueno.foto_perfil} alt={dueno.nombre} />
-                    ) : (
-                      <div className="resena-avatar-initial">{inicial}</div>
-                    )}
+            return (
+              <div key={r.id} className="resena-card-modern">
+                <div className="resena-user-avatar">
+                  {dueno.foto_perfil ? <img src={dueno.foto_perfil} alt={dueno.nombre} /> : <div className="resena-avatar-initial">{inicial}</div>}
+                </div>
+                <div className="resena-content">
+                  <div className="resena-top-line">
+                    <span className="resena-author">{dueno.nombre}</span>
+                    <span className="resena-dot">•</span>
+                    <span className="resena-date">{fecha}</span>
                   </div>
+<<<<<<< HEAD
                   
                   <div className="resena-content">
                     <div className="resena-top-line">
@@ -194,16 +222,22 @@ export default function ListaResenas({ resenas = [], nombreProveedor = '', rol =
                       </span>
                       {r.tipo_servicio === 'veterinaria' ? 'Veterinaria' : 'Paseo'}
                     </div>
+=======
+                  <div className="resena-mid-line">
+                    <Estrellas calificacion={r.calificacion} size={14} />
+                  </div>
+                  <p className="resena-text">"{r.comentario}"</p>
+                  <div className="resena-tag-service">
+                    <span className="resena-tag-icon">{esVeterinario ? '🏥' : '🐾'}</span>
+                    {r.tipo_servicio || (esVeterinario ? 'Consulta' : 'Paseo')}
+>>>>>>> 60384922cc550a9255084da273649241927c5fa6
                   </div>
                 </div>
-              );
-            })
-          ) : (
-            <div className="resenas-no-match">No hay reseñas que coincidan con los filtros seleccionados.</div>
-          )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
-

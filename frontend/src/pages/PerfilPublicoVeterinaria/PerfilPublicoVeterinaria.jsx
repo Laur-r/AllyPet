@@ -18,6 +18,7 @@ export default function PerfilPublicoVeterinaria() {
   const [error,    setError]    = useState(null);
 
   const cargarDatos = async () => {
+    if (!usuarioId) return;
     try {
       const [resPerfil, resResenas] = await Promise.all([
         fetch(`${API_VET}/api/veterinarios/publico/${usuarioId}`),
@@ -30,7 +31,7 @@ export default function PerfilPublicoVeterinaria() {
       setPerfil(dataPerfil);
       setResenas(resResenas || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error cargando perfil veterinaria:", err);
       setError('No se pudo cargar el perfil. Intenta de nuevo.');
     } finally {
       setCargando(false);
@@ -38,7 +39,9 @@ export default function PerfilPublicoVeterinaria() {
   };
 
   useEffect(() => {
-    cargarDatos();
+    if (usuarioId) {
+      cargarDatos();
+    }
   }, [usuarioId]);
 
   if (cargando) return (
@@ -165,14 +168,11 @@ export default function PerfilPublicoVeterinaria() {
           <div className="tema-violeta">
             <ListaResenas 
               resenas={resenas} 
-              nombreProveedor={perfil?.nombre_establecimiento} 
+              nombreProveedor={perfil.nombre_establecimiento || perfil.nombre} 
               rol="veterinaria" 
             />
           </div>
         )}
-
-
-
       </div>
 
     </div>

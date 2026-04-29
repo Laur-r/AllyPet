@@ -11,6 +11,7 @@ router.get('/calificables', authMiddleware, ResenaController.obtenerServiciosCal
 
 // Obtener reseñas de un proveedor (pública)
 router.get('/:id_usuario', ResenaController.obtenerResenas);
+router.get('/proveedor/:id_usuario', ResenaController.obtenerResenas);
 
 // Obtener promedio de calificaciones (pública)
 router.get('/promedio/:id_usuario', ResenaController.obtenerPromedio);

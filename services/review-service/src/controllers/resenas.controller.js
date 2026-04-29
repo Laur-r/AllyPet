@@ -31,16 +31,16 @@ const ResenaController = {
 
   async obtenerServiciosCalificables(req, res) {
     try {
-      // Usar id del dueño desde el token
       const dueno_id = req.user.id;
+      const ResenaModel = require('../models/resenas.model');
       
-      const servicios = await ResenaService.obtenerServiciosCalificables(parseInt(dueno_id));
-      res.json(servicios);
+      const pendientes = await ResenaModel.obtenerServiciosPorCalificar(dueno_id);
+      const historial = await ResenaModel.obtenerHistorial(dueno_id);
+      
+      res.json({ pendientes, historial });
     } catch (err) {
       console.error('Error en obtenerServiciosCalificables:', err);
-      res.status(err.status || 500).json({ 
-        error: err.message || 'Error al obtener los servicios' 
-      });
+      res.status(500).json({ error: 'Error al obtener la lista de servicios' });
     }
   },
 
