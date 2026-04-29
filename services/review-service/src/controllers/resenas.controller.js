@@ -13,7 +13,7 @@ const ResenaController = {
       // Usar id del dueño desde el token
       const datos = {
         ...req.body,
-        id_dueno: req.user.id
+        dueno_id: req.user.id
       };
       
       const nuevaResena = await ResenaService.crearResena(datos);
@@ -31,12 +31,10 @@ const ResenaController = {
 
   async obtenerServiciosCalificables(req, res) {
     try {
-      // Usar id del dueño desde el token (req.user.id)
-      const id_dueno = req.user.id;
+      // Usar id del dueño desde el token
+      const dueno_id = req.user.id;
       
-      console.log("Obteniendo servicios calificables para USER ID:", id_dueno);
-      
-      const servicios = await ResenaService.obtenerServiciosCalificables(parseInt(id_dueno));
+      const servicios = await ResenaService.obtenerServiciosCalificables(parseInt(dueno_id));
       res.json(servicios);
     } catch (err) {
       console.error('Error en obtenerServiciosCalificables:', err);
@@ -59,8 +57,6 @@ const ResenaController = {
     }
   },
 
-  /* Obtiene el promedio de estrellas y el total de reseñas de un proveedor.
-     Este endpoint es consultado por los perfiles para mostrar su "rating" global. */
   async obtenerPromedio(req, res) {
     try {
       const { id_usuario } = req.params;

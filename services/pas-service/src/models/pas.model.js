@@ -155,12 +155,12 @@ const obtenerPerfilPublico = async (usuarioId) => {
        SET promedio_estrellas = sub.promedio,
            total_resenas = sub.total
        FROM (
-         SELECT id_proveedor, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
+      SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
          FROM resenas
-         WHERE id_proveedor = $1
-         GROUP BY id_proveedor
+         WHERE proveedor_id = $1
+         GROUP BY proveedor_id
        ) sub
-       WHERE p.usuario_id = sub.id_proveedor`,
+       WHERE p.usuario_id = sub.proveedor_id`,
       [usuarioId]
     );
   } catch (err) {
@@ -207,8 +207,8 @@ const obtenerResenas = async (proveedorId) => {
       u.nombre AS dueno_nombre,
       u.foto_perfil AS dueno_foto
     FROM resenas r
-    INNER JOIN usuarios u ON u.id = r.id_dueno
-    WHERE r.id_proveedor = $1
+    INNER JOIN usuarios u ON u.id = r.dueno_id
+    WHERE r.proveedor_id = $1
     ORDER BY r.fecha DESC`,
     [proveedorId]
   );

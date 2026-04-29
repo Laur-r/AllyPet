@@ -3,18 +3,18 @@ const pool = require('../config/db');
 const ResenaModel = {
   // Crear una nueva reseña y actualizar el perfil del proveedor
   async crearResena(datos) {
-    const { id_servicio, id_dueno, id_proveedor, calificacion, comentario, tipo_objetivo } = datos;
+    const { id_servicio, dueno_id, proveedor_id, calificacion, comentario, tipo_objetivo } = datos;
     const client = await pool.connect();
     
     try {
       await client.query('BEGIN');
 
       const queryInsert = `
-        INSERT INTO resenas (id_servicio, id_dueno, id_proveedor, calificacion, comentario)
+        INSERT INTO resenas (id_servicio, dueno_id, proveedor_id, calificacion, comentario)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING *;
       `;
-      const valuesInsert = [id_servicio, id_dueno, id_proveedor, calificacion, comentario];
+      const valuesInsert = [id_servicio, dueno_id, proveedor_id, calificacion, comentario];
       const result = await client.query(queryInsert, valuesInsert);
       const nuevaResena = result.rows[0];
 
@@ -27,15 +27,15 @@ const ResenaModel = {
             promedio_estrellas = sub.promedio,
             total_resenas = sub.total
         FROM (
-            SELECT id_proveedor, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
+            SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
             FROM resenas
-            WHERE id_proveedor = $1
-            GROUP BY id_proveedor
+            WHERE proveedor_id = $1
+            GROUP BY proveedor_id
         ) sub
-        WHERE t.usuario_id = sub.id_proveedor;
+        WHERE t.usuario_id = sub.proveedor_id;
       `;
       
-      await client.query(queryUpdate, [id_proveedor]);
+      await client.query(queryUpdate, [proveedor_id]);
       
       await client.query('COMMIT');
       return nuevaResena;
@@ -55,11 +55,11 @@ const ResenaModel = {
   },
 
   // Obtener servicios completados y calificables para un dueño
-  async obtenerServiciosCalificables(id_dueno) {
+  async obtenerServiciosCalificables(dueno_id) {
     const query = `
       SELECT 
         s.id as id_servicio,
-        s.id_proveedor,
+        s.id_proveedor as proveedor_id,
         s.tipo_servicio,
         s.fecha as fecha_servicio,
         u.nombre as proveedor_nombre,
@@ -74,33 +74,33 @@ const ResenaModel = {
       WHERE s.id_dueno = $1 AND s.estado = 'completado'
       ORDER BY s.fecha DESC;
     `;
-    const result = await pool.query(query, [id_dueno]);
+    const result = await pool.query(query, [dueno_id]);
     return result.rows;
   },
 
   // Obtener todas las reseñas de un proveedor
-  async obtenerPorProveedor(id_proveedor) {
+  async obtenerPorProveedor(proveedor_id) {
     const query = `
       SELECT r.*, u.nombre as nombre_dueno, u.foto_perfil as foto_dueno
       FROM resenas r
-      JOIN usuarios u ON r.id_dueno = u.id
-      WHERE r.id_proveedor = $1
+      JOIN usuarios u ON r.dueno_id = u.id
+      WHERE r.proveedor_id = $1
       ORDER BY r.fecha DESC;
     `;
-    const result = await pool.query(query, [id_proveedor]);
+    const result = await pool.query(query, [proveedor_id]);
     return result.rows;
   },
 
   // Obtener el promedio de calificaciones de un proveedor
-  async obtenerPromedio(id_proveedor) {
+  async obtenerPromedio(proveedor_id) {
     const query = `
       SELECT 
         AVG(calificacion)::NUMERIC(10,1) as promedio,
         COUNT(*) as total_resenas
       FROM resenas
-      WHERE id_proveedor = $1;
+      WHERE proveedor_id = $1;
     `;
-    const result = await pool.query(query, [id_proveedor]);
+    const result = await pool.query(query, [proveedor_id]);
     return result.rows[0];
   }
 };

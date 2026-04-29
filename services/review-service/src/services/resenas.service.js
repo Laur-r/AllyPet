@@ -19,29 +19,29 @@ const ResenaService = {
     return await ResenaModel.crearResena(datos);
   },
 
-  async obtenerServiciosCalificables(id_dueno) {
-    return await ResenaModel.obtenerServiciosCalificables(id_dueno);
+  async obtenerServiciosCalificables(dueno_id) {
+    return await ResenaModel.obtenerServiciosCalificables(dueno_id);
   },
 
-  async obtenerResenasProveedor(id_proveedor) {
-    const resenas = await ResenaModel.obtenerPorProveedor(id_proveedor);
+  async obtenerResenasProveedor(proveedor_id) {
+    const resenas = await ResenaModel.obtenerPorProveedor(proveedor_id);
     return resenas.map(r => ({
       id: r.id,
       calificacion: r.calificacion,
       comentario: r.comentario,
       fecha: r.fecha || r.fecha_creacion,
       usuario_dueno: {
-        id: r.id_dueno,
+        id: r.dueno_id,
         nombre: r.nombre_dueno,
         foto_perfil: r.foto_dueno
       }
     }));
   },
 
-  async obtenerPromedioProveedor(id_proveedor) {
-    const resultado = await ResenaModel.obtenerPromedio(id_proveedor);
+  async obtenerPromedioProveedor(proveedor_id) {
+    const resultado = await ResenaModel.obtenerPromedio(proveedor_id);
     return {
-      id_proveedor,
+      proveedor_id,
       promedio: parseFloat(resultado.promedio) || 0,
       total_resenas: parseInt(resultado.total_resenas) || 0
     };
