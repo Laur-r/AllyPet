@@ -121,11 +121,15 @@ export default function PerfilPublicoPaseador() {
       </div>
 
       {/* BOTÓN SOLICITAR PASEO */}
-      <div className="ppp-solicitar-wrap">
-        <button className="ppp-btn-solicitar">
-           Solicitar paseo
-        </button>
-      </div>
+      {/* BOTÓN SOLICITAR PASEO */}
+<div className="ppp-solicitar-wrap">
+  <button
+    className="ppp-btn-solicitar"
+    onClick={() => navigate(`/menu/dueno/solicitar-paseo/${usuarioId}`)}
+  >
+    🐾 Solicitar paseo
+  </button>
+</div>
 
       {/* TABS */}
       <div className="ppp-tabs">
