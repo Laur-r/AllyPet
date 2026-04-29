@@ -360,6 +360,28 @@
   font-style: italic;
 }
 
+/* —— TEMA VIOLETA (VETERINARIO) —— */
+.theme-violet .resenas-title-underline { background: #8B5CF6; }
+
+.theme-violet .resenas-notice-box { background: #F5F3FF; color: #7C3AED; border-color: #DDD6FE; }
+
+.theme-violet .resenas-score-box { background: #F5F3FF; border-color: #DDD6FE; }
+.theme-violet .resenas-score-big { color: #7C3AED; }
+
+.theme-violet .resena-bar-fill { background: linear-gradient(90deg, #A78BFA 0%, #7C3AED 100%); }
+
+.theme-violet .resenas-trust-card { background: #F5F3FF; border-color: #DDD6FE; }
+.theme-violet .resenas-trust-check { background: #8B5CF6; }
+.theme-violet .resenas-trust-info h5 { color: #7C3AED; }
+.theme-violet .resenas-trust-info p { color: #5B21B6; }
+
+.theme-violet .resena-avatar-initial { background: #8B5CF6; }
+
+.theme-violet .resena-tag-service { background: #F5F3FF; color: #7C3AED; }
+
+.theme-violet .resenas-vacias { border-color: #DDD6FE; }
+.theme-violet .resenas-vacias p { color: #7C3AED; }
+
 /* Responsive */
 @media (max-width: 850px) {
   .resenas-summary-card {
@@ -379,4 +401,3 @@
     justify-content: center;
   }
 }
-

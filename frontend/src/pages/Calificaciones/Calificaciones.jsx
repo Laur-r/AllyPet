@@ -20,16 +20,22 @@ export default function Calificaciones() {
 
   const user = JSON.parse(localStorage.getItem('user'));
 
+  const [pendientes, setPendientes] = useState([]);
+  const [historial, setHistorial] = useState([]);
+
   const cargarDatos = async () => {
     try {
       const data = await obtenerServiciosCalificables();
-      setServicios(data);
+      setPendientes(data.pendientes || []);
+      setHistorial(data.historial || []);
       
-      // Seleccionar el primero que no tenga reseña para calificar
-      const pendientes = data.filter(s => !s.id_resena);
-      if (pendientes.length > 0 && !servicioSeleccionado) {
-        setServicioSeleccionado(pendientes[0]);
-      }
+      setServicioSeleccionado((actual) => {
+        if (!data.pendientes || data.pendientes.length === 0) return null;
+        if (actual && data.pendientes.some((s) => s.id_solicitud === actual.id_solicitud)) {
+          return actual;
+        }
+        return data.pendientes[0];
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -44,19 +50,17 @@ export default function Calificaciones() {
   const handleEnviar = async (e) => {
     e.preventDefault();
     if (!servicioSeleccionado) return;
-    
+
     setEnviando(true);
     try {
       await crearResena({
-        id_servicio: servicioSeleccionado.id_servicio,
-        id_dueno: user.id,
-        id_proveedor: servicioSeleccionado.proveedor_id,
-        tipo_objetivo: servicioSeleccionado.tipo_servicio === 'veterinaria' ? 'veterinario' : 'paseador',
+        dueno_id: user.id,
+        proveedor_id: servicioSeleccionado.proveedor_id,
+        tipo_proveedor: esVeterinaria(servicioSeleccionado.tipo_servicio) ? 'veterinario' : 'paseador',
         calificacion,
         comentario
       });
-      
-      // Limpiar y recargar
+
       setComentario('');
       setCalificacion(5);
       setServicioSeleccionado(null);
@@ -69,8 +73,8 @@ export default function Calificaciones() {
     }
   };
 
-  const serviciosPorCalificar = servicios.filter(s => !s.id_resena);
-  const historialServicios = servicios.filter(s => s.id_resena);
+  const serviciosPorCalificar = pendientes;
+  const historialServicios = historial;
 
   if (cargando) return (
     <div className="cal-container">

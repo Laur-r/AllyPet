@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Estrellas from '../../components/Estrellas/Estrellas';
+import ListaResenas from '../../components/Resenas/ListaResenas';
 import { getResenasUsuario } from '../../services/resenas.service';
 import './PerfilPublicoVeterinaria.css';
 
@@ -17,6 +18,7 @@ export default function PerfilPublicoVeterinaria() {
   const [error,    setError]    = useState(null);
 
   const cargarDatos = async () => {
+    if (!usuarioId) return;
     try {
       const [resPerfil, resResenas] = await Promise.all([
         fetch(`${API_VET}/api/veterinarios/publico/${usuarioId}`),
@@ -29,7 +31,7 @@ export default function PerfilPublicoVeterinaria() {
       setPerfil(dataPerfil);
       setResenas(resResenas || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error cargando perfil veterinaria:", err);
       setError('No se pudo cargar el perfil. Intenta de nuevo.');
     } finally {
       setCargando(false);
@@ -37,7 +39,9 @@ export default function PerfilPublicoVeterinaria() {
   };
 
   useEffect(() => {
-    cargarDatos();
+    if (usuarioId) {
+      cargarDatos();
+    }
   }, [usuarioId]);
 
   if (cargando) return (
@@ -106,7 +110,7 @@ export default function PerfilPublicoVeterinaria() {
         </div>
         <div className="ppv-rating-box">
           <span className="ppv-rating-num">
-            {Number(perfil.promedio_estrellas || 0).toFixed(2)}
+            {Number(perfil.promedio_estrellas || 0).toFixed(1)}
           </span>
           <Estrellas calificacion={perfil.promedio_estrellas} size={17} />
           <span className="ppv-rating-count">{perfil.total_resenas || 0} reseñas</span>
@@ -162,29 +166,11 @@ export default function PerfilPublicoVeterinaria() {
 
         {tab === 'resenas' && (
           <div className="ppv-tab-resenas">
-            {resenas.length > 0
-              ? resenas.map((r) => (
-                  <div key={r.id} className="ppv-resena-card">
-                    <div className="ppv-resena-header">
-                      <div className="ppv-resena-avatar">
-                        {r.usuario_dueno?.foto_perfil
-                          ? <img src={r.usuario_dueno.foto_perfil} alt={r.usuario_dueno.nombre} />
-                          : <span>{r.usuario_dueno?.nombre?.[0]?.toUpperCase()}</span>
-                        }
-                      </div>
-                      <div className="ppv-resena-meta">
-                        <strong>{r.usuario_dueno?.nombre || 'Usuario de AllyPet'}</strong>
-                        <Estrellas calificacion={r.calificacion} size={13} />
-                      </div>
-                      <span className="ppv-resena-fecha">
-                        {new Date(r.fecha).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {r.comentario && <p className="ppv-resena-comentario">{r.comentario}</p>}
-                  </div>
-                ))
-              : <div className="ppv-empty-resenas">Aún no hay reseñas.</div>
-            }
+            <ListaResenas 
+              resenas={resenas} 
+              nombreProveedor={perfil.nombre_establecimiento || perfil.nombre} 
+              tipo="veterinario" 
+            />
           </div>
         )}
       </div>

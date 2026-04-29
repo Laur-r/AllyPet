@@ -165,7 +165,7 @@ const obtenerPerfilPublico = async (usuarioId) => {
       [usuarioId]
     );
   } catch (err) {
-    console.warn("No se pudo sincronizar reputación (posiblemente tabla resenas no accesible):", err.message);
+    console.warn("Sincronización de reputación saltada (posible falta de reseñas o tabla):", err.message);
   }
 
   const { rows } = await pool.query(
