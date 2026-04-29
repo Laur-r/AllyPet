@@ -2,21 +2,17 @@ import { useState, useMemo } from 'react';
 import Estrellas from '../Estrellas/Estrellas';
 import './ListaResenas.css';
 
-<<<<<<< HEAD
-export default function ListaResenas({ resenas = [], nombreProveedor = '', rol = 'paseador' }) {
-=======
 /**
- * Componente ListaResenas
- * @param {string} tipo - 'paseador' o 'veterinario' para cambiar el tema de color.
+ * Componente ListaResenas - Unificado para Paseadores y Veterinarias.
+ * Muestra el resumen de reputación, barras de estadísticas y el listado de comentarios.
  */
-export default function ListaResenas({ resenas = [], nombreProveedor = 'El profesional', tipo = 'paseador' }) {
->>>>>>> 60384922cc550a9255084da273649241927c5fa6
+export default function ListaResenas({ resenas = [], nombreProveedor = '', rol = 'paseador' }) {
   const [filtroCalificacion, setFiltroCalificacion] = useState('todas');
   const [filtroOrden, setFiltroOrden] = useState('recientes');
 
-  // —— Determinar si es tema morado (veterinario) ——
-  const esVeterinario = tipo === 'veterinario' || tipo === 'veterinaria';
-  const themeClass = esVeterinario ? 'theme-violet' : 'theme-green';
+  // —— Determinar si es tema violeta ——
+  const esVeterinaria = rol === 'veterinaria' || rol === 'veterinario';
+  const themeClass = esVeterinaria ? 'theme-violet' : 'theme-green';
 
   // —— Cálculos de Resumen ——
   const stats = useMemo(() => {
@@ -35,35 +31,23 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El profe
 
   const { counts, total, promedio } = stats;
 
-  // —— Lógica Mensaje Dinámico ——
+  // —— Lógica Mensaje Dinámico de Confianza ——
   const getMensajeConfianza = (avg) => {
     const val = parseFloat(avg);
-<<<<<<< HEAD
-    const articulos = rol === 'veterinaria' ? 'Esta' : 'Este';
-    const sujeto = rol === 'veterinaria' ? 'veterinaria' : 'paseador';
+    const articulos = esVeterinaria ? 'Esta' : 'Este';
+    const sujeto = esVeterinaria ? 'veterinaria' : 'paseador';
     const proveedorFinal = nombreProveedor || `${articulos} ${sujeto}`;
+    const iconBase = esVeterinaria ? "🩺" : "🛡️";
 
     if (val >= 4.5) return { 
       label: "Excelente", 
       title: `${proveedorFinal} es altamente confiable`, 
-=======
-    const sujeto = esVeterinario ? "veterinario" : "paseador";
-    const iconBase = esVeterinario ? "🏥" : "🛡️";
-
-    if (val >= 4.5) return { 
-      label: "Excelente", 
-      title: `${nombreProveedor} es un ${sujeto} altamente confiable`, 
->>>>>>> 60384922cc550a9255084da273649241927c5fa6
       desc: "Sus excelentes reseñas reflejan un servicio seguro y de calidad",
       icon: iconBase 
     };
     if (val >= 4.0) return { 
       label: "Muy bueno", 
-<<<<<<< HEAD
       title: `${proveedorFinal} es un servicio bien valorado`, 
-=======
-      title: `${nombreProveedor} es un ${sujeto} bien valorado`, 
->>>>>>> 60384922cc550a9255084da273649241927c5fa6
       desc: "Los clientes destacan su buen trato y responsabilidad",
       icon: "🐾" 
     };
@@ -73,17 +57,7 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El profe
       desc: "Sigue mejorando su servicio con cada experiencia",
       icon: "✨" 
     };
-<<<<<<< HEAD
-    return { 
-      label: "Regular", 
-      title: `${proveedorFinal} está en proceso de mejorar`, 
-      desc: "Las opiniones ayudan a fortalecer su servicio",
-      icon: "📈" 
-    };
-=======
->>>>>>> 60384922cc550a9255084da273649241927c5fa6
   };
-
 
   const mensaje = getMensajeConfianza(promedio);
 
@@ -103,7 +77,7 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El profe
     return (
       <div className={`resenas-vacias ${themeClass}`}>
         <div className="resenas-vacias-icon">💬</div>
-        <p>Aún no hay reseñas para este {esVeterinario ? 'veterinario' : 'paseador'}.</p>
+        <p>Aún no hay reseñas para este {esVeterinaria ? 'veterinario' : 'paseador'}.</p>
         <span>Sé el primero en calificar su servicio.</span>
       </div>
     );
@@ -117,7 +91,6 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El profe
       </div>
 
       <div className="resenas-panel">
-        {/* Aviso Dinámico */}
         <div className="resenas-notice-box">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Las reseñas son generadas por los dueños de mascotas y no pueden editarse.
@@ -201,36 +174,18 @@ export default function ListaResenas({ resenas = [], nombreProveedor = 'El profe
                     <span className="resena-dot">•</span>
                     <span className="resena-date">{fecha}</span>
                   </div>
-<<<<<<< HEAD
-                  
-                  <div className="resena-content">
-                    <div className="resena-top-line">
-                      <span className="resena-author">{dueno.nombre}</span>
-                      <span className="resena-dot">•</span>
-                      <span className="resena-date">{fecha}</span>
-                    </div>
 
-                    <div className="resena-mid-line">
-                      <Estrellas calificacion={r.calificacion} size={14} />
-                    </div>
-
-                    <p className="resena-text">"{r.comentario}"</p>
-
-                    <div className="resena-tag-service">
-                      <span className="resena-tag-icon">
-                        {r.tipo_servicio === 'veterinaria' ? '🩺' : '🐾'}
-                      </span>
-                      {r.tipo_servicio === 'veterinaria' ? 'Veterinaria' : 'Paseo'}
-                    </div>
-=======
                   <div className="resena-mid-line">
                     <Estrellas calificacion={r.calificacion} size={14} />
                   </div>
+
                   <p className="resena-text">"{r.comentario}"</p>
+
                   <div className="resena-tag-service">
-                    <span className="resena-tag-icon">{esVeterinario ? '🏥' : '🐾'}</span>
-                    {r.tipo_servicio || (esVeterinario ? 'Consulta' : 'Paseo')}
->>>>>>> 60384922cc550a9255084da273649241927c5fa6
+                    <span className="resena-tag-icon">
+                      {r.tipo_servicio === 'veterinaria' ? '🩺' : '🐾'}
+                    </span>
+                    {r.tipo_servicio === 'veterinaria' ? 'Veterinaria' : 'Paseo'}
                   </div>
                 </div>
               </div>
