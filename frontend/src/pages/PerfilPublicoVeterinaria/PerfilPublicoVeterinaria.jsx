@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPerfilPublicoVeterinaria, getResenasVeterinaria } from "../../services/veterinario.service";
+import Estrellas from '../../components/Estrellas/Estrellas';
+import ListaResenas from '../../components/Resenas/ListaResenas';
+import { getResenasUsuario } from '../../services/resenas.service';
 import './PerfilPublicoVeterinaria.css';
 
 const API_VET = 'http://localhost:3005';
-
-function Estrellas({ valor, size = 15 }) {
-  return (
-    <span className="ppv-stars" style={{ fontSize: size }}>
-      {[1,2,3,4,5].map(i => (
-        <span key={i} className={i <= Math.round(valor) ? 'star on' : 'star'}>★</span>
-      ))}
-    </span>
-  );
-}
 
 export default function PerfilPublicoVeterinaria() {
   const { usuarioId } = useParams();
@@ -25,24 +17,31 @@ export default function PerfilPublicoVeterinaria() {
   const [tab,      setTab]      = useState('info');
   const [error,    setError]    = useState(null);
 
+  const cargarDatos = async () => {
+    if (!usuarioId) return;
+    try {
+      const [resPerfil, resResenas] = await Promise.all([
+        fetch(`${API_VET}/api/veterinarios/publico/${usuarioId}`),
+        getResenasUsuario(usuarioId),
+      ]);
+
+      if (!resPerfil.ok) throw new Error('Error al cargar perfil');
+
+      const dataPerfil = await resPerfil.json();
+      setPerfil(dataPerfil);
+      setResenas(resResenas || []);
+    } catch (err) {
+      console.error("Error cargando perfil veterinaria:", err);
+      setError('No se pudo cargar el perfil. Intenta de nuevo.');
+    } finally {
+      setCargando(false);
+    }
+  };
+
   useEffect(() => {
-    const cargarDatos = async () => {
-        try {
-        const [dataPerfil, dataResenas] = await Promise.all([
-            getPerfilPublicoVeterinaria(usuarioId),
-            getResenasVeterinaria(usuarioId),
-        ]);
-
-        setPerfil(dataPerfil.data);
-        setResenas(dataResenas.data || []);
-        } catch (err) {
-        setError('No se pudo cargar el perfil. Intenta de nuevo.');
-        } finally {
-        setCargando(false);
-        }
-    };
-
-    cargarDatos();
+    if (usuarioId) {
+      cargarDatos();
+    }
   }, [usuarioId]);
 
   if (cargando) return (
@@ -52,16 +51,9 @@ export default function PerfilPublicoVeterinaria() {
     </div>
   );
 
-  if (error) return (
+  if (error || !perfil) return (
     <div className="ppv-loading">
-      <p>{error}</p>
-      <button className="ppv-btn-volver" onClick={() => navigate(-1)}>Volver</button>
-    </div>
-  );
-
-  if (!perfil) return (
-    <div className="ppv-loading">
-      <p>Veterinaria no encontrada.</p>
+      <p>{error || 'Veterinaria no encontrada'}</p>
       <button className="ppv-btn-volver" onClick={() => navigate(-1)}>Volver</button>
     </div>
   );
@@ -77,13 +69,11 @@ export default function PerfilPublicoVeterinaria() {
   const serviciosLista = Array.isArray(perfil.servicios)
     ? perfil.servicios
     : typeof perfil.servicios === 'string'
-    ? perfil.servicios.split(',').map(s => s.trim())
+    ? JSON.parse(perfil.servicios || '[]')
     : [];
 
   return (
     <div className="ppv-page">
-
-      {/* BOTÓN VOLVER */}
       <button className="ppv-btn-volver" onClick={() => navigate(-1)}>
         ← Volver a resultados
       </button>
@@ -97,10 +87,8 @@ export default function PerfilPublicoVeterinaria() {
 
         <div className="ppv-foto-wrap">
           {fotoUrl
-            ? <img className="ppv-foto" src={fotoUrl} alt={perfil.nombre_establecimiento} />
-            : <div className="ppv-foto-placeholder">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-              </div>
+            ? <img className="ppv-foto" src={fotoUrl} alt={perfil.nombre} />
+            : <div className="ppv-foto-placeholder">{perfil.nombre?.[0]?.toUpperCase()}</div>
           }
           <span className={`ppv-disponible ${perfil.disponible ? 'on' : 'off'}`}>
             <span className="ppv-dot" />
@@ -112,17 +100,19 @@ export default function PerfilPublicoVeterinaria() {
       {/* INFO PRINCIPAL */}
       <div className="ppv-header-info">
         <div className="ppv-header-left">
-          <h1>{perfil.nombre_establecimiento}</h1>
-          <p className="ppv-especialidad">{perfil.especialidad}</p>
+          <h1>{perfil.nombre_establecimiento || perfil.nombre}</h1>
+          <p className="ppv-especialidad">{perfil.especialidad || 'Servicios Veterinarios'}</p>
           <div className="ppv-meta">
             <span>📍 {perfil.direccion || perfil.ciudad}</span>
             <span>🏙 {perfil.ciudad}</span>
-            <span>⏱ {perfil.experiencia} años de experiencia</span>
+            <span>⏱ {perfil.experiencia || 0} años de experiencia</span>
           </div>
         </div>
         <div className="ppv-rating-box">
-          <span className="ppv-rating-num">{perfil.calificacion ?? '—'}</span>
-          <Estrellas valor={perfil.calificacion || 0} size={17} />
+          <span className="ppv-rating-num">
+            {Number(perfil.promedio_estrellas || 0).toFixed(1)}
+          </span>
+          <Estrellas calificacion={perfil.promedio_estrellas} size={17} />
           <span className="ppv-rating-count">{perfil.total_resenas || 0} reseñas</span>
         </div>
       </div>
@@ -145,14 +135,11 @@ export default function PerfilPublicoVeterinaria() {
 
       {/* CONTENIDO */}
       <div className="ppv-body">
-
-        {/* INFO */}
         {tab === 'info' && (
           <div className="ppv-tab-info">
-
             <div className="ppv-card">
               <h3>Sobre nosotros</h3>
-              <p>{perfil.descripcion || 'Sin descripción.'}</p>
+              <p>{perfil.descripcion || 'Soy un veterinario comprometido con la salud de tus mascotas.'}</p>
             </div>
 
             <div className="ppv-card">
@@ -170,61 +157,24 @@ export default function PerfilPublicoVeterinaria() {
             </div>
 
             <div className="ppv-card">
-              <h3>Horarios</h3>
-            {perfil.horarios && typeof perfil.horarios === 'object' && Object.keys(perfil.horarios).length > 0
-            ? <div className="ppv-horarios">
-                {Object.entries(perfil.horarios).map(([dia, hora]) => (
-                    <div key={dia} className="ppv-horario-row">
-                    <span className="ppv-dia">{dia}</span>
-                    <span className="ppv-hora">
-                        {typeof hora === 'object' 
-                        ? `${hora.desde || ''} - ${hora.hasta || ''}` 
-                        : hora}
-                    </span>
-                    </div>
-                ))}
-                </div>
-            : <p>Sin horarios registrados.</p>
-            }
+              <h3>Contacto</h3>
+              <p>📞 {perfil.telefono || 'No disponible'}</p>
+              <p>📧 {perfil.correo || 'No disponible'}</p>
             </div>
-
           </div>
         )}
 
-        {/* RESEÑAS */}
         {tab === 'resenas' && (
-          <div className="ppv-tab-resenas">
-            {resenas.length > 0
-              ? resenas.map((r) => (
-                  <div key={r.id} className="ppv-resena-card">
-                    <div className="ppv-resena-header">
-                      <div className="ppv-resena-avatar">
-                        {r.dueno_foto
-                          ? <img src={r.dueno_foto} alt={r.dueno_nombre} />
-                          : <span>{r.dueno_nombre?.[0]?.toUpperCase()}</span>
-                        }
-                      </div>
-                      <div className="ppv-resena-meta">
-                        <strong>{r.dueno_nombre}</strong>
-                        <Estrellas valor={r.calificacion} size={13} />
-                      </div>
-                      <span className="ppv-resena-fecha">
-                        {new Date(r.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </span>
-                    </div>
-                    {r.comentario && <p className="ppv-resena-comentario">{r.comentario}</p>}
-                  </div>
-                ))
-              : (
-                <div className="ppv-empty-resenas">
-                  <p>Esta veterinaria aún no tiene reseñas.</p>
-                </div>
-              )
-            }
+          <div className="tema-violeta">
+            <ListaResenas 
+              resenas={resenas} 
+              nombreProveedor={perfil.nombre_establecimiento || perfil.nombre} 
+              rol="veterinaria" 
+            />
           </div>
         )}
-
       </div>
+
     </div>
   );
 }

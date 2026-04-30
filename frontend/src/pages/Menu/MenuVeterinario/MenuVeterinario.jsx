@@ -13,14 +13,20 @@ export default function MenuVeterinario() {
   const location = useLocation();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) setUser(JSON.parse(userData));
+    const loadUser = () => {
+      const userData = localStorage.getItem("user");
+      if (userData) setUser(JSON.parse(userData));
+    };
+    loadUser();
+    window.addEventListener("storage", loadUser);
+    return () => window.removeEventListener("storage", loadUser);
   }, []);
 
   /* Determina el ítem activo según la URL actual */
   const getActive = () => {
     const path = location.pathname;
     if (path.includes("perfil"))        return "perfil";
+    if (path.includes("pacientes")) return "pacientes";
     if (path.includes("citas"))         return "citas";
     if (path.includes("mensajes"))      return "mensajes";
     if (path.includes("configuracion")) return "configuracion";
@@ -33,15 +39,26 @@ export default function MenuVeterinario() {
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     },
     {
+      /* Tag 'Comercial' añadido para identificar que este perfil es de un proveedor de servicios */
       key: "perfil", label: "Mi Perfil", tag: "Comercial", route: "/menu/veterinario/perfil",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    },
+    {
+      key: "pacientes", label: "Pacientes", route: "/menu/veterinario/pacientes",
+      icon: <svg width="20" height="20" viewBox="0 0 100 100" fill="currentColor">
+      <ellipse cx="50" cy="85" rx="18" ry="12"/>
+      <ellipse cx="20" cy="60" rx="10" ry="14" transform="rotate(-20 20 60)"/>
+      <ellipse cx="80" cy="60" rx="10" ry="14" transform="rotate(20 80 60)"/>
+      <ellipse cx="32" cy="42" rx="9" ry="13" transform="rotate(-10 32 42)"/>
+      <ellipse cx="68" cy="42" rx="9" ry="13" transform="rotate(10 68 42)"/>
+    </svg>,
     },
     {
       key: "citas", label: "Citas", badge: 4, route: "/menu/veterinario/citas",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
     },
     {
-      key: "mensajes", label: "Mensajes", badge: 1, route: "/menu/veterinario/mensajes",
+      key: "mensajes", label: "Mensajes", route: "/menu/veterinario/mensajes",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
     },
     {

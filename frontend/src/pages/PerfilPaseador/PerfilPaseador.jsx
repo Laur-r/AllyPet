@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ListaResenas from "../../components/Resenas/ListaResenas";
 import "./PerfilPaseador.css";
 
 /* ─── SVG icons para servicios ─── */
@@ -24,6 +25,10 @@ const IcoX      = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="no
 const API = import.meta.env.VITE_PAS_SERVICE_URL || "http://localhost:3006";
 
 /* ── Helpers ── */
+/* ── Componente de Estrellas ──
+   Este componente se encarga de renderizar visualmente la reputación del paseador.
+   Recibe un valor (promedio) y dibuja 5 estrellas, resaltando las que correspondan al puntaje.
+   Es crucial para que el paseador vea cómo lo percibe la comunidad. */
 function Estrellas({ valor, size = 15 }) {
   return (
     <span className="pp-stars" style={{ fontSize: size }}>
@@ -55,6 +60,8 @@ export default function PerfilPaseador() {
   const [saving,   setSaving]   = useState(false);
   const [tab,      setTab]      = useState("info");
   const [toast,    setToast]    = useState(null);
+  const [resenas,  setResenas]  = useState([]);
+  const [cargandoResenas, setCargandoResenas] = useState(false);
 
   const [editHero,     setEditHero]     = useState(false);
   const [editDesc,     setEditDesc]     = useState(false);
@@ -89,12 +96,57 @@ export default function PerfilPaseador() {
   /* ── Carga inicial ── */
   useEffect(() => {
     if (!usuarioId) { setCargando(false); return; }
-    fetch(`${API}/api/perfil-paseador/${usuarioId}`, { headers: hdrs })
-      .then(r => r.json())
-      .then(data => setPas({ ...data, servicios: normalizarServicios(data.servicios) }))
-      .catch(() => notify("Error al cargar el perfil"))
-      .finally(() => setCargando(false));
+
+    const cargarTodo = async () => {
+      try {
+        // 1. Cargar perfil del pas-service
+        const resPerfil = await fetch(`${API}/api/perfil-paseador/${usuarioId}`, { headers: hdrs });
+        const dataPerfil = await resPerfil.json();
+
+        // 2. Cargar promedio real desde review-service (fuente de verdad)
+        /* SECCIÓN DE CALIFICACIONES:
+           Aquí consultamos el microservicio de reseñas (puerto 3007).
+           Aunque el paseador tiene sus datos básicos, la reputación (estrellas y total)
+           se maneja de forma independiente para garantizar que los datos sean reales
+           y provengan de servicios completados. */
+        let promedioReal = 0;
+        let totalReal    = 0;
+        try {
+          const resPromedio = await fetch(`http://localhost:3007/api/resenas/promedio/${usuarioId}`);
+          const dataPromedio = await resPromedio.json();
+          promedioReal = parseFloat(dataPromedio.promedio) || 0;
+          totalReal    = parseInt(dataPromedio.total_resenas) || 0;
+        } catch { /* si falla el review-service, usar valores del perfil */ }
+
+        setPas({
+          ...dataPerfil,
+          nombre:            dataPerfil.nombre || "Usuario",
+          servicios:         normalizarServicios(dataPerfil.servicios),
+          promedio_estrellas: promedioReal || dataPerfil.promedio_estrellas || 0,
+          total_resenas:      totalReal    || dataPerfil.total_resenas      || 0,
+        });
+      } catch {
+        notify("Error al cargar el perfil");
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarTodo();
   }, [usuarioId]);
+
+  /* ── SECCIÓN DE RESEÑAS REALES ──
+     Cargamos las reseñas reales desde el microservicio para que el paseador pueda
+     ver el feedback que le han dejado los clientes. */
+  useEffect(() => {
+    if (tab !== 'resenas' || !usuarioId) return;
+    setCargandoResenas(true);
+    fetch(`http://localhost:3007/api/resenas/${usuarioId}`)
+      .then(r => r.json())
+      .then(data => setResenas(Array.isArray(data) ? data : []))
+      .catch(() => setResenas([]))
+      .finally(() => setCargandoResenas(false));
+  }, [tab, usuarioId]);
 
   /* ── PUT genérico ── */
   const putPerfil = async (body) => {
@@ -157,6 +209,15 @@ export default function PerfilPaseador() {
 
       await putPerfil(payload);
       setPas(p => ({ ...p, ...payload }));
+      
+      // Sincronizar con localStorage para que el sidebar/navbar se actualicen
+      if (payload.nombre) {
+        const u = JSON.parse(localStorage.getItem("user") || "{}");
+        u.nombre = payload.nombre;
+        localStorage.setItem("user", JSON.stringify(u));
+        window.dispatchEvent(new Event("storage"));
+      }
+
       setEditHero(false);
       notify("Información principal actualizada ✓");
     } catch (e) { notify("Error: " + e.message); }
@@ -312,8 +373,10 @@ export default function PerfilPaseador() {
           )}
         </div>
         <div className="pp-rating-box">
-          <span className="pp-rating-num">{pas.calificacion ?? "—"}</span>
-          <Estrellas valor={pas.calificacion || 0} size={17} />
+          <span className="pp-rating-num">
+            {pas.promedio_estrellas ? Number(pas.promedio_estrellas).toFixed(1) : "0.0"}
+          </span>
+          <Estrellas valor={pas.promedio_estrellas || 0} size={17} />
           <span className="pp-rating-count">{pas.total_resenas || 0} reseñas</span>
         </div>
       </div>
@@ -351,10 +414,10 @@ export default function PerfilPaseador() {
             {/* Stats */}
             <div className="pp-stats-grid">
               {[
-                { num: pas.experiencia || 0,      label: "Años de experiencia"   },
-                { num: pas.total_resenas || 0,    label: "Reseñas recibidas"     },
-                { num: pas.calificacion || 0,     label: "Calificación promedio" },
-                { num: pas.mascotas_max || 0,     label: "Mascotas por paseo"    },
+                { num: pas.experiencia || 0,                                       label: "Años de experiencia"   },
+                { num: pas.total_resenas || 0,                                     label: "Reseñas recibidas"     },
+                { num: Number(pas.promedio_estrellas || 0).toFixed(1),             label: "Calificación promedio" },
+                { num: pas.mascotas_max || 0,                                      label: "Mascotas por paseo"    },
               ].map((s, i) => (
                 <div className="pp-stat" key={i}>
                   <span className="pp-stat-num">{s.num}</span>
@@ -480,30 +543,13 @@ export default function PerfilPaseador() {
         {/* RESEÑAS */}
         {tab === "resenas" && (
           <div className="pp-tab-resenas">
-            <div className="pp-resenas-notice">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Las reseñas son generadas por los dueños de mascotas y no pueden editarse.
-            </div>
-            <div className="pp-rating-summary">
-              <div className="pp-rating-big">
-                <span className="pp-rating-big-num">{pas.calificacion || "—"}</span>
-                <Estrellas valor={pas.calificacion || 0} size={20} />
-                <span className="pp-rating-big-sub">{pas.total_resenas || 0} reseñas</span>
-              </div>
-              <div className="pp-bars">
-                {[{s:5,p:85},{s:4,p:10},{s:3,p:3},{s:2,p:1},{s:1,p:1}].map(b => (
-                  <div className="pp-bar-row" key={b.s}>
-                    <span className="pp-bar-label">{b.s}★</span>
-                    <div className="pp-bar-track"><div className="pp-bar-fill" style={{ width:`${b.p}%` }} /></div>
-                    <span className="pp-bar-pct">{b.p}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="pp-resenas-empty">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <p>Las reseñas aparecerán aquí cuando los dueños califiquen tu servicio.</p>
-            </div>
+            {/* Lista de reseñas reales con el nuevo diseño unificado */}
+            {/* Lista de reseñas reales con el nuevo diseño */}
+            {cargandoResenas ? (
+              <div className="pp-loading" style={{ padding: '20px' }}><div className="pp-spinner" /><span>Cargando reseñas…</span></div>
+            ) : (
+              <ListaResenas resenas={resenas} nombreProveedor={pas.nombre} rol="paseador" />
+            )}
           </div>
         )}
       </div>

@@ -51,3 +51,16 @@ export const generarToken = (petId) =>
 
 export const revocarToken = (petId) =>
   axios.delete(`${API_URL}/pets/${petId}/carnet/token`, headers());
+
+// ─── RUTAS VETERINARIO ────────────────────────────────────────────
+export const getCarnetVet = (petId) =>
+  axios.get(`${API_URL}/pets/${petId}/carnet/vet`, headers());
+
+export const getHistorialVet = (petId) =>
+  axios.get(`${API_URL}/pets/${petId}/historial/vet`, headers());
+
+export const agregarHistorialVet = (petId, data) =>
+  axios.post(`${API_URL}/pets/${petId}/historial/vet`, data, headers());
+
+export const agregarRecordatorioVet = (petId, data) =>
+  axios.post(`${API_URL}/pets/${petId}/recordatorios/vet`, data, headers());

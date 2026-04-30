@@ -315,3 +315,97 @@
   border-radius: 50%;
   object-fit: cover;
 }
+
+.historial-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border, #EDE8F2);
+}
+.historial-item:last-child { border-bottom: none; }
+
+.historial-item-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.historial-tipo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: #e8f4fd;
+  color: #1a6fa8;
+  text-transform: capitalize;
+}
+
+.historial-fecha {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
+
+.historial-desc {
+  font-size: 0.85rem;
+  color: #1A1A2E;
+  margin: 2px 0;
+}
+
+.historial-vet {
+  font-size: 0.75rem;
+  color: #6B7280;
+  display: block;
+  margin-top: 3px;
+}
+
+.historial-notas {
+  font-size: 0.78rem;
+  color: #6B7280;
+  font-style: italic;
+  margin-top: 3px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Fallback para avatar */
+.carnet-avatar {
+  position: relative;
+}
+
+.avatar-fallback {
+  display: none;
+  font-size: 3rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  color: white;
+}
+
+/* Posicionar botones fuera del PDF */
+.carnet-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+/* Ocultar elementos interactivos en PDF */
+.qr-label {
+  color: #666;
+  font-size: 0.8rem;
+  cursor: default !important;
+}
+
+.qr-no-token {
+  background: #f0f0f0;
+  color: #999;
+  cursor: default !important;
+}

@@ -42,7 +42,7 @@ const login = async (req, res) => {
     }
 
     // Generar token y respuesta exitosa
-    const payload = { sub: user.id, email: user.email };
+   const payload = { sub: user.id, email: user.email, rol: user.rol };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     const userResponse = {
@@ -187,6 +187,7 @@ const googleCallbackHandler = (req, res) => {
     'message',
     `Inicio de sesion exitoso. Bienvenido ${user.nombre || user.email} (${user.rol || 'usuario'}).`
   );
+  redirectUrl.searchParams.set('id', user.id);
   redirectUrl.searchParams.set('name', user.nombre || user.email);
   redirectUrl.searchParams.set('role', user.rol || 'usuario');
   redirectUrl.searchParams.set('email', user.email);

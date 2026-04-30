@@ -1,8 +1,14 @@
 const model = require("../models/pas.model");
 
-/* ── Obtener y normalizar perfil ── */
 const obtenerPerfil = async (usuarioId) => {
-  const perfil = await model.obtenerPerfil(usuarioId);
+  let perfil = await model.obtenerPerfil(usuarioId);
+  
+  // Si no tiene registro en perfil_paseador (pero existe en usuarios), crearlo
+  if (perfil && !perfil.usuario_id) {
+    await model.crearPerfil(usuarioId);
+    perfil = await model.obtenerPerfil(usuarioId);
+  }
+
   if (!perfil) return null;
 
   /* Parsear JSONB en caso de que lleguen como string */

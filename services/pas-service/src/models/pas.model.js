@@ -1,9 +1,30 @@
 const pool = require("../config/db");
 
-/* ── Obtener perfil completo ── */
+/* ── Obtener perfil completo (Privado) ── */
 const obtenerPerfil = async (usuarioId) => {
   const { rows } = await pool.query(
-    `SELECT * FROM perfil_paseador WHERE usuario_id = $1`,
+    `SELECT 
+      u.nombre, u.correo, u.telefono, 
+      COALESCE(NULLIF(p.ciudad, ''), u.ciudad) AS ciudad,
+      COALESCE(p.foto_perfil, u.foto_perfil) AS foto_perfil,
+      p.usuario_id, p.descripcion, p.tarifa, p.disponibilidad, p.promedio_estrellas,
+      p.total_resenas, p.aprobado, p.experiencia, p.especialidad, p.banner,
+      p.disponible, p.zonas, p.razas, p.servicios, p.mascotas_max, p.estado
+     FROM usuarios u
+     LEFT JOIN perfil_paseador p ON u.id = p.usuario_id
+     WHERE u.id = $1`,
+    [usuarioId]
+  );
+  return rows[0] || null;
+};
+
+/* ── Crear perfil base si no existe ── */
+const crearPerfil = async (usuarioId) => {
+  const { rows } = await pool.query(
+    `INSERT INTO perfil_paseador (usuario_id, promedio_estrellas, total_resenas, aprobado)
+     VALUES ($1, 0, 0, true)
+     ON CONFLICT (usuario_id) DO NOTHING
+     RETURNING *`,
     [usuarioId]
   );
   return rows[0] || null;
@@ -11,25 +32,48 @@ const obtenerPerfil = async (usuarioId) => {
 
 /* ── Actualizar campos generales ── */
 const actualizarPerfil = async (usuarioId, campos) => {
-  /* Construye SET dinámico solo con los campos enviados */
-  const permitidos = [
-    "nombre", "especialidad", "descripcion", "tarifa",
-    "disponibilidad", "ciudad", "estado", "disponible",
-    "experiencia", "mascotas_max", "banner", "foto_perfil",
-  ];
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
 
-  const keys   = Object.keys(campos).filter((k) => permitidos.includes(k));
-  if (keys.length === 0) return null;
+    // 1. Campos de la tabla 'usuarios'
+    const permitidosUser = ["nombre"];
+    const keysUser = Object.keys(campos).filter((k) => permitidosUser.includes(k));
+    if (keysUser.length > 0) {
+      const setsUser = keysUser.map((k, i) => `${k} = $${i + 1}`).join(", ");
+      const valuesUser = keysUser.map((k) => campos[k]);
+      valuesUser.push(usuarioId);
+      await client.query(`UPDATE usuarios SET ${setsUser} WHERE id = $${valuesUser.length}`, valuesUser);
+    }
 
-  const sets   = keys.map((k, i) => `${k} = $${i + 1}`).join(", ");
-  const values = keys.map((k) => campos[k]);
-  values.push(usuarioId);
+    // 2. Campos de la tabla 'perfil_paseador'
+    const permitidosPas = [
+      "especialidad", "descripcion", "tarifa", "disponibilidad",
+      "ciudad", "estado", "disponible", "experiencia",
+      "mascotas_max", "banner", "foto_perfil"
+    ];
+    const keysPas = Object.keys(campos).filter((k) => permitidosPas.includes(k));
+    
+    let perfil = null;
+    if (keysPas.length > 0) {
+      const setsPas = keysPas.map((k, i) => `${k} = $${i + 1}`).join(", ");
+      const valuesPas = keysPas.map((k) => campos[k]);
+      valuesPas.push(usuarioId);
+      const { rows } = await client.query(
+        `UPDATE perfil_paseador SET ${setsPas} WHERE usuario_id = $${valuesPas.length} RETURNING *`,
+        valuesPas
+      );
+      perfil = rows[0];
+    }
 
-  const { rows } = await pool.query(
-    `UPDATE perfil_paseador SET ${sets} WHERE usuario_id = $${values.length} RETURNING *`,
-    values
-  );
-  return rows[0] || null;
+    await client.query("COMMIT");
+    return perfil || { usuario_id: usuarioId };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 /* ── Actualizar JSONB: servicios ── */
@@ -88,7 +132,8 @@ const buscarPorCiudad = async (ciudad) => {
       u.nombre,
       u.foto_perfil,
       p.tarifa,
-      p.calificacion,
+      p.promedio_estrellas AS calificacion,
+      p.total_resenas,
       p.disponible,
       p.ciudad
     FROM perfil_paseador p
@@ -97,38 +142,56 @@ const buscarPorCiudad = async (ciudad) => {
       AND p.aprobado = true
       AND p.disponible = true
       AND u.estado = true
-    ORDER BY p.calificacion DESC`,
+    ORDER BY p.promedio_estrellas DESC`,
     [ciudad]
   );
   return rows;
 };
 
-/* ── Obtener perfil público del paseador ── */
 const obtenerPerfilPublico = async (usuarioId) => {
+  // ── Sincronizar reputación en tiempo real si es necesario ──
+  try {
+     await pool.query(
+      `UPDATE perfil_paseador p
+       SET promedio_estrellas = sub.promedio,
+           total_resenas = sub.total
+       FROM (
+         SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
+         FROM resenas
+         WHERE proveedor_id = $1
+         GROUP BY proveedor_id
+       ) sub
+       WHERE p.usuario_id = sub.proveedor_id`,
+      [usuarioId]
+    );
+  } catch (err) {
+    console.warn("Sincronización de reputación saltada (posible falta de reseñas o tabla):", err.message);
+  }
+
   const { rows } = await pool.query(
     `SELECT 
       u.id,
       u.nombre,
-      p.foto_perfil,
+      u.correo,
+      u.telefono,
+      u.ciudad,
+      u.foto_perfil,
+      p.promedio_estrellas,
+      p.total_resenas,
       p.banner,
       p.descripcion,
       p.tarifa,
       p.disponibilidad,
       p.disponible,
-      p.calificacion,
-      p.total_resenas,
       p.experiencia,
       p.especialidad,
-      p.ciudad,
       p.zonas,
       p.razas,
       p.servicios,
       p.mascotas_max
-    FROM perfil_paseador p
-    INNER JOIN usuarios u ON u.id = p.usuario_id
-    WHERE p.usuario_id = $1
-      AND p.aprobado = true
-      AND u.estado = true`,
+    FROM usuarios u
+    LEFT JOIN perfil_paseador p ON u.id = p.usuario_id
+    WHERE u.id = $1`,
     [usuarioId]
   );
   return rows[0] || null;
@@ -137,7 +200,7 @@ const obtenerPerfilPublico = async (usuarioId) => {
 /* ── Obtener reseñas del paseador ── */
 const obtenerResenas = async (proveedorId) => {
   const { rows } = await pool.query(
-    `SELECT 
+     `SELECT 
       r.id,
       r.calificacion,
       r.comentario,
@@ -147,7 +210,6 @@ const obtenerResenas = async (proveedorId) => {
     FROM resenas r
     INNER JOIN usuarios u ON u.id = r.dueno_id
     WHERE r.proveedor_id = $1
-      AND r.tipo_proveedor = 'paseador'
     ORDER BY r.fecha DESC`,
     [proveedorId]
   );

@@ -15,14 +15,19 @@ const verificarToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    console.log("DECODED:", decoded);
-
-    req.usuario_id = decoded.sub; // 🔥 IMPORTANTE (ver abajo)
+    req.usuario_id = decoded.sub;
+    req.rol = decoded.rol || decoded.role || null; 
     next();
   } catch (err) {
     return res.status(401).json({ ok: false, message: 'Token inválido o expirado' });
   }
 };
 
-module.exports = { verificarToken };
+const verificarVeterinario = (req, res, next) => {
+  if (req.rol !== 'veterinario') {
+    return res.status(403).json({ ok: false, message: 'Solo veterinarios pueden acceder' });
+  }
+  next();
+};
+
+module.exports = { verificarToken, verificarVeterinario };

@@ -13,7 +13,9 @@ app.use(express.json());
 // Servir imágenes subidas
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-app.use('/perfil-vet', vetRoutes);
+app.use('/perfil-vet',      vetRoutes);
+app.use('/api/veterinarios', vetRoutes);
+app.use('/api/perfil-vet',   vetRoutes);
 app.get('/health', (_, res) => res.json({ ok: true, service: 'vet-service' }));
 
 app.listen(PORT, () => console.log(`🏥 Vet-service corriendo en puerto ${PORT}`));

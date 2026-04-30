@@ -9,7 +9,9 @@ const verificarToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const cleanToken = token.trim();
+    const secret = process.env.JWT_SECRET || 'allypet_secret_key_2026';
+    const decoded = jwt.verify(cleanToken, secret);
     req.usuario   = decoded; // { id, rol, ... }
     next();
   } catch (err) {

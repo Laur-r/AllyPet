@@ -75,24 +75,25 @@ export default function HistorialMedico() {
   };
 
   useEffect(() => {
-    if (!petId) return;
-    setLoading(true);
+  if (!petId) return;
+  let cancelado = false;
+  setLoading(true);
 
-    // Carga nombre de la mascota
-    const token = localStorage.getItem('token');
-    fetch(`http://localhost:3003/api/pets/${petId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.json())
-      .then(res => { if (res.ok) setPetNombre(res.data.nombre); })
-      .catch(() => {});
+  const token = localStorage.getItem('token');
+  fetch(`http://localhost:3003/api/pets/${petId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(r => r.json())
+    .then(res => { if (!cancelado && res.ok) setPetNombre(res.data.nombre); })
+    .catch(() => {});
 
-    // Carga historial
-    getHistorial(petId)
-      .then(res => setHistorial(res.data.data || []))
-      .catch(() => notify('Error al cargar historial'))
-      .finally(() => setLoading(false));
-  }, [petId]);
+  getHistorial(petId)
+    .then(res => { if (!cancelado) setHistorial(res.data.data || []); })
+    .catch(() => notify('Error al cargar historial'))
+    .finally(() => { if (!cancelado) setLoading(false); });
+
+  return () => { cancelado = true; };
+}, [petId]);
 
   const set = (k, v) => {
     setForm(f => ({ ...f, [k]: v }));
@@ -145,9 +146,6 @@ export default function HistorialMedico() {
             {petNombre && <p>{petNombre}</p>}
           </div>
         </div>
-        <button className="hm-btn-agregar" onClick={() => setModal(true)}>
-          + Agregar registro
-        </button>
       </div>
 
       {/* Contenido */}
@@ -157,7 +155,7 @@ export default function HistorialMedico() {
         <div className="hm-empty">
           <div className="hm-empty-icon">🩺</div>
           <h3>Sin registros médicos</h3>
-          <p>Agrega el primer registro del historial de {petNombre || 'tu mascota'}</p>
+          
         </div>
       ) : (
         <div className="hm-timeline">
@@ -251,37 +249,6 @@ export default function HistorialMedico() {
               <button className="hm-btn-sec" onClick={() => setModal(false)}>Cancelar</button>
               <button className="hm-btn-primary" onClick={handleGuardar} disabled={guardando}>
                 {guardando ? 'Guardando...' : 'Guardar registro'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal confirmar eliminar */}
-      {confirmDel && (
-        <div className="hm-overlay" onClick={() => setConfirmDel(null)}>
-          <div className="hm-modal" style={{ maxWidth: 360 }} onClick={e => e.stopPropagation()}>
-            <div className="hm-modal-head">
-              <h2>Eliminar registro</h2>
-              <button className="hm-modal-x" onClick={() => setConfirmDel(null)}><IcoX /></button>
-            </div>
-            <div className="hm-modal-body" style={{ textAlign: 'center', padding: '2rem' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🗑️</div>
-              <p style={{ fontSize: '0.9rem', color: '#1A1A2E', fontWeight: 500 }}>
-                ¿Eliminar este registro de <span style={{ color: '#8B35C8' }}>{confirmDel.tipo}</span>?
-              </p>
-              <p style={{ fontSize: '0.82rem', color: '#6B7280', marginTop: 6 }}>
-                Esta acción no se puede deshacer.
-              </p>
-            </div>
-            <div className="hm-modal-foot">
-              <button className="hm-btn-sec" onClick={() => setConfirmDel(null)}>Cancelar</button>
-              <button
-                className="hm-btn-primary"
-                style={{ background: '#ef4444' }}
-                onClick={handleEliminar}
-              >
-                Sí, eliminar
               </button>
             </div>
           </div>

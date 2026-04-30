@@ -15,6 +15,7 @@ app.use("/uploads", express.static("uploads"));
 
 /* Rutas */
 app.use("/api/perfil-paseador", perfilRoutes);
+app.use("/api/paseadores",      perfilRoutes);
 
 /* Health check */
 app.get("/health", (_, res) => res.json({ service: "pas-service", status: "ok" }));

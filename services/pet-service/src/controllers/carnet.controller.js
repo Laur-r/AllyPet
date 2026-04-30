@@ -11,6 +11,15 @@ const getCarnet = async (req, res) => {
   }
 };
 
+const getHistorial = async (req, res) => {
+  try {
+    const data = await CarnetService.getHistorial(req.params.petId, req.usuario_id);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
 const getCarnetPublico = async (req, res) => {
   try {
     const data = await CarnetService.getCarnetPublico(req.params.token);
@@ -105,10 +114,50 @@ const revocarToken = async (req, res) => {
   }
 };
 
+// ─── RUTAS VETERINARIO (sin verificar dueño) ──────────────────────
+const getCarnetVet = async (req, res) => {
+  try {
+    const data = await CarnetService.getCarnetCompletoVet(req.params.petId);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
+const getHistorialVet = async (req, res) => {
+  try {
+    const data = await CarnetService.getHistorialVet(req.params.petId);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
+const agregarHistorialVet = async (req, res) => {
+  try {
+    const data = await CarnetService.agregarHistorialVet(req.params.petId, req.body);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
+const agregarRecordatorioVet = async (req, res) => {
+  try {
+    console.log('BODY RECORDATORIO VET:', req.body); // ← temporal
+    const data = await CarnetService.agregarRecordatorioVet(req.params.petId, req.body);
+    res.json({ ok: true, data });
+  } catch (err) {
+    console.error('ERROR RECORDATORIO VET:', err); // ← temporal
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
+};
+
 module.exports = {
   getCarnet, getCarnetPublico,
   agregarVacuna, editarVacuna, eliminarVacuna,
-  agregarHistorial, eliminarHistorial,
-  agregarRecordatorio, eliminarRecordatorio,
-  generarToken, revocarToken
+  getHistorial, agregarHistorial, eliminarHistorial,
+  agregarRecordatorio, eliminarRecordatorio,   
+  generarToken, revocarToken,
+  getCarnetVet, getHistorialVet, agregarHistorialVet, agregarRecordatorioVet 
 };
