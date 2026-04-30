@@ -25,7 +25,10 @@ import PerfilDueno       from './pages/Profiles/ProfileOwner/Profilepage';
 
 import MenuAdmin     from './pages/MenuAdmin/MenuAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import SolicitarPaseo from "./pages/SolicitarPaseo/SolicitarPaseo";
+import SolicitudesPaseador from "./pages/SolicitudesPaseador/SolicitudesPaseador";
+import HistorialDueno    from "./pages/HistorialDueno/HistorialDueno";
+import HistorialPaseador from "./pages/HistorialPaseador/HistorialPaseador";
 import HistorialMedico from './pages/HistorialMedico/HistorialMedico';
 import Carnet from './pages/Carnet/Carnet';
 import Calificaciones from './pages/Calificaciones/Calificaciones';
@@ -53,13 +56,14 @@ function App() {
           <Route index element={<h2>Bienvenido dueño</h2>} />
           <Route path="mascotas" element={<Mascotas />} />
           <Route path="mascotas/:petId/carnet" element={<Carnet />} /> 
-          
+          <Route path="historial-solicitudes" element={<HistorialDueno />} />
           <Route path="buscar/paseadores" element={<BusquedaPaseadores />} />
           <Route path="buscar/veterinarias"  element={<BusquedaVeterinarias />} />
           <Route path="paseador/:usuarioId" element={<PerfilPublicoPaseador />} />
           <Route path="veterinaria/:usuarioId" element={<PerfilPublicoVeterinaria />} />
 
           <Route path="mascotas/:petId/historial" element={<HistorialMedico />} />
+          <Route path="solicitar-paseo/:paseadorId" element={<SolicitarPaseo />} />
           <Route path="calificaciones" element={<Calificaciones />} />
         </Route>
 
@@ -67,6 +71,8 @@ function App() {
         <Route path="/menu/paseador" element={<MenuPaseador />}>
           <Route index element={<h2>Bienvenido paseador</h2>} />
           <Route path="perfil"        element={<PerfilPaseador />} />
+          <Route path="solicitudes" element={<SolicitudesPaseador />} />
+          <Route path="historial" element={<HistorialPaseador />} />
           <Route path="reservas"      element={<h2>Reservas</h2>} />
           <Route path="mensajes"      element={<h2>Mensajes</h2>} />
           <Route path="configuracion" element={<h2>Configuración</h2>} />

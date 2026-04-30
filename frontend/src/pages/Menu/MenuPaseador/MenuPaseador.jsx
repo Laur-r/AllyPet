@@ -25,6 +25,8 @@ export default function MenuPaseador() {
   const getActive = () => {
     const path = location.pathname;
     if (path.includes("/perfil"))        return "perfil";
+    if (path.includes("/solicitudes"))   return "solicitudes";
+    if (path.includes("/historial"))     return "historial";
     if (path.includes("/reservas"))      return "reservas";
     if (path.includes("/mensajes"))      return "mensajes";
     if (path.includes("/configuracion")) return "configuracion";
@@ -38,12 +40,19 @@ export default function MenuPaseador() {
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     },
     {
-      /* Tag 'Comercial' añadido para identificar que este perfil es de un proveedor de servicios */
       key: "perfil", label: "Mi Perfil", path: "/menu/paseador/perfil", tag: "Comercial",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
     },
     {
-      key: "reservas", label: "Reservas", path: "/menu/paseador/reservas",
+      key: "solicitudes", label: "Solicitudes", path: "/menu/paseador/solicitudes",
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
+    },
+    {
+      key: "historial", label: "Historial", path: "/menu/paseador/historial",
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+    },
+    {
+      key: "reservas", label: "Reservas", path: "/menu/paseador/reservas", badge: 5,
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
     },
     {
@@ -68,16 +77,9 @@ export default function MenuPaseador() {
 
   return (
     <div className="mp-layout">
-
-      {/* ── Sidebar ── */}
       <aside className={`mp-sidebar ${sidebarOpen ? "" : "collapsed"}`}>
-
         <div className="mp-logo">
-          <img
-            src={logoNavbar}
-            alt="AllyPet"
-            className={sidebarOpen ? "mp-logo-img" : "mp-logo-img-small"}
-          />
+          <img src={logoNavbar} alt="AllyPet" className={sidebarOpen ? "mp-logo-img" : "mp-logo-img-small"} />
         </div>
 
         <div className="mp-profile">
@@ -107,7 +109,7 @@ export default function MenuPaseador() {
                 <>
                   <span className="mp-nav-label">{item.label}</span>
                   {item.badge && <span className="mp-badge">{item.badge}</span>}
-                  {item.tag   && <span className="mp-tag">{item.tag}</span>}
+                  {item.tag && <span className="mp-tag">{item.tag}</span>}
                 </>
               )}
             </button>
@@ -128,22 +130,18 @@ export default function MenuPaseador() {
         </div>
       </aside>
 
-      {/* ── Main ── */}
       <div className="mp-main">
         <header className="mp-navbar">
           <div className="mp-navbar-left">
             <button className="mp-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <line x1="3" y1="12" x2="21" y2="12"/>
                 <line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
+
             <div className="mp-searchbar">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
               <input
                 type="text"
                 placeholder="Buscar reservas, clientes, zonas..."
@@ -154,17 +152,6 @@ export default function MenuPaseador() {
           </div>
 
           <div className="mp-navbar-right">
-            <div className="mp-status-pill">
-              <span className="mp-status-dot" />
-              Disponible
-            </div>
-            <button className="mp-bell">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              <span className="mp-bell-dot" />
-            </button>
             <div className="mp-user-chip">
               <img src={avatarDefault} alt="avatar" />
               <span>{user?.nombre || "Usuario"}</span>
@@ -172,7 +159,6 @@ export default function MenuPaseador() {
           </div>
         </header>
 
-        {/* Outlet renderiza la ruta anidada activa */}
         <main className="mp-content">
           <Outlet />
         </main>

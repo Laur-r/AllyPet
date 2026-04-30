@@ -110,6 +110,16 @@ export default function PerfilPublicoPaseador() {
         </div>
       </div>
 
+      {/* BOTÓN SOLICITAR PASEO */}
+      <div className="ppp-solicitar-wrap">
+        <button
+          className="ppp-btn-solicitar"
+          onClick={() => navigate(`/menu/dueno/solicitar-paseo/${usuarioId}`)}
+        >
+          🐾 Solicitar paseo
+        </button>
+      </div>
+
       {/* TABS */}
       <div className="ppp-tabs">
         {[
@@ -153,9 +163,7 @@ export default function PerfilPublicoPaseador() {
         {tab === 'resenas' && (
           <ListaResenas resenas={resenas} nombreProveedor={perfil?.nombre} rol="paseador" />
         )}
-
       </div>
-
     </div>
   );
 }
