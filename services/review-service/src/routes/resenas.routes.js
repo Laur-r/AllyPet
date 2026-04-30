@@ -3,17 +3,11 @@ const router = express.Router();
 const ResenaController = require('../controllers/resenas.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 
-// Crear reseña (protegida)
 router.post('/', authMiddleware, ResenaController.crearResena);
 
-// Obtener servicios calificables para el usuario autenticado
 router.get('/calificables', authMiddleware, ResenaController.obtenerServiciosCalificables);
 
-// Obtener reseñas de un proveedor (pública)
-router.get('/:id_usuario', ResenaController.obtenerResenas);
-router.get('/proveedor/:id_usuario', ResenaController.obtenerResenas);
-
-// Obtener promedio de calificaciones (pública)
 router.get('/promedio/:id_usuario', ResenaController.obtenerPromedio);
+router.get('/:id_usuario', ResenaController.obtenerResenas);
 
 module.exports = router;

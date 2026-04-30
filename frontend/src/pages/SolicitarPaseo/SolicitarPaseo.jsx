@@ -83,8 +83,7 @@ export default function SolicitarPaseo() {
     }
   };
 
-  const hoy = new Date().toISOString().split("T")[0];
-
+const hoy = new Date().toLocaleDateString("en-CA");
   if (cargando) return (
     <div className="sp-loading">
       <div className="sp-spinner" />

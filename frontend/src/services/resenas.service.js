@@ -5,7 +5,7 @@
  * Se encarga de gestionar todo lo relacionado con la reputación de los paseadores y veterinarios,
  * incluyendo la creación de nuevas calificaciones (estrellas) y la obtención de promedios.
  */
-const API_RES = 'http://localhost:3007';
+const API_RES = 'http://localhost:3008';
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');

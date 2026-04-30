@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Estrellas from '../../components/Estrellas/Estrellas';
 import ListaResenas from '../../components/Resenas/ListaResenas';
-import { getResenasUsuario } from '../../services/resenas.service';
+import { getResenasUsuario } from '../../services/resenas.service'; // ✅ puerto 3008
 import './PerfilPublicoPaseador.css';
 
 const API_PAS = 'http://localhost:3006';
@@ -19,16 +19,26 @@ export default function PerfilPublicoPaseador() {
 
   const cargarDatos = async () => {
     try {
-      const [resPerfil, resResenas] = await Promise.all([
-        fetch(`${API_PAS}/api/paseadores/publico/${usuarioId}`),
-        getResenasUsuario(usuarioId),
-      ]);
-
+      const resPerfil = await fetch(`${API_PAS}/api/paseadores/publico/${usuarioId}`);
       if (!resPerfil.ok) throw new Error('Error al cargar perfil');
-
       const dataPerfil = await resPerfil.json();
       setPerfil(dataPerfil);
-      setResenas(resResenas || []);
+
+      try {
+        const dataResenas = await getResenasUsuario(usuarioId); // ✅ puerto 3008
+        // Normalizar: puede venir como array o como { resenas: [...] } o { data: [...] }
+        const lista = Array.isArray(dataResenas)
+          ? dataResenas
+          : Array.isArray(dataResenas?.resenas)
+          ? dataResenas.resenas
+          : Array.isArray(dataResenas?.data)
+          ? dataResenas.data
+          : [];
+        setResenas(lista);
+      } catch {
+        setResenas([]);
+      }
+
     } catch (err) {
       console.error(err);
       setError('No se pudo cargar el perfil del paseador.');
@@ -38,9 +48,7 @@ export default function PerfilPublicoPaseador() {
   };
 
   useEffect(() => {
-    if (usuarioId) {
-      cargarDatos();
-    }
+    if (usuarioId) cargarDatos();
   }, [usuarioId]);
 
   if (cargando) return (
@@ -71,13 +79,11 @@ export default function PerfilPublicoPaseador() {
         ← Volver a resultados
       </button>
 
-      {/* HERO */}
       <div className="ppp-hero">
         <div className="ppp-banner">
           <img src={bannerUrl} alt="banner" />
           <div className="ppp-banner-overlay" />
         </div>
-
         <div className="ppp-foto-wrap">
           {fotoUrl
             ? <img className="ppp-foto" src={fotoUrl} alt={perfil.nombre} />
@@ -90,7 +96,6 @@ export default function PerfilPublicoPaseador() {
         </div>
       </div>
 
-      {/* INFO PRINCIPAL */}
       <div className="ppp-header-info">
         <div className="ppp-header-left">
           <h1>{perfil.nombre}</h1>
@@ -106,11 +111,10 @@ export default function PerfilPublicoPaseador() {
             {Number(perfil.promedio_estrellas || 0).toFixed(1)}
           </span>
           <Estrellas calificacion={perfil.promedio_estrellas} size={17} />
-          <span className="ppp-rating-count">{perfil.total_resenas || 0} reseñas</span>
+          <span className="ppp-rating-count">{resenas.length} reseñas</span> {/* ✅ ahora tiene datos reales */}
         </div>
       </div>
 
-      {/* BOTÓN SOLICITAR PASEO */}
       <div className="ppp-solicitar-wrap">
         <button
           className="ppp-btn-solicitar"
@@ -120,7 +124,6 @@ export default function PerfilPublicoPaseador() {
         </button>
       </div>
 
-      {/* TABS */}
       <div className="ppp-tabs">
         {[
           { key: 'info',    label: 'Información' },
@@ -136,7 +139,6 @@ export default function PerfilPublicoPaseador() {
         ))}
       </div>
 
-      {/* CONTENIDO */}
       <div className="ppp-body">
         {tab === 'info' && (
           <div className="ppp-tab-info">
@@ -144,12 +146,10 @@ export default function PerfilPublicoPaseador() {
               <h3>Sobre mí</h3>
               <p>{perfil.descripcion || 'Hola, soy un amante de los animales listo para pasear a tu mascota.'}</p>
             </div>
-
             <div className="ppp-card">
               <h3>Disponibilidad</h3>
               <p>{perfil.disponibilidad || 'Consulta mi disponibilidad directamente.'}</p>
             </div>
-
             <div className="ppp-card">
               <h3>Preferencias</h3>
               <div className="ppp-chips">

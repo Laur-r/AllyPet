@@ -34,8 +34,8 @@ const ResenaController = {
       const dueno_id = req.user.id;
       const ResenaModel = require('../models/resenas.model');
       
-      const pendientes = await ResenaModel.obtenerServiciosPorCalificar(dueno_id);
-      const historial = await ResenaModel.obtenerHistorial(dueno_id);
+const pendientes = await ResenaModel.obtenerServiciosCalificables(dueno_id);
+const historial = await ResenaModel.obtenerHistorial(dueno_id);
       
       res.json({ pendientes, historial });
     } catch (err) {

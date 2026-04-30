@@ -22,7 +22,6 @@ const verificarMascota = async (mascota_id, dueno_id) => {
 };
 
 /* ── Verificar que el paseador existe y está aprobado ── */
-/* ── Verificar que el paseador existe y está aprobado ── */
 const verificarPaseador = async (usuario_id) => {
   const { rows } = await pool.query(
     `SELECT id FROM perfil_paseador WHERE usuario_id = $1 AND aprobado = true`,
@@ -30,12 +29,13 @@ const verificarPaseador = async (usuario_id) => {
   );
   return rows[0] || null;
 };
+
 /* ── Obtener solicitudes pendientes del paseador ── */
 const obtenerSolicitudesPendientesPaseador = async (paseador_usuario_id) => {
   const { rows } = await pool.query(
     `SELECT 
       s.id,
-      s.fecha_servicio,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
       s.hora_servicio,
       s.duracion_minutos,
       s.estado,
@@ -74,6 +74,7 @@ const responderSolicitud = async (solicitud_id, paseador_usuario_id, estado) => 
   );
   return rows[0] || null;
 };
+
 /* ── Cancelar solicitud (solo dueño, solo pendientes) ── */
 const cancelarSolicitud = async (solicitud_id, dueno_id) => {
   const { rows } = await pool.query(
@@ -94,7 +95,7 @@ const obtenerHistorialDueno = async (dueno_id, estado) => {
   const { rows } = await pool.query(
     `SELECT
       s.id,
-      s.fecha_servicio,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
       s.hora_servicio,
       s.duracion_minutos,
       s.estado,
@@ -125,7 +126,7 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
   const { rows } = await pool.query(
     `SELECT
       s.id,
-      s.fecha_servicio,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
       s.hora_servicio,
       s.duracion_minutos,
       s.estado,
@@ -149,9 +150,11 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
   );
   return rows;
 };
+
 /* ── Marcar servicio como completado ── */
 const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   const hoy = new Date().toISOString().split("T")[0];
+
   const { rows } = await pool.query(
     `UPDATE solicitudes s
      SET estado = 'completada', fecha_actualizacion = NOW()
@@ -164,8 +167,10 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
      RETURNING s.*`,
     [solicitud_id, paseador_usuario_id, hoy]
   );
+
   return rows[0] || null;
 };
+
 module.exports = {
   crearSolicitud,
   verificarMascota,

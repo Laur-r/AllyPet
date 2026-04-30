@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ListaResenas from "../../components/Resenas/ListaResenas";
+import { getResenasUsuario, getPromedioUsuario } from "../../services/resenas.service"; // ✅
 import "./PerfilPaseador.css";
 
 /* ─── SVG icons para servicios ─── */
@@ -12,7 +13,6 @@ const SrvIcons = {
   visita: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>,
 };
 
-/* ── Íconos UI ── */
 const IcoEdit   = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
 const IcoSave   = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>;
 const IcoCancel = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>;
@@ -21,14 +21,8 @@ const IcoPlus   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="no
 const IcoTrash  = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcoX      = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>;
 
-/* ── URL microservicio paseador ── */
 const API = import.meta.env.VITE_PAS_SERVICE_URL || "http://localhost:3006";
 
-/* ── Helpers ── */
-/* ── Componente de Estrellas ──
-   Este componente se encarga de renderizar visualmente la reputación del paseador.
-   Recibe un valor (promedio) y dibuja 5 estrellas, resaltando las que correspondan al puntaje.
-   Es crucial para que el paseador vea cómo lo percibe la comunidad. */
 function Estrellas({ valor, size = 15 }) {
   return (
     <span className="pp-stars" style={{ fontSize: size }}>
@@ -53,7 +47,6 @@ function Toast({ msg }) {
   return msg ? <div className="pp-toast"><IcoSave /> {msg}</div> : null;
 }
 
-/* ═══════════════════════════════════════════════════════════ */
 export default function PerfilPaseador() {
   const [pas,      setPas]      = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -89,7 +82,6 @@ export default function PerfilPaseador() {
 
   const notify = msg => { setToast(msg); setTimeout(() => setToast(null), 2800); };
 
-  /* ── normalizar servicios con iconos React ── */
   const normalizarServicios = (lista = []) =>
     lista.map(s => ({ ...s, icon: SrvIcons[s.iconKey] || SrvIcons.paseo }));
 
@@ -99,29 +91,22 @@ export default function PerfilPaseador() {
 
     const cargarTodo = async () => {
       try {
-        // 1. Cargar perfil del pas-service
-        const resPerfil = await fetch(`${API}/api/perfil-paseador/${usuarioId}`, { headers: hdrs });
+        const resPerfil  = await fetch(`${API}/api/perfil-paseador/${usuarioId}`, { headers: hdrs });
         const dataPerfil = await resPerfil.json();
 
-        // 2. Cargar promedio real desde review-service (fuente de verdad)
-        /* SECCIÓN DE CALIFICACIONES:
-           Aquí consultamos el microservicio de reseñas (puerto 3007).
-           Aunque el paseador tiene sus datos básicos, la reputación (estrellas y total)
-           se maneja de forma independiente para garantizar que los datos sean reales
-           y provengan de servicios completados. */
+        // ✅ Usa resenas.service.js → puerto 3008
         let promedioReal = 0;
         let totalReal    = 0;
         try {
-          const resPromedio = await fetch(`http://localhost:3007/api/resenas/promedio/${usuarioId}`);
-          const dataPromedio = await resPromedio.json();
-          promedioReal = parseFloat(dataPromedio.promedio) || 0;
-          totalReal    = parseInt(dataPromedio.total_resenas) || 0;
-        } catch { /* si falla el review-service, usar valores del perfil */ }
+          const dataPromedio = await getPromedioUsuario(usuarioId);
+          promedioReal = parseFloat(dataPromedio.promedio)      || 0;
+          totalReal    = parseInt(dataPromedio.total_resenas)   || 0;
+        } catch { /* si falla, usar valores del perfil */ }
 
         setPas({
           ...dataPerfil,
-          nombre:            dataPerfil.nombre || "Usuario",
-          servicios:         normalizarServicios(dataPerfil.servicios),
+          nombre:             dataPerfil.nombre || "Usuario",
+          servicios:          normalizarServicios(dataPerfil.servicios),
           promedio_estrellas: promedioReal || dataPerfil.promedio_estrellas || 0,
           total_resenas:      totalReal    || dataPerfil.total_resenas      || 0,
         });
@@ -135,14 +120,13 @@ export default function PerfilPaseador() {
     cargarTodo();
   }, [usuarioId]);
 
-  /* ── SECCIÓN DE RESEÑAS REALES ──
-     Cargamos las reseñas reales desde el microservicio para que el paseador pueda
-     ver el feedback que le han dejado los clientes. */
+  /* ── Cargar reseñas al abrir la tab ── */
   useEffect(() => {
-    if (tab !== 'resenas' || !usuarioId) return;
+    if (tab !== "resenas" || !usuarioId) return;
     setCargandoResenas(true);
-    fetch(`http://localhost:3007/api/resenas/${usuarioId}`)
-      .then(r => r.json())
+
+    // ✅ Usa resenas.service.js → puerto 3008
+    getResenasUsuario(usuarioId)
       .then(data => setResenas(Array.isArray(data) ? data : []))
       .catch(() => setResenas([]))
       .finally(() => setCargandoResenas(false));
@@ -156,13 +140,12 @@ export default function PerfilPaseador() {
     return data;
   };
 
-  /* ── Subir imagen con multipart/form-data ── */
   const subirImagen = async (campo, file) => {
     const fd = new FormData();
     fd.append("imagen", file);
     const res = await fetch(`${API}/api/perfil-paseador/${usuarioId}/imagen/${campo}`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` }, // sin Content-Type → multer lo define
+      headers: { Authorization: `Bearer ${token}` },
       body: fd,
     });
     const data = await res.json();
@@ -170,18 +153,15 @@ export default function PerfilPaseador() {
     return data.url;
   };
 
-  /* ── Handlers de imagen ── */
   const handleBanner = async (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    const preview = URL.createObjectURL(f);
-    setDraftHero(d => ({ ...d, banner: preview, _bannerFile: f }));
+    setDraftHero(d => ({ ...d, banner: URL.createObjectURL(f), _bannerFile: f }));
   };
   const handleFoto = async (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    const preview = URL.createObjectURL(f);
-    setDraftHero(d => ({ ...d, foto_perfil: preview, _fotoFile: f }));
+    setDraftHero(d => ({ ...d, foto_perfil: URL.createObjectURL(f), _fotoFile: f }));
   };
 
   /* ══ HERO ══ */
@@ -192,16 +172,10 @@ export default function PerfilPaseador() {
   const guardarHero = async () => {
     setSaving(true);
     try {
-      /* Subir imágenes si se seleccionaron nuevas */
       let bannerUrl     = draftHero.banner;
       let fotoperfilUrl = draftHero.foto_perfil;
-
-      if (draftHero._bannerFile) {
-        bannerUrl = await subirImagen("banner", draftHero._bannerFile);
-      }
-      if (draftHero._fotoFile) {
-        fotoperfilUrl = await subirImagen("foto_perfil", draftHero._fotoFile);
-      }
+      if (draftHero._bannerFile) bannerUrl     = await subirImagen("banner",     draftHero._bannerFile);
+      if (draftHero._fotoFile)   fotoperfilUrl = await subirImagen("foto_perfil", draftHero._fotoFile);
 
       const payload = { ...draftHero, banner: bannerUrl, foto_perfil: fotoperfilUrl };
       delete payload._bannerFile;
@@ -209,8 +183,7 @@ export default function PerfilPaseador() {
 
       await putPerfil(payload);
       setPas(p => ({ ...p, ...payload }));
-      
-      // Sincronizar con localStorage para que el sidebar/navbar se actualicen
+
       if (payload.nombre) {
         const u = JSON.parse(localStorage.getItem("user") || "{}");
         u.nombre = payload.nombre;
@@ -226,15 +199,11 @@ export default function PerfilPaseador() {
 
   /* ══ DISPONIBILIDAD ══ */
   const toggleDisponible = async () => {
-    if (editHero) {
-      setDraftHero(d => ({ ...d, disponible: !d.disponible }));
-      return;
-    }
+    if (editHero) { setDraftHero(d => ({ ...d, disponible: !d.disponible })); return; }
     const nuevo = !pas.disponible;
     try {
       await fetch(`${API}/api/perfil-paseador/${usuarioId}/disponibilidad`, {
-        method: "PATCH", headers: hdrs,
-        body: JSON.stringify({ disponible: nuevo }),
+        method: "PATCH", headers: hdrs, body: JSON.stringify({ disponible: nuevo }),
       });
       setPas(p => ({ ...p, disponible: nuevo }));
     } catch { notify("Error al cambiar disponibilidad"); }
@@ -254,17 +223,9 @@ export default function PerfilPaseador() {
     const payload = lista.map(({ nombre, precio, iconKey }) => ({ nombre, precio, iconKey: iconKey || "paseo" }));
     await fetch(`${API}/api/perfil-paseador/${usuarioId}/servicios`, { method: "PUT", headers: hdrs, body: JSON.stringify({ servicios: payload }) });
   };
-  const abrirSrv = i => { setDraftSrv({ nombre: pas.servicios[i].nombre, precio: pas.servicios[i].precio }); setEditServicio(i); };
-  const guardarSrv = async i => {
-    const lista = pas.servicios.map((s, idx) => idx === i ? { ...s, ...draftSrv } : s);
-    setPas(p => ({ ...p, servicios: lista })); setEditServicio(null); notify("Servicio actualizado ✓");
-    await syncServicios(lista);
-  };
-  const eliminarSrv = async i => {
-    const lista = pas.servicios.filter((_, idx) => idx !== i);
-    setPas(p => ({ ...p, servicios: lista })); notify("Servicio eliminado ✓");
-    await syncServicios(lista);
-  };
+  const abrirSrv      = i => { setDraftSrv({ nombre: pas.servicios[i].nombre, precio: pas.servicios[i].precio }); setEditServicio(i); };
+  const guardarSrv    = async i => { const lista = pas.servicios.map((s, idx) => idx === i ? { ...s, ...draftSrv } : s); setPas(p => ({ ...p, servicios: lista })); setEditServicio(null); notify("Servicio actualizado ✓"); await syncServicios(lista); };
+  const eliminarSrv   = async i => { const lista = pas.servicios.filter((_, idx) => idx !== i); setPas(p => ({ ...p, servicios: lista })); notify("Servicio eliminado ✓"); await syncServicios(lista); };
   const guardarNuevoSrv = async () => {
     if (!newSrv.nombre.trim()) return;
     const lista = [...pas.servicios, { icon: SrvIcons.paseo, iconKey: "paseo", ...newSrv }];
@@ -276,10 +237,8 @@ export default function PerfilPaseador() {
   const abrirZonas   = () => { setDraftZonas([...(pas.zonas || [])]); setEditZonas(true); };
   const guardarZonas = async () => {
     setSaving(true);
-    try {
-      await fetch(`${API}/api/perfil-paseador/${usuarioId}/zonas`, { method: "PUT", headers: hdrs, body: JSON.stringify({ zonas: draftZonas }) });
-      setPas(p => ({ ...p, zonas: draftZonas })); setEditZonas(false); notify("Zonas actualizadas ✓");
-    } catch { notify("Error al guardar zonas"); }
+    try { await fetch(`${API}/api/perfil-paseador/${usuarioId}/zonas`, { method: "PUT", headers: hdrs, body: JSON.stringify({ zonas: draftZonas }) }); setPas(p => ({ ...p, zonas: draftZonas })); setEditZonas(false); notify("Zonas actualizadas ✓"); }
+    catch { notify("Error al guardar zonas"); }
     finally { setSaving(false); }
   };
   const agregarZona  = () => { if (!newZona.trim() || draftZonas.includes(newZona.trim())) return; setDraftZonas(z => [...z, newZona.trim()]); setNewZona(""); };
@@ -289,16 +248,13 @@ export default function PerfilPaseador() {
   const abrirRazas   = () => { setDraftRazas([...(pas.razas || [])]); setEditRazas(true); };
   const guardarRazas = async () => {
     setSaving(true);
-    try {
-      await fetch(`${API}/api/perfil-paseador/${usuarioId}/razas`, { method: "PUT", headers: hdrs, body: JSON.stringify({ razas: draftRazas }) });
-      setPas(p => ({ ...p, razas: draftRazas })); setEditRazas(false); notify("Razas actualizadas ✓");
-    } catch { notify("Error al guardar razas"); }
+    try { await fetch(`${API}/api/perfil-paseador/${usuarioId}/razas`, { method: "PUT", headers: hdrs, body: JSON.stringify({ razas: draftRazas }) }); setPas(p => ({ ...p, razas: draftRazas })); setEditRazas(false); notify("Razas actualizadas ✓"); }
+    catch { notify("Error al guardar razas"); }
     finally { setSaving(false); }
   };
   const agregarRaza  = () => { if (!newRaza.trim() || draftRazas.includes(newRaza.trim())) return; setDraftRazas(r => [...r, newRaza.trim()]); setNewRaza(""); };
   const eliminarRaza = i => setDraftRazas(r => r.filter((_, idx) => idx !== i));
 
-  /* ── Loading ── */
   if (cargando) return <div className="pp-loading"><div className="pp-spinner" /><span>Cargando perfil…</span></div>;
   if (!pas)     return <div className="pp-loading">No se encontró el perfil.</div>;
 
@@ -373,9 +329,7 @@ export default function PerfilPaseador() {
           )}
         </div>
         <div className="pp-rating-box">
-          <span className="pp-rating-num">
-            {pas.promedio_estrellas ? Number(pas.promedio_estrellas).toFixed(1) : "0.0"}
-          </span>
+          <span className="pp-rating-num">{pas.promedio_estrellas ? Number(pas.promedio_estrellas).toFixed(1) : "0.0"}</span>
           <Estrellas valor={pas.promedio_estrellas || 0} size={17} />
           <span className="pp-rating-count">{pas.total_resenas || 0} reseñas</span>
         </div>
@@ -395,11 +349,8 @@ export default function PerfilPaseador() {
       {/* ══════ BODY ══════ */}
       <div className="pp-body">
 
-        {/* INFO */}
         {tab === "info" && (
           <div className="pp-tab-info">
-
-            {/* Descripción */}
             <div className="pp-card">
               <div className="pp-card-header">
                 <h3 className="pp-card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Sobre mí</h3>
@@ -411,13 +362,12 @@ export default function PerfilPaseador() {
               }
             </div>
 
-            {/* Stats */}
             <div className="pp-stats-grid">
               {[
-                { num: pas.experiencia || 0,                                       label: "Años de experiencia"   },
-                { num: pas.total_resenas || 0,                                     label: "Reseñas recibidas"     },
-                { num: Number(pas.promedio_estrellas || 0).toFixed(1),             label: "Calificación promedio" },
-                { num: pas.mascotas_max || 0,                                      label: "Mascotas por paseo"    },
+                { num: pas.experiencia || 0,                           label: "Años de experiencia"   },
+                { num: pas.total_resenas || 0,                         label: "Reseñas recibidas"     },
+                { num: Number(pas.promedio_estrellas || 0).toFixed(1), label: "Calificación promedio" },
+                { num: pas.mascotas_max || 0,                          label: "Mascotas por paseo"    },
               ].map((s, i) => (
                 <div className="pp-stat" key={i}>
                   <span className="pp-stat-num">{s.num}</span>
@@ -426,7 +376,6 @@ export default function PerfilPaseador() {
               ))}
             </div>
 
-            {/* Zonas de cobertura */}
             <div className="pp-card">
               <div className="pp-card-header">
                 <h3 className="pp-card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Zonas de cobertura</h3>
@@ -456,7 +405,6 @@ export default function PerfilPaseador() {
               )}
             </div>
 
-            {/* Razas aceptadas */}
             <div className="pp-card">
               <div className="pp-card-header">
                 <h3 className="pp-card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><path d="M9.27 7.26 4 17m11-6-2.15 5.4M4 17h16m-5 0 3-6 3.27 3.27"/></svg>Razas aceptadas</h3>
@@ -488,7 +436,6 @@ export default function PerfilPaseador() {
           </div>
         )}
 
-        {/* SERVICIOS */}
         {tab === "servicios" && (
           <div className="pp-tab-servicios">
             <div className="pp-servicios-header">
@@ -540,13 +487,10 @@ export default function PerfilPaseador() {
           </div>
         )}
 
-        {/* RESEÑAS */}
         {tab === "resenas" && (
           <div className="pp-tab-resenas">
-            {/* Lista de reseñas reales con el nuevo diseño unificado */}
-            {/* Lista de reseñas reales con el nuevo diseño */}
             {cargandoResenas ? (
-              <div className="pp-loading" style={{ padding: '20px' }}><div className="pp-spinner" /><span>Cargando reseñas…</span></div>
+              <div className="pp-loading" style={{ padding: "20px" }}><div className="pp-spinner" /><span>Cargando reseñas…</span></div>
             ) : (
               <ListaResenas resenas={resenas} nombreProveedor={pas.nombre} rol="paseador" />
             )}

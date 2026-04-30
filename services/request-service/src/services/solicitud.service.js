@@ -7,10 +7,12 @@ const crearSolicitud = async ({ dueno_id, paseador_id, mascota_id, fecha_servici
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-  const fechaSolicitud = new Date(fecha_servicio);
+  const fechaSolicitud = new Date(fecha_servicio + 'T00:00:00'); // ✅ única línea cambiada
   if (fechaSolicitud < hoy) {
     throw new Error("La fecha del servicio no puede ser en el pasado");
   }
+
+  // ... resto del código igual
 
   const mascota = await model.verificarMascota(mascota_id, dueno_id);
   if (!mascota) {

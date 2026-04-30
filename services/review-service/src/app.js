@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
   res.send('Review Service funcionando ⭐');
 });
 
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.PORT || 3008;
 
 app.listen(PORT, () => {
   console.log(`Review Service corriendo en http://localhost:${PORT}`);

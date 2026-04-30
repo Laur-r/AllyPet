@@ -3,14 +3,17 @@ import { obtenerServiciosCalificables, crearResena } from '../../services/resena
 import Estrellas from '../../components/Estrellas/Estrellas';
 import './Calificaciones.css';
 
-// Importación de ilustraciones
 import walkingDogImg from '../../assets/illustrations/walking_dog.png';
 import petFooterImg from '../../assets/illustrations/pet_footer.png';
 
+function esVeterinaria(tipo) {
+  if (!tipo) return false;
+  return tipo.toLowerCase().includes('veterinaria');
+}
+
 export default function Calificaciones() {
-  const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [tab, setTab] = useState('por-calificar'); // 'por-calificar' | 'historial'
+  const [tab, setTab] = useState('por-calificar');
   
   const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
   const [calificacion, setCalificacion] = useState(5);
@@ -26,15 +29,18 @@ export default function Calificaciones() {
   const cargarDatos = async () => {
     try {
       const data = await obtenerServiciosCalificables();
-      setPendientes(data.pendientes || []);
+
+      // Solo los que NO tienen reseña todavía
+      const sinCalificar = (data.pendientes || []).filter(s => s.id_resena === null);
+      setPendientes(sinCalificar);
       setHistorial(data.historial || []);
-      
+
       setServicioSeleccionado((actual) => {
-        if (!data.pendientes || data.pendientes.length === 0) return null;
-        if (actual && data.pendientes.some((s) => s.id_solicitud === actual.id_solicitud)) {
+        if (!sinCalificar || sinCalificar.length === 0) return null;
+        if (actual && sinCalificar.some((s) => s.solicitud_id === actual.solicitud_id)) {
           return actual;
         }
-        return data.pendientes[0];
+        return sinCalificar[0];
       });
     } catch (err) {
       console.error(err);
@@ -56,6 +62,7 @@ export default function Calificaciones() {
       await crearResena({
         dueno_id: user.id,
         proveedor_id: servicioSeleccionado.proveedor_id,
+        solicitud_id: servicioSeleccionado.solicitud_id,
         tipo_proveedor: esVeterinaria(servicioSeleccionado.tipo_servicio) ? 'veterinario' : 'paseador',
         calificacion,
         comentario
@@ -112,13 +119,12 @@ export default function Calificaciones() {
           <>
             {serviciosPorCalificar.length > 0 ? (
               <>
-                {/* Si hay más de uno, mostramos una lista mini para elegir */}
                 {serviciosPorCalificar.length > 1 && (
                   <div className="cal-pending-list">
                     {serviciosPorCalificar.map(s => (
                       <div 
-                        key={s.id_servicio} 
-                        className={`cal-mini-card ${servicioSeleccionado?.id_servicio === s.id_servicio ? 'active' : ''}`}
+                        key={s.solicitud_id}
+                        className={`cal-mini-card ${servicioSeleccionado?.solicitud_id === s.solicitud_id ? 'active' : ''}`}
                         onClick={() => setServicioSeleccionado(s)}
                       >
                         <strong>{s.proveedor_nombre}</strong>
@@ -128,7 +134,6 @@ export default function Calificaciones() {
                   </div>
                 )}
 
-                {/* Card Principal de Calificación */}
                 {servicioSeleccionado && (
                   <div className="cal-main-card">
                     <div className="cal-card-top">
@@ -137,19 +142,19 @@ export default function Calificaciones() {
                           {servicioSeleccionado.proveedor_foto ? (
                             <img src={servicioSeleccionado.proveedor_foto} alt="provider" />
                           ) : (
-                            <span>{servicioSeleccionado.proveedor_nombre[0].toUpperCase()}</span>
+                            <span>{servicioSeleccionado.proveedor_nombre?.[0]?.toUpperCase() ?? '?'}</span>
                           )}
                         </div>
                         <div className="cal-provider-details">
                           <div className="cal-name-row">
-                            <h2>{servicioSeleccionado.proveedor_nombre}</h2>
+                            <h2>{servicioSeleccionado.proveedor_nombre ?? 'Proveedor'}</h2>
                             <span className="cal-role-tag">
-                              {servicioSeleccionado.tipo_servicio === 'veterinaria' ? 'Veterinario' : 'Paseador'}
+                              {esVeterinaria(servicioSeleccionado.tipo_servicio) ? 'Veterinario' : 'Paseador'}
                             </span>
                           </div>
                           <p className="cal-service-meta">
                             {new Date(servicioSeleccionado.fecha_servicio).toLocaleDateString()} • 
-                            {servicioSeleccionado.tipo_servicio === 'veterinaria' ? ' Consulta Médica' : ' Paseo de 30 minutos'}
+                            {esVeterinaria(servicioSeleccionado.tipo_servicio) ? ' Consulta Médica' : ' Paseo de 30 minutos'}
                           </p>
                         </div>
                       </div>
@@ -240,34 +245,36 @@ export default function Calificaciones() {
           <div className="cal-historial-list">
             {historialServicios.length > 0 ? (
               historialServicios.map(s => (
-                <div key={s.id_servicio} className="cal-main-card">
-                   <div className="cal-card-top">
-                      <div className="cal-provider-info">
-                        <div className="cal-provider-avatar">
-                          {s.proveedor_foto ? (
-                            <img src={s.proveedor_foto} alt="provider" />
-                          ) : (
-                            <span>{s.proveedor_nombre[0].toUpperCase()}</span>
-                          )}
-                        </div>
-                        <div className="cal-provider-details">
-                          <div className="cal-name-row">
-                            <h2>{s.proveedor_nombre}</h2>
-                            <span className="cal-role-tag">
-                              {s.tipo_servicio === 'veterinaria' ? 'Veterinario' : 'Paseador'}
-                            </span>
-                          </div>
-                          <p className="cal-service-meta">
-                            Calificado el {s.fecha_resena ? new Date(s.fecha_resena.toString().replace(' ', 'T')).toLocaleDateString() : 'Recientemente'}
-                          </p>
-                        </div>
+                <div key={s.id} className="cal-main-card">
+                  <div className="cal-card-top">
+                    <div className="cal-provider-info">
+                      <div className="cal-provider-avatar">
+                        {s.proveedor_foto ? (
+                          <img src={s.proveedor_foto} alt="provider" />
+                        ) : (
+                          <span>{s.proveedor_nombre?.[0]?.toUpperCase() ?? '?'}</span>
+                        )}
                       </div>
-                      <div className="cal-score-badge">
-                        <span className="cal-score-num">{Number(s.calificacion).toFixed(1)}</span>
-                        <Estrellas calificacion={s.calificacion} size={14} />
+                      <div className="cal-provider-details">
+                        <div className="cal-name-row">
+                          <h2>{s.proveedor_nombre ?? 'Proveedor'}</h2>
+                          <span className="cal-role-tag">
+                            {esVeterinaria(s.tipo_servicio) ? 'Veterinario' : 'Paseador'}
+                          </span>
+                        </div>
+                        <p className="cal-service-meta">
+                          Calificado el {s.fecha_resena 
+                            ? new Date(s.fecha_resena.toString().replace(' ', 'T')).toLocaleDateString() 
+                            : 'Recientemente'}
+                        </p>
                       </div>
                     </div>
-                    <p className="cal-comment-prev">"{s.comentario || 'Sin comentario'}"</p>
+                    <div className="cal-score-badge">
+                      <span className="cal-score-num">{Number(s.calificacion).toFixed(1)}</span>
+                      <Estrellas calificacion={s.calificacion} size={14} />
+                    </div>
+                  </div>
+                  <p className="cal-comment-prev">"{s.comentario || 'Sin comentario'}"</p>
                 </div>
               ))
             ) : (

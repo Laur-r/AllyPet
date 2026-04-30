@@ -22,8 +22,16 @@ const COLORES_ESTADO = {
 };
 
 function formatFecha(fecha) {
-  return new Date(fecha + "T00:00:00").toLocaleDateString("es-CO", {
-    day: "numeric", month: "long", year: "numeric",
+  if (!fecha) return "Fecha inválida";
+
+  const f = new Date(fecha);
+
+  if (isNaN(f)) return "Fecha inválida";
+
+  return f.toLocaleDateString("es-CO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 }
 
@@ -35,9 +43,16 @@ function formatDuracion(minutos) {
 }
 
 function puedeCompletar(fechaServicio) {
-  const hoy   = new Date();
+  if (!fechaServicio) return false;
+
+  const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-  const fecha = new Date(fechaServicio + "T00:00:00");
+
+  const fecha = new Date(fechaServicio);
+  if (isNaN(fecha)) return false;
+
+  fecha.setHours(0, 0, 0, 0);
+
   return fecha <= hoy;
 }
 
