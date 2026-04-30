@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ThumbsUp, ThumbsDown, PartyPopper, ClipboardList } from 'lucide-react';
+
 import { obtenerServiciosCalificables, crearResena } from '../../services/resenas.service';
 import Estrellas from '../../components/Estrellas/Estrellas';
 import './Calificaciones.css';
@@ -193,14 +195,17 @@ export default function Calificaciones() {
                               className={`cal-toggle-btn ${recomienda ? 'active' : ''}`}
                               onClick={() => setRecomienda(true)}
                             >
-                              👍 Sí
+                              <ThumbsUp size={16} />
+                              Sí
                             </button>
+
                             <button 
                               type="button" 
                               className={`cal-toggle-btn ${!recomienda ? 'active' : ''}`}
                               onClick={() => setRecomienda(false)}
                             >
-                              👎 No
+                              <ThumbsDown size={16} />
+                              No
                             </button>
                           </div>
                         </div>
@@ -233,7 +238,9 @@ export default function Calificaciones() {
               </>
             ) : (
               <div className="cal-empty-state">
-                <div className="cal-empty-icon">🎉</div>
+                <div className="cal-empty-icon">
+                  <PartyPopper size={52} />
+                </div>
                 <h3>¡Todo al día!</h3>
                 <p>No tienes servicios pendientes por calificar en este momento.</p>
               </div>
@@ -279,7 +286,9 @@ export default function Calificaciones() {
               ))
             ) : (
               <div className="cal-empty-state">
-                <div className="cal-empty-icon">📋</div>
+                <div className="cal-empty-icon">
+                  <ClipboardList size={52} />
+                </div>
                 <h3>Historial vacío</h3>
                 <p>Aún no has realizado ninguna calificación.</p>
               </div>

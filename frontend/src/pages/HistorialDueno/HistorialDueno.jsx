@@ -6,20 +6,20 @@ const PAS_API = "http://localhost:3006";
 const PET_API = "http://localhost:3003";
 
 const ESTADOS = [
-  { value: "",            label: "Todas"      },
-  { value: "pendiente",   label: "Pendientes" },
-  { value: "aceptada",    label: "Aceptadas"  },
-  { value: "completada",  label: "Completadas"},
-  { value: "cancelada",   label: "Canceladas" },
-  { value: "rechazada",   label: "Rechazadas" },
+  { value: "",            label: "Todas"       },
+  { value: "pendiente",   label: "Pendientes"  },
+  { value: "aceptada",    label: "Aceptadas"   },
+  { value: "completada",  label: "Completadas" },
+  { value: "cancelada",   label: "Canceladas"  },
+  { value: "rechazada",   label: "Rechazadas"  },
 ];
 
-const COLORES_ESTADO = {
-  pendiente:  { bg: "#FEF9C3", color: "#92400E", border: "#FDE68A", label: "Pendiente"  },
-  aceptada:   { bg: "#EBF7E4", color: "#3A7A2A", border: "#C6EDBA", label: "Aceptada"   },
-  completada: { bg: "#EFF6FF", color: "#1E40AF", border: "#BFDBFE", label: "Completada" },
-  cancelada:  { bg: "#F3F4F6", color: "#6B7280", border: "#E5E7EB", label: "Cancelada"  },
-  rechazada:  { bg: "#FEE2E2", color: "#B91C1C", border: "#FECACA", label: "Rechazada"  },
+const BADGE_ESTADO = {
+  pendiente:  { bg: "rgba(254,249,195,.92)", color: "#92400E", border: "#FDE68A", label: "Pendiente",  accent: "#F59E0B" },
+  aceptada:   { bg: "rgba(235,247,228,.92)", color: "#3A7A2A", border: "#C6EDBA", label: "Aceptada",   accent: "#6CC04A" },
+  completada: { bg: "rgba(239,246,255,.92)", color: "#1E40AF", border: "#BFDBFE", label: "Completada", accent: "#3B82F6" },
+  cancelada:  { bg: "rgba(243,244,246,.92)", color: "#6B7280", border: "#E5E7EB", label: "Cancelada",  accent: "#9CA3AF" },
+  rechazada:  { bg: "rgba(254,226,226,.92)", color: "#B91C1C", border: "#FECACA", label: "Rechazada",  accent: "#EF4444" },
 };
 
 function formatFecha(fecha) {
@@ -33,6 +33,10 @@ function formatDuracion(minutos) {
   const h = Math.floor(minutos / 60);
   const m = minutos % 60;
   return m > 0 ? `${h}h ${m}min` : `${h} hora${h > 1 ? "s" : ""}`;
+}
+
+function getIniciales(nombre = "") {
+  return nombre.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
 export default function HistorialDueno() {
@@ -85,10 +89,15 @@ export default function HistorialDueno() {
 
       {/* ENCABEZADO */}
       <div className="hd-head">
-        <div>
+        <div className="hd-head-titles">
           <h1>Mis solicitudes</h1>
           <p>Historial de todos los paseos que has solicitado</p>
         </div>
+        {!cargando && (
+          <span className="hd-head-counter">
+            {solicitudes.length} solicitud{solicitudes.length !== 1 ? "es" : ""}
+          </span>
+        )}
       </div>
 
       {/* FILTROS */}
@@ -122,96 +131,124 @@ export default function HistorialDueno() {
       )}
 
       {/* LISTA */}
-      {!cargando && (
+      {!cargando && solicitudes.length > 0 && (
         <div className="hd-lista">
           {solicitudes.map(s => {
-            const est = COLORES_ESTADO[s.estado] || COLORES_ESTADO.pendiente;
+            const est = BADGE_ESTADO[s.estado] || BADGE_ESTADO.pendiente;
+            const fotoMascota = s.mascota_foto
+              ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
+              : null;
+            const fotoPaseador = s.paseador_foto
+              ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto)
+              : null;
+
             return (
               <div key={s.id} className="hd-card">
 
-                {/* Header card */}
-                <div className="hd-card-header">
-                  <div className="hd-paseador">
-                    <div className="hd-avatar">
-                      {s.paseador_foto
-                        ? <img src={s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto} alt={s.paseador_nombre} />
-                        : <span>{s.paseador_nombre?.[0]?.toUpperCase()}</span>
-                      }
-                    </div>
-                    <div>
-                      <strong>{s.paseador_nombre}</strong>
-                      <span>Paseador</span>
-                    </div>
+                {/* ── HERO: foto grande de la mascota ── */}
+                <div className="hd-hero">
+                  {fotoMascota ? (
+                    <img
+                      className="hd-hero-img"
+                      src={fotoMascota}
+                      alt={s.mascota_nombre}
+                      onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+                    />
+                  ) : null}
+                  <div
+                    className="hd-hero-emoji"
+                    style={{ display: fotoMascota ? "none" : "flex" }}
+                  >
+                    🐶
                   </div>
+                  <div className="hd-hero-fade" />
                   <span
-                    className="hd-estado-badge"
+                    className="hd-badge-float"
                     style={{ background: est.bg, color: est.color, borderColor: est.border }}
                   >
                     {est.label}
                   </span>
-                </div>
-
-                <div className="hd-divider" />
-
-                {/* Mascota */}
-                <div className="hd-mascota-row">
-                  <div className="hd-mascota-foto">
-                    {s.mascota_foto
-                      ? <img src={s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto} alt={s.mascota_nombre} />
-                      : <span>🐶</span>
-                    }
-                  </div>
-                  <div>
-                    <strong>{s.mascota_nombre}</strong>
-                    <span>{s.mascota_raza || s.mascota_especie}</span>
-                  </div>
-                </div>
-
-                {/* Detalles */}
-                <div className="hd-detalles">
-                  <div className="hd-detalle">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="4" width="18" height="18" rx="2"/>
-                      <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                      <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                    <span>{formatFecha(s.fecha_servicio)}</span>
-                  </div>
-                  <div className="hd-detalle">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span>{s.hora_servicio?.slice(0, 5)} — {formatDuracion(s.duracion_minutos)}</span>
-                  </div>
-                </div>
-
-                {/* Botón cancelar solo si está pendiente */}
-                {s.estado === "pendiente" && (
-                  confirmId === s.id ? (
-                    <div className="hd-confirm">
-                      <p>¿Seguro que deseas cancelar esta solicitud?</p>
-                      <div className="hd-confirm-btns">
-                        <button className="hd-btn-no" onClick={() => setConfirmId(null)}>
-                          No, volver
-                        </button>
-                        <button
-                          className="hd-btn-si"
-                          onClick={() => handleCancelar(s.id)}
-                          disabled={cancelando === s.id}
-                        >
-                          {cancelando === s.id ? <div className="hd-spinner-sm" /> : null}
-                          Sí, cancelar
-                        </button>
-                      </div>
+                  <div className="hd-hero-info">
+                    <div>
+                      <div className="hd-pet-name">{s.mascota_nombre}</div>
+                      <div className="hd-pet-raza">{s.mascota_raza || s.mascota_especie}</div>
                     </div>
-                  ) : (
-                    <button className="hd-btn-cancelar" onClick={() => setConfirmId(s.id)}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M18 6L6 18M6 6l12 12"/>
+                  </div>
+                </div>
+
+                {/* Barra acento */}
+                <div className="hd-accent" style={{ background: est.accent }} />
+
+                {/* BODY */}
+                <div className="hd-body">
+
+                  {/* Paseador */}
+                  <div className="hd-paseador">
+                    <div className="hd-avatar">
+                      {fotoPaseador
+                        ? <img src={fotoPaseador} alt={s.paseador_nombre} />
+                        : <span>{getIniciales(s.paseador_nombre)}</span>
+                      }
+                    </div>
+                    <div className="hd-paseador-info">
+                      <strong>{s.paseador_nombre}</strong>
+                      <small>Paseador</small>
+                    </div>
+                  </div>
+
+                  {/* Detalles */}
+                  <div className="hd-detalles">
+                    <div className="hd-det">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
                       </svg>
-                      Cancelar solicitud
-                    </button>
-                  )
+                      <span>{formatFecha(s.fecha_servicio)}</span>
+                    </div>
+                    <div className="hd-det">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      <span>{s.hora_servicio?.slice(0, 5)} · {formatDuracion(s.duracion_minutos)}</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* FOOTER: cancelar */}
+                {s.estado === "pendiente" ? (
+                  <div className="hd-foot">
+                    {confirmId === s.id ? (
+                      <div className="hd-confirm">
+                        <p>¿Seguro que deseas cancelar esta solicitud?</p>
+                        <div className="hd-confirm-btns">
+                          <button className="hd-btn-no" onClick={() => setConfirmId(null)}>
+                            No, volver
+                          </button>
+                          <button
+                            className="hd-btn-si"
+                            onClick={() => handleCancelar(s.id)}
+                            disabled={cancelando === s.id}
+                          >
+                            {cancelando === s.id && <div className="hd-spinner-sm" />}
+                            Sí, cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button className="hd-btn-cancel" onClick={() => setConfirmId(s.id)}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                        Cancelar solicitud
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ height: "14px" }} />
                 )}
 
               </div>
