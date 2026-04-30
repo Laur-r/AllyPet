@@ -1,4 +1,5 @@
 const PetService = require('../services/pet.service');
+const petModel = require('../models/pet.model');
 
 const getMascotas = async (req, res) => {
   try {
@@ -51,4 +52,41 @@ const eliminarMascota = async (req, res) => {
   }
 };
 
-module.exports = { getMascotas, getMascota, crearMascota, actualizarMascota, eliminarMascota };
+// Galería de fotos
+const getGaleria = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // ✅ Usamos el modelo en lugar de pool directo
+        const fotos = await petModel.getGaleriaByMascotaId(id);
+        res.json({ ok: true, data: fotos });
+    } catch (error) {
+        res.status(500).json({ ok: false, message: 'Error al obtener galería' });
+    }
+};
+
+const subirAFotoGaleria = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!req.file) return res.status(400).json({ ok: false, message: 'Falta la imagen' });
+        
+        const foto_url = `/uploads/${req.file.filename}`;
+        // ✅ Usamos el modelo
+        const nuevaFoto = await petModel.addFotoGaleria(id, foto_url);
+        res.json({ ok: true, data: nuevaFoto });
+    } catch (error) {
+        res.status(500).json({ ok: false, message: 'Error al subir foto' });
+    }
+};
+
+const eliminarFotoGaleria = async (req, res) => {
+    try {
+        const { fotoId } = req.params;
+        // ✅ Usamos el modelo
+        await petModel.deleteFotoGaleria(fotoId);
+        res.json({ ok: true, message: 'Foto eliminada' });
+    } catch (error) {
+        res.status(500).json({ ok: false, message: 'Error al eliminar foto' });
+    }
+};
+
+module.exports = { getMascotas, getMascota, crearMascota, actualizarMascota, eliminarMascota, getGaleria, subirAFotoGaleria,eliminarFotoGaleria };

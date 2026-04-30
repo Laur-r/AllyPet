@@ -377,3 +377,176 @@
 .mas-card-img:has(img[style*="display: none"]) .mas-placeholder {
   display: flex !important;
 }
+
+
+/*Galeria*/
+/* Botón de cámara en la tarjeta */
+.mas-btn-galeria-float {
+  position: absolute;
+  bottom: 12px; /* Separado del borde inferior */
+  right: 12px;  /* Separado del borde derecho */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px); /* Efecto moderno */
+  border: 1px solid var(--purple-light);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  color: var(--purple);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.mas-btn-galeria-float:hover {
+  transform: scale(1.1);
+  background: white;
+}
+
+/* Modal de Galería */
+.mas-galeria-modal {
+  max-width: 800px !important;
+  width: 90%;
+}
+
+.mas-galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 10px 0;
+}
+
+/* Botón de subir foto */
+.mas-galeria-add {
+  aspect-ratio: 1 / 1;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-soft);
+  transition: all var(--tr);
+}
+
+.mas-galeria-add:hover {
+  border-color: var(--purple);
+  background: var(--purple-pale);
+  color: var(--purple);
+}
+
+/* Items de la galería */
+.mas-galeria-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.mas-galeria-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mas-galeria-del {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.mas-galeria-item:hover .mas-galeria-del {
+  opacity: 1;
+}
+
+.mas-empty-galeria {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-xsoft);
+}
+
+/* Recordatorios estilo Historial */
+.mas-reminder-row {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.mas-reminder-dot-main {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.mas-reminder-content { flex: 1; }
+
+.mas-reminder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.mas-reminder-main-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.mas-rec-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #f0f0f0;
+}
+
+/* Colores de badges */
+.mas-rec-badge.vacuna { background: #F3E8F7; color: #7B2D8B; }
+.mas-rec-badge.desparasitacion { background: #EBF7E4; color: #3A7A2A; }
+
+.mas-pet-tag { color: var(--text-soft); font-size: 0.85rem; font-weight: 500; }
+
+.mas-reminder-desc {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.mas-btn-ir {
+  background: none;
+  border: none;
+  color: var(--purple);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mas-days-badge.urgent { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }

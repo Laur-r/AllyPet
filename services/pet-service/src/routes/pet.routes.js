@@ -32,4 +32,9 @@ router.get('/:id/recordatorios', async (req, res) => {
   }
 });
 
+// ✅ Galería de fotos
+router.get('/:id/galeria', PetController.getGaleria);
+router.post('/:id/galeria', upload.single('foto'), PetController.subirAFotoGaleria);
+router.delete('/galeria/:fotoId', PetController.eliminarFotoGaleria);
+
 module.exports = router;
