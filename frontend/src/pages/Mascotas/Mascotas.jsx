@@ -18,9 +18,11 @@ const authFetch = (url, options = {}) => {
 };
 
 const getFotoUrl = (foto) => {
+  
   if (!foto) return null;
   if (foto.startsWith('http')) return foto;
   if (foto.startsWith('/uploads')) return `${API}${foto}`;
+  
   return null;
 };
 
