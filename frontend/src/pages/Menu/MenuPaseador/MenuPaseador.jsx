@@ -3,23 +3,15 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuPaseador.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 export default function MenuPaseador() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch]           = useState("");
-  const [user, setUser]               = useState(null);
+  const { user } = useCurrentUser();
 
-  useEffect(() => {
-    const loadUser = () => {
-      const userData = localStorage.getItem("user");
-      if (userData) setUser(JSON.parse(userData));
-    };
-    loadUser();
-    window.addEventListener("storage", loadUser);
-    return () => window.removeEventListener("storage", loadUser);
-  }, []);
 
   /* Deriva el item activo de la URL actual */
   const getActive = () => {
@@ -84,7 +76,7 @@ export default function MenuPaseador() {
 
         <div className="mp-profile">
           <div className="mp-avatar-wrap">
-            <img className="mp-avatar" src={avatarDefault} alt="avatar" />
+            <img className="mp-avatar" src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
             <span className="mp-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -152,8 +144,10 @@ export default function MenuPaseador() {
           </div>
 
           <div className="mp-navbar-right">
-            <div className="mp-user-chip">
-              <img src={avatarDefault} alt="avatar" />
+            <div className="mv-user-chip"
+              onClick={() => navigate("/profile")}
+            >
+              <img src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
               <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>

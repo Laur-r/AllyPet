@@ -3,24 +3,16 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuVeterinario.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 export default function MenuVeterinario() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
-  const [user, setUser] = useState(null);
+   const { user } = useCurrentUser();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const loadUser = () => {
-      const userData = localStorage.getItem("user");
-      if (userData) setUser(JSON.parse(userData));
-    };
-    loadUser();
-    window.addEventListener("storage", loadUser);
-    return () => window.removeEventListener("storage", loadUser);
-  }, []);
 
   /* Determina el ítem activo según la URL actual */
   const getActive = () => {
@@ -78,7 +70,7 @@ export default function MenuVeterinario() {
 
         <div className="mv-profile">
           <div className="mv-avatar-wrap">
-            <img className="mv-avatar" src={avatarDefault} alt="avatar" />
+            <img className="mv-avatar"src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
             <span className="mv-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -167,8 +159,10 @@ export default function MenuVeterinario() {
               </svg>
               <span className="mv-bell-dot" />
             </button>
-            <div className="mv-user-chip">
-              <img src={avatarDefault} alt="avatar" />
+            <div className="mv-user-chip"
+              onClick={() => navigate("/profile")}
+            >
+              <img src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
               <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>

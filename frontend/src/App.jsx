@@ -32,6 +32,7 @@ import HistorialPaseador from "./pages/HistorialPaseador/HistorialPaseador";
 import HistorialMedico from './pages/HistorialMedico/HistorialMedico';
 import Carnet from './pages/Carnet/Carnet';
 import Calificaciones from './pages/Calificaciones/Calificaciones';
+import ConfiguracionPerfil from './pages/Configuracion/ConfiguracionPerfil';
 
 function App() {
   return (
@@ -65,8 +66,9 @@ function App() {
           <Route path="mascotas/:petId/historial" element={<HistorialMedico />} />
           <Route path="solicitar-paseo/:paseadorId" element={<SolicitarPaseo />} />
           <Route path="calificaciones" element={<Calificaciones />} />
+          <Route path="configuracion" element={<ConfiguracionPerfil />} />
         </Route>
-
+          
         {/* Menú Paseador */}
         <Route path="/menu/paseador" element={<MenuPaseador />}>
           <Route index element={<h2>Bienvenido paseador</h2>} />
@@ -75,7 +77,7 @@ function App() {
           <Route path="historial" element={<HistorialPaseador />} />
           <Route path="reservas"      element={<h2>Reservas</h2>} />
           <Route path="mensajes"      element={<h2>Mensajes</h2>} />
-          <Route path="configuracion" element={<h2>Configuración</h2>} />
+          <Route path="configuracion" element={<ConfiguracionPerfil />} />
         </Route>
 
         {/* Menú Veterinario */}
@@ -86,7 +88,7 @@ function App() {
           <Route path="pacientes/:petId" element={<CarnetVet />} />
           <Route path="citas"         element={<h2>Citas</h2>} />
           <Route path="mensajes"      element={<h2>Mensajes</h2>} />
-          <Route path="configuracion" element={<h2>Configuración</h2>} />
+          <Route path="configuracion" element={<ConfiguracionPerfil />} />
         </Route>
 
         {/* Admin */}

@@ -3,12 +3,13 @@ import "./MenuDueno.css";
 import logoNavbar from "../../../assets/menus/logonavbar.png";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import avatarDefault from "../../../assets/menus/menudefault.png";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 export default function MenuDueno() {
+  const { user } = useCurrentUser();
   const [serviciosOpen, setServiciosOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch] = useState("");
-  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,11 +29,6 @@ export default function MenuDueno() {
   useEffect(() => {
     setActiveItem(getActiveFromPath(location.pathname));
   }, [location.pathname]);
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) setUser(JSON.parse(userData));
-  }, []);
 
   const getRolNombre = (rol) => {
     const roles = {
@@ -86,7 +82,11 @@ export default function MenuDueno() {
 
         <div className="md-profile">
           <div className="md-avatar-wrap">
-            <img className="md-avatar" src={avatarDefault} alt="avatar" />
+            <img
+              className="md-avatar"
+              src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault}
+              alt="avatar"
+            />
             <span className="md-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -133,6 +133,7 @@ export default function MenuDueno() {
                       navigate("/menu/dueno/historial-solicitudes");
                     if (item.key === "calificar")
                       navigate("calificaciones");
+                    if (item.key === "configuracion") navigate("/menu/dueno/configuracion");
                   }
                 }}
               >
@@ -230,8 +231,11 @@ export default function MenuDueno() {
               className="md-user-chip"
               onClick={() => navigate("/profile")}
             >
-              <img className="md-avatar" src={avatarDefault} alt="avatar" />
-              <span>{user?.nombre || "Usuario"}</span>
+            <img
+              className="md-avatar"
+              src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault}
+              alt="avatar"
+            />
             </div>
           </div>
         </header>
