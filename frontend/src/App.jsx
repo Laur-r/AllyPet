@@ -32,6 +32,7 @@ import HistorialPaseador from "./pages/HistorialPaseador/HistorialPaseador";
 import HistorialMedico from './pages/HistorialMedico/HistorialMedico';
 import Carnet from './pages/Carnet/Carnet';
 import Calificaciones from './pages/Calificaciones/Calificaciones';
+import DashboardDueno from './pages/DashboardDueno/DashboardDueno';
 
 function App() {
   return (
@@ -53,7 +54,7 @@ function App() {
 
         {/* Menú Dueño */}
         <Route path="/menu/dueno" element={<MenuDueno />}>
-          <Route index element={<h2>Bienvenido dueño</h2>} />
+          <Route index element={<DashboardDueno />} />
           <Route path="mascotas" element={<Mascotas />} />
           <Route path="mascotas/:petId/carnet" element={<Carnet />} /> 
           <Route path="historial-solicitudes" element={<HistorialDueno />} />
