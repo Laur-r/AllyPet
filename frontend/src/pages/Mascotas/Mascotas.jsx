@@ -368,58 +368,60 @@ function GaleriaMascota({ mascota, onCerrar, notify }) {
 
 
   return (
-    <div className="mas-overlay" onClick={onCerrar}>
-      <div className="mas-modal mas-galeria-modal" onClick={e => e.stopPropagation()}>
-        <div className="mas-modal-head">
-          <div>
-            <h2>Álbum de {mascota.nombre}</h2>
-            <p>{fotos.length} fotos guardadas</p>
-          </div>
-          <button className="mas-modal-x" onClick={onCerrar}><IcoX /></button>
-        </div>
-
-        <div className="mas-modal-body">
-          <div className="mas-galeria-grid">
-            {/* Botón Añadir */}
-            <div className="mas-galeria-add" onClick={() => fileRef.current.click()}>
-              <IcoPlus />
-              <span>Subir</span>
-              <input type="file" ref={fileRef} hidden onChange={handleSubir} accept="image/*" />
+    <>
+      <div className="mas-overlay" onClick={onCerrar}>
+        <div className="mas-modal mas-galeria-modal" onClick={e => e.stopPropagation()}>
+          <div className="mas-modal-head">
+            <div>
+              <h2>Álbum de {mascota.nombre}</h2>
+              <p>{fotos.length} fotos guardadas</p>
             </div>
+            <button className="mas-modal-x" onClick={onCerrar}><IcoX /></button>
+          </div>
 
-            {fotos.map(f => (
-              <div key={f.id} className="mas-galeria-item">
-                <img
-                  src={getFotoUrl(f.foto_url)}
-                  alt="Mascota"
-                  onClick={() => setFotoAmpliada(getFotoUrl(f.foto_url))}
-                  style={{ cursor: 'zoom-in' }}
-                />
-                <button className="mas-galeria-del" onClick={() => eliminarFoto(f.id)}>
-                  <IcoX />
-                </button>
+          <div className="mas-modal-body">
+            <div className="mas-galeria-grid">
+              <div className="mas-galeria-add" onClick={() => fileRef.current.click()}>
+                <IcoPlus />
+                <span>Subir</span>
+                <input type="file" ref={fileRef} hidden onChange={handleSubir} accept="image/*" />
               </div>
-            ))}
-          </div>
-          {cargando && <p style={{ textAlign: 'center', padding: 20 }}>Cargando álbum...</p>}
-          {!cargando && fotos.length === 0 && (
-            <div className="mas-empty-galeria">
-              <p>Aún no hay fotos en el álbum.</p>
+
+              {fotos.map(f => (
+                <div key={f.id} className="mas-galeria-item">
+                  <img
+                    src={getFotoUrl(f.foto_url)}
+                    alt="Mascota"
+                    onClick={(e) => { e.stopPropagation(); setFotoAmpliada(getFotoUrl(f.foto_url)); }}
+                    style={{ cursor: 'zoom-in' }}
+                  />
+                  <button className="mas-galeria-del" onClick={() => eliminarFoto(f.id)}>
+                    <IcoX />
+                  </button>
+                </div>
+              ))}
             </div>
-          )}
+            {cargando && <p style={{ textAlign: 'center', padding: 20 }}>Cargando álbum...</p>}
+            {!cargando && fotos.length === 0 && (
+              <div className="mas-empty-galeria">
+                <p>Aún no hay fotos en el álbum.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {fotoAmpliada && (
+        <div className="mas-foto-zoom-overlay" onClick={() => setFotoAmpliada(null)}>
+          <img src={fotoAmpliada} alt="Foto ampliada" className="mas-foto-zoom-img" />
+          <button className="mas-foto-zoom-close" onClick={() => setFotoAmpliada(null)}>
+            <IcoX />
+          </button>
+        </div>
+      )}
+    </>
   );
 
-  {fotoAmpliada && (
-  <div className="mas-foto-zoom-overlay" onClick={() => setFotoAmpliada(null)}>
-    <img src={fotoAmpliada} alt="Foto ampliada" className="mas-foto-zoom-img" />
-    <button className="mas-foto-zoom-close" onClick={() => setFotoAmpliada(null)}>
-      <IcoX />
-    </button>
-  </div>
-)}
 }
 
 function FormularioMascota({ mascota, onGuardar, onCerrar }) {
@@ -477,7 +479,7 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
               <input ref={fileRef} type="file" accept="image/*" onChange={handleFoto} />
               {preview
                 ? <img src={preview} alt="preview" className="mas-photo-prev" />
-                : <IcoBell size={28} />
+                : <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               }
               <p>{preview ? 'Toca para cambiar' : 'Subir foto (opcional)'}</p>
             </div>
