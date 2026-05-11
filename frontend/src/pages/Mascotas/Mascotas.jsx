@@ -40,7 +40,7 @@ const RAZAS_PERRO = ['Schnauzer','Pincher','Labrador','Golden Retriever','Bulldo
 const RAZAS_GATO  = ['Persa','Siamés','Maine Coon','Bengalí','Ragdoll','Doméstico','Otra'];
 const RAZAS_OTRO  = ['Conejo','Hamster','Ave','Reptil','Otro'];
 const FILTROS     = ['Todas','Perros','Gatos','Otros','Recordatorios'];
-const FORM_VACIO  = { nombre:'', especie:'Perro', raza:'', sexo:'Macho', edad:'', peso:'', color:'', notas:'', foto:null };
+const FORM_VACIO = { nombre:'', especie:'Perro', raza:'', sexo:'Macho', edad:'', edad_unidad:'años', peso:'', color:'', notas:'', foto:null };
 
 const REC_TYPES = {
   vacuna:    { emoji: '💉', color: '#7B2D8B' },
@@ -331,6 +331,7 @@ function GaleriaMascota({ mascota, onCerrar, notify }) {
   const [fotos, setFotos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const fileRef = useRef();
+  const [fotoAmpliada, setFotoAmpliada] = useState(null);
 
   useEffect(() => {
     authFetch(`/api/pets/${mascota.id}/galeria`)
@@ -365,6 +366,7 @@ function GaleriaMascota({ mascota, onCerrar, notify }) {
     } catch { notify('Error al eliminar'); }
   };
 
+
   return (
     <div className="mas-overlay" onClick={onCerrar}>
       <div className="mas-modal mas-galeria-modal" onClick={e => e.stopPropagation()}>
@@ -385,10 +387,14 @@ function GaleriaMascota({ mascota, onCerrar, notify }) {
               <input type="file" ref={fileRef} hidden onChange={handleSubir} accept="image/*" />
             </div>
 
-            {/* Lista de fotos */}
             {fotos.map(f => (
               <div key={f.id} className="mas-galeria-item">
-                <img src={getFotoUrl(f.foto_url)} alt="Mascota" />
+                <img
+                  src={getFotoUrl(f.foto_url)}
+                  alt="Mascota"
+                  onClick={() => setFotoAmpliada(getFotoUrl(f.foto_url))}
+                  style={{ cursor: 'zoom-in' }}
+                />
                 <button className="mas-galeria-del" onClick={() => eliminarFoto(f.id)}>
                   <IcoX />
                 </button>
@@ -405,6 +411,15 @@ function GaleriaMascota({ mascota, onCerrar, notify }) {
       </div>
     </div>
   );
+
+  {fotoAmpliada && (
+  <div className="mas-foto-zoom-overlay" onClick={() => setFotoAmpliada(null)}>
+    <img src={fotoAmpliada} alt="Foto ampliada" className="mas-foto-zoom-img" />
+    <button className="mas-foto-zoom-close" onClick={() => setFotoAmpliada(null)}>
+      <IcoX />
+    </button>
+  </div>
+)}
 }
 
 function FormularioMascota({ mascota, onGuardar, onCerrar }) {
@@ -444,8 +459,8 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
     if (!form.raza)                  e.raza   = 'Selecciona una raza';
     if (!String(form.edad).trim())   e.edad   = 'Campo requerido';
     if (Object.keys(e).length) { setErrs(e); return; }
-    const { nombre, raza, edad, peso, foto, especie, sexo, color, notas } = form;
-    onGuardar({ id: mascota?.id, nombre, raza, edad, peso, foto, especie, sexo, color, notas });
+    const { nombre, raza, edad, edad_unidad, peso, foto, especie, sexo, color, notas } = form;
+    onGuardar({ id: mascota?.id, nombre, raza, edad, edad_unidad, peso, foto, especie, sexo, color, notas });
   };
 
   return (
@@ -495,7 +510,24 @@ function FormularioMascota({ mascota, onGuardar, onCerrar }) {
             </div>
             <div className="mas-fg">
               <label>Edad *</label>
-              <input className="mas-input" placeholder="Ej: 2 años" value={form.edad} onChange={e => set('edad', e.target.value)} />
+              <div className="mas-edad-wrap">
+                <input
+                  className="mas-input"
+                  placeholder="Ej: 2"
+                  type="number"
+                  min="0"
+                  value={form.edad}
+                  onChange={e => set('edad', e.target.value)}
+                />
+                <select
+                  className="mas-select mas-select-unidad"
+                  value={form.edad_unidad || 'años'}
+                  onChange={e => set('edad_unidad', e.target.value)}
+                >
+                  <option value="años">Años</option>
+                  <option value="meses">Meses</option>
+                </select>
+              </div>
               {errs.edad && <span className="mas-err">{errs.edad}</span>}
             </div>
             <div className="mas-fg">
