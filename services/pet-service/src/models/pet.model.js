@@ -58,4 +58,39 @@ const remove = async (id, usuario_id) => {
   return rowCount > 0;
 };
 
-module.exports = { getByUsuario, getById, create, update, remove };
+// Galería de fotos
+const getGaleriaByMascotaId = async (petId) => {
+    const res = await pool.query(
+        'SELECT * FROM mascota_galeria WHERE mascota_id = $1 ORDER BY fecha_subida DESC', 
+        [petId]
+    );
+    return res.rows;
+};
+
+const addFotoGaleria = async (petId, url) => {
+    const res = await pool.query(
+        'INSERT INTO mascota_galeria (mascota_id, foto_url) VALUES ($1, $2) RETURNING *',
+        [petId, url]
+    );
+    return res.rows[0];
+};
+
+const deleteFotoGaleria = async (photoId) => {
+    const res = await pool.query(
+        'DELETE FROM mascota_galeria WHERE id = $1 RETURNING *', 
+        [photoId]
+    );
+    return res.rows[0];
+};
+
+// ✅ Ahora el export ya no dará error porque las funciones existen con estos nombres
+module.exports = { 
+    getByUsuario, 
+    getById, 
+    create, 
+    update, 
+    remove, 
+    getGaleriaByMascotaId, 
+    addFotoGaleria, 
+    deleteFotoGaleria 
+};

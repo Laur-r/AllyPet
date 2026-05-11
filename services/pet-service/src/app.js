@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config(); // ← aquí
@@ -12,10 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Archivos estáticos (fotos subidas)
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-// Rutas
-app.use('/api/pets', petRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));app.use('/api/pets', petRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.json({ ok: true, service: 'pet-service' }));
