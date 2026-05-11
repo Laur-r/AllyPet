@@ -26,7 +26,7 @@ export default function Navbar({ showActions = true }) {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
 
       {/* Logo */}
-      <a className="navbar__logo" href="#">
+      <a className="navbar__logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
         <img
           src="/logo.png"
           alt="AllyPet"
