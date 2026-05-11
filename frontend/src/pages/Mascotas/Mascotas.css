@@ -524,6 +524,63 @@
   background: #f0f0f0;
 }
 
+/* ── Edad con unidad ── */
+.mas-edad-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mas-edad-wrap .mas-input {
+  flex: 1;
+}
+
+.mas-select-unidad {
+  width: 90px;
+  flex-shrink: 0;
+}
+
+/* ── Zoom de foto ── */
+.mas-foto-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.mas-foto-zoom-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+
+.mas-foto-zoom-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background .2s;
+}
+
+.mas-foto-zoom-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+
 /* Colores de badges */
 .mas-rec-badge.vacuna { background: #F3E8F7; color: #7B2D8B; }
 .mas-rec-badge.desparasitacion { background: #EBF7E4; color: #3A7A2A; }
