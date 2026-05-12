@@ -192,7 +192,7 @@ export default function MenuAdmin() {
 
         <div className="ma-profile">
           <div className="ma-avatar-wrap">
-            <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+            <img className="ma-avatar" src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
             <span className="ma-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -250,8 +250,10 @@ export default function MenuAdmin() {
             </div>
           </div>
           <div className="ma-navbar-right">
-            <div className="ma-user-chip">
-              <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+           <div className="mv-user-chip"
+              onClick={() => navigate("/profile")}
+            >
+              <img className="ma-avatar" src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
               <span>{user?.nombre || user?.email || 'Admin'}</span>
             </div>
           </div>

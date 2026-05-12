@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuPaseador.css";
 import logoNavbar    from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 import { getUnreadCount as getUnreadMessages }      from "../../../services/message.service";
 import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
@@ -13,20 +14,10 @@ export default function MenuPaseador() {
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch]           = useState("");
-  const [user, setUser]               = useState(null);
+  const { user }                      = useCurrentUser();
 
   const [mensajesSinLeer, setMensajesSinLeer]             = useState(0);
   const [notificacionesSinLeer, setNotificacionesSinLeer] = useState(0);
-
-  useEffect(() => {
-    const loadUser = () => {
-      const userData = localStorage.getItem("user");
-      if (userData) setUser(JSON.parse(userData));
-    };
-    loadUser();
-    window.addEventListener("storage", loadUser);
-    return () => window.removeEventListener("storage", loadUser);
-  }, []);
 
   // Polling de badges cada 30 segundos
   useEffect(() => {
@@ -93,7 +84,6 @@ export default function MenuPaseador() {
     },
   ];
 
-  // Badge dinámico por ítem
   const getBadgeCount = (key) => {
     if (key === "mensajes") return mensajesSinLeer;
     return 0;
@@ -109,7 +99,11 @@ export default function MenuPaseador() {
 
         <div className="mp-profile">
           <div className="mp-avatar-wrap">
-            <img className="mp-avatar" src={avatarDefault} alt="avatar" />
+            <img
+              className="mp-avatar"
+              src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault}
+              alt="avatar"
+            />
             <span className="mp-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -131,22 +125,18 @@ export default function MenuPaseador() {
                 className={`mp-nav-item ${activeItem === item.key ? "active" : ""}`}
                 onClick={() => navigate(item.path)}
               >
-                {/* Ícono con punto cuando sidebar colapsado */}
                 <span className="mp-nav-icon" style={{ position: "relative" }}>
                   {item.icon}
                   {!sidebarOpen && dynamicBadge > 0 && (
                     <span className="mp-badge-dot" />
                   )}
                 </span>
-
                 {sidebarOpen && (
                   <>
                     <span className="mp-nav-label">{item.label}</span>
-                    {/* Badge estático (reservas) solo si no hay dinámico */}
                     {item.badge && dynamicBadge === 0 && (
                       <span className="mp-badge">{item.badge}</span>
                     )}
-                    {/* Badge dinámico mensajes */}
                     {dynamicBadge > 0 && (
                       <span className="mp-badge">{dynamicBadge}</span>
                     )}
@@ -184,9 +174,9 @@ export default function MenuPaseador() {
           <div className="mp-navbar-left">
             <button className="mp-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6"  x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
             <div className="mp-searchbar">
@@ -200,7 +190,6 @@ export default function MenuPaseador() {
           </div>
 
           <div className="mp-navbar-right">
-            {/* Campana — agregada al paseador */}
             <button
               className="mp-bell"
               onClick={() => navigate("/menu/paseador/notificaciones")}
@@ -215,8 +204,11 @@ export default function MenuPaseador() {
               )}
             </button>
 
-            <div className="mp-user-chip">
-              <img src={avatarDefault} alt="avatar" />
+            <div className="mp-user-chip" onClick={() => navigate("/profile")}>
+              <img
+                src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault}
+                alt="avatar"
+              />
               <span>{user?.nombre || "Usuario"}</span>
             </div>
           </div>
