@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "./MenuVeterinario.css";
-import logoNavbar from "../../../assets/menus/logonavbar.png";
+import logoNavbar    from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
+
+import { getUnreadCount as getUnreadMessages }      from "../../../services/message.service";
+import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
 
 export default function MenuVeterinario() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [search, setSearch] = useState("");
-  const [user, setUser] = useState(null);
+  const [search, setSearch]           = useState("");
+  const [user, setUser]               = useState(null);
+
+  const [mensajesSinLeer, setMensajesSinLeer]             = useState(0);
+  const [notificacionesSinLeer, setNotificacionesSinLeer] = useState(0);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,14 +28,35 @@ export default function MenuVeterinario() {
     return () => window.removeEventListener("storage", loadUser);
   }, []);
 
-  /* Determina el ítem activo según la URL actual */
+  // Polling de badges cada 30 segundos
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const fetchBadges = async () => {
+      try {
+        const [msgs, notifs] = await Promise.all([
+          getUnreadMessages(),
+          getUnreadNotifications(),
+        ]);
+        setMensajesSinLeer(msgs);
+        setNotificacionesSinLeer(notifs);
+      } catch { /* silencioso */ }
+    };
+
+    fetchBadges();
+    const interval = setInterval(fetchBadges, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getActive = () => {
     const path = location.pathname;
-    if (path.includes("perfil"))        return "perfil";
-    if (path.includes("pacientes")) return "pacientes";
-    if (path.includes("citas"))         return "citas";
-    if (path.includes("mensajes"))      return "mensajes";
-    if (path.includes("configuracion")) return "configuracion";
+    if (path.includes("perfil"))          return "perfil";
+    if (path.includes("pacientes"))       return "pacientes";
+    if (path.includes("citas"))           return "citas";
+    if (path.includes("mensajes"))        return "mensajes";
+    if (path.includes("notificaciones"))  return "notificaciones";
+    if (path.includes("configuracion"))   return "configuracion";
     return "inicio";
   };
 
@@ -39,19 +66,20 @@ export default function MenuVeterinario() {
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     },
     {
-      /* Tag 'Comercial' añadido para identificar que este perfil es de un proveedor de servicios */
       key: "perfil", label: "Mi Perfil", tag: "Comercial", route: "/menu/veterinario/perfil",
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
     },
     {
       key: "pacientes", label: "Pacientes", route: "/menu/veterinario/pacientes",
-      icon: <svg width="20" height="20" viewBox="0 0 100 100" fill="currentColor">
-      <ellipse cx="50" cy="85" rx="18" ry="12"/>
-      <ellipse cx="20" cy="60" rx="10" ry="14" transform="rotate(-20 20 60)"/>
-      <ellipse cx="80" cy="60" rx="10" ry="14" transform="rotate(20 80 60)"/>
-      <ellipse cx="32" cy="42" rx="9" ry="13" transform="rotate(-10 32 42)"/>
-      <ellipse cx="68" cy="42" rx="9" ry="13" transform="rotate(10 68 42)"/>
-    </svg>,
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="currentColor">
+          <ellipse cx="50" cy="85" rx="18" ry="12"/>
+          <ellipse cx="20" cy="60" rx="10" ry="14" transform="rotate(-20 20 60)"/>
+          <ellipse cx="80" cy="60" rx="10" ry="14" transform="rotate(20 80 60)"/>
+          <ellipse cx="32" cy="42" rx="9" ry="13" transform="rotate(-10 32 42)"/>
+          <ellipse cx="68" cy="42" rx="9" ry="13" transform="rotate(10 68 42)"/>
+        </svg>
+      ),
     },
     {
       key: "citas", label: "Citas", badge: 4, route: "/menu/veterinario/citas",
@@ -67,13 +95,18 @@ export default function MenuVeterinario() {
     },
   ];
 
+  // Badge dinámico por ítem
+  const getBadgeCount = (key) => {
+    if (key === "mensajes") return mensajesSinLeer;
+    return 0;
+  };
+
   return (
     <div className="mv-layout">
-
       <aside className={`mv-sidebar ${sidebarOpen ? "" : "collapsed"}`}>
-
         <div className="mv-logo">
-          <img src={logoNavbar} alt="AllyPet" className={sidebarOpen ? "mv-logo-img" : "mv-logo-img-small"} />
+          <img src={logoNavbar} alt="AllyPet"
+            className={sidebarOpen ? "mv-logo-img" : "mv-logo-img-small"} />
         </div>
 
         <div className="mv-profile">
@@ -92,22 +125,39 @@ export default function MenuVeterinario() {
         {sidebarOpen && <span className="mv-nav-section-label">NAVEGACIÓN</span>}
 
         <nav className="mv-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.key}
-              className={`mv-nav-item ${getActive() === item.key ? "active" : ""}`}
-              onClick={() => navigate(item.route)}
-            >
-              <span className="mv-nav-icon">{item.icon}</span>
-              {sidebarOpen && (
-                <>
-                  <span className="mv-nav-label">{item.label}</span>
-                  {item.badge && <span className="mv-badge">{item.badge}</span>}
-                  {item.tag   && <span className="mv-tag">{item.tag}</span>}
-                </>
-              )}
-            </button>
-          ))}
+          {navItems.map((item) => {
+            const dynamicBadge = getBadgeCount(item.key);
+            return (
+              <button
+                key={item.key}
+                className={`mv-nav-item ${getActive() === item.key ? "active" : ""}`}
+                onClick={() => navigate(item.route)}
+              >
+                {/* Ícono con punto rojo cuando sidebar colapsado */}
+                <span className="mv-nav-icon" style={{ position: "relative" }}>
+                  {item.icon}
+                  {!sidebarOpen && dynamicBadge > 0 && (
+                    <span className="mv-badge-dot" />
+                  )}
+                </span>
+
+                {sidebarOpen && (
+                  <>
+                    <span className="mv-nav-label">{item.label}</span>
+                    {/* Badge estático (ej: citas) */}
+                    {item.badge && dynamicBadge === 0 && (
+                      <span className="mv-badge">{item.badge}</span>
+                    )}
+                    {/* Badge dinámico de mensajes sin leer */}
+                    {dynamicBadge > 0 && (
+                      <span className="mv-badge">{dynamicBadge}</span>
+                    )}
+                    {item.tag && <span className="mv-tag">{item.tag}</span>}
+                  </>
+                )}
+              </button>
+            );
+          })}
         </nav>
 
         <div className="mv-sidebar-footer">
@@ -160,13 +210,24 @@ export default function MenuVeterinario() {
               <span className="mv-status-dot" />
               Consultorio Abierto
             </div>
-            <button className="mv-bell">
+
+            {/* Campana — ahora con conteo real */}
+            <button
+              className="mv-bell"
+              onClick={() => navigate("/menu/veterinario/notificaciones")}
+              title="Notificaciones"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
-              <span className="mv-bell-dot" />
+              {/* Punto solo si hay notificaciones, reemplaza el punto estático */}
+              {notificacionesSinLeer > 0
+                ? <span className="mv-bell-count">{notificacionesSinLeer}</span>
+                : null
+              }
             </button>
+
             <div className="mv-user-chip">
               <img src={avatarDefault} alt="avatar" />
               <span>{user?.nombre || "Usuario"}</span>
@@ -174,7 +235,6 @@ export default function MenuVeterinario() {
           </div>
         </header>
 
-        {/* Aquí se renderizan las páginas hijas */}
         <main className="mv-content">
           <Outlet />
         </main>
