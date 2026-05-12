@@ -105,13 +105,13 @@
 .navbar__register {
   background: var(--color-purple);
   color: #fff;
-  border-radius: 50px;       
+  border-radius: 50px; 
+  border: none;      
   padding: 9px 22px;
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 3px 12px rgba(139, 53, 200, 0.3);
   white-space: nowrap;
 }
 

@@ -1,12 +1,14 @@
 const UserService = require('../services/user.service');
 
 const UserController = {
+
   async getPerfil(req, res) {
     try {
       const { id } = req.params;
       const perfil = await UserService.getPerfil(parseInt(id));
       res.json(perfil);
     } catch (err) {
+      console.error('ERROR getPerfil:', err);
       res.status(err.status || 500).json({ error: err.message || 'Error interno' });
     }
   },
@@ -30,6 +32,47 @@ const UserController = {
       res.status(err.status || 500).json({ error: err.message || 'Error interno' });
     }
   },
+
+  async updateFoto(req, res) {
+    try {
+      const { id } = req.params;
+      if (!req.file) return res.status(400).json({ error: 'No se subió ninguna imagen' });
+      const foto_url = `/uploads/${req.file.filename}`;
+      const updated = await UserService.updateFoto(parseInt(id), foto_url);
+      res.json(updated);
+    } catch (err) {
+      console.error('ERROR updateFoto:', err);
+      res.status(err.status || 500).json({ error: err.message || 'Error interno' });
+    }
+  },
+
+  async getMe(req, res) {
+    try {
+      const perfil = await UserService.getMe(req.user.id);
+      res.json(perfil);
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Error interno' });
+    }
+  },
+
+  async updateBasicInfo(req, res) {
+    try {
+      const updated = await UserService.updateBasicInfo(req.user.id, req.body);
+      res.json(updated);
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Error interno' });
+    }
+  },
+
+  async updatePassword(req, res) {
+    try {
+      await UserService.updatePassword(req.user.id, req.body);
+      res.json({ message: 'Contraseña actualizada correctamente' });
+    } catch (err) {
+      res.status(err.status || 500).json({ error: err.message || 'Error interno' });
+    }
+  },
+
 };
 
 module.exports = UserController;
