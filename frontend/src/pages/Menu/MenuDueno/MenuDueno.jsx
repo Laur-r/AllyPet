@@ -65,6 +65,7 @@ export default function MenuDueno() {
       dueno:       "Dueño de mascota",
       paseador:    "Paseador",
       veterinario: "Veterinario",
+      admin:       "Administrador",
     };
     return roles[rol] || "Usuario";
   };

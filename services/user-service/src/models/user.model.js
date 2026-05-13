@@ -5,7 +5,7 @@ const UserModel = {
   // ── Lectura ──────────────────────────────────────────────────────────────────
   async getById(id) {
     const result = await pool.query(
-      `SELECT u.id, u.nombre, u.correo, u.telefono, u.ciudad,
+      `SELECT u.id, u.nombre, u.correo, u.rol, u.telefono, u.ciudad,
               u.foto_perfil, u.estado, u.fecha_registro, pd.direccion
        FROM usuarios u
        LEFT JOIN perfil_dueno pd ON pd.usuario_id = u.id
