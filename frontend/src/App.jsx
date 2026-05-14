@@ -32,6 +32,7 @@ import HistorialPaseador   from './pages/HistorialPaseador/HistorialPaseador';
 import HistorialMedico     from './pages/HistorialMedico/HistorialMedico';
 import Carnet              from './pages/Carnet/Carnet';
 import Calificaciones      from './pages/Calificaciones/Calificaciones';
+import Configuracion         from './pages/Configuracion/ConfiguracionPerfil';
 import DashboardDueno      from './pages/DashboardDueno/DashboardDueno';
 import Mensajes            from './pages/Mensajes/Mensajes';
 import Notificaciones      from './pages/Notificaciones/Notificaciones';
@@ -67,6 +68,7 @@ function App() {
           <Route path="veterinaria/:usuarioId"      element={<PerfilPublicoVeterinaria />} />
           <Route path="solicitar-paseo/:paseadorId" element={<SolicitarPaseo />} />
           <Route path="calificaciones"              element={<Calificaciones />} />
+          <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"                    element={<Mensajes />} />
           <Route path="notificaciones"              element={<Notificaciones />} />
         </Route>
@@ -78,9 +80,9 @@ function App() {
           <Route path="solicitudes"    element={<SolicitudesPaseador />} />
           <Route path="historial"      element={<HistorialPaseador />} />
           <Route path="reservas"       element={<h2>Reservas</h2>} />
+          <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"       element={<Mensajes />} />
           <Route path="notificaciones" element={<Notificaciones />} />
-          <Route path="configuracion"  element={<h2>Configuración</h2>} />
         </Route>
 
         {/* ── Menú Veterinario ── */}
@@ -90,9 +92,9 @@ function App() {
           <Route path="pacientes"        element={<Pacientes />} />
           <Route path="pacientes/:petId" element={<CarnetVet />} />
           <Route path="citas"            element={<h2>Citas</h2>} />
+          <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"         element={<Mensajes />} />
           <Route path="notificaciones"   element={<Notificaciones />} />
-          <Route path="configuracion"    element={<h2>Configuración</h2>} />
         </Route>
 
         {/* Admin */}

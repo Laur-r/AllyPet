@@ -58,26 +58,27 @@ export default function ConfiguracionPerfil() {
     setFotoStatus({ tipo: "", msg: "" });
   };
 
-  const handleGuardarFoto = async () => {
-    if (!fotoFile) return;
-    setGuardandoFoto(true);
-    setFotoStatus({ tipo: "", msg: "" });
-    try {
-      const updated = await updateFoto(fotoFile);
-      setUsuario((u) => ({ ...u, foto_perfil: updated.foto_perfil }));
-      setFotoFile(null);
-      setFotoStatus({ tipo: "success", msg: "Foto actualizada correctamente" });
-    } catch (err) {
-      setFotoStatus({ tipo: "error", msg: err.message });
-    } finally {
-      setGuardandoFoto(false);
-    }
-    // En ConfiguracionPerfil.jsx, dentro de handleGuardarFoto, después del try exitoso:
+ const handleGuardarFoto = async () => {
+  if (!fotoFile) return;
+  setGuardandoFoto(true);
+  setFotoStatus({ tipo: "", msg: "" });
+  try {
+    const updated = await updateFoto(fotoFile);
+    setUsuario((u) => ({ ...u, foto_perfil: updated.foto_perfil }));
+    setFotoFile(null);
+    setFotoStatus({ tipo: "success", msg: "Foto actualizada correctamente" });
+
     const updatedUser = JSON.parse(localStorage.getItem("user") || "{}");
     updatedUser.foto_perfil = updated.foto_perfil;
     localStorage.setItem("user", JSON.stringify(updatedUser));
     window.dispatchEvent(new Event("userUpdated"));
-  };
+
+  } catch (err) {
+    setFotoStatus({ tipo: "error", msg: err.message });
+  } finally {
+    setGuardandoFoto(false);
+  }
+};
 
   // ── Info básica ───────────────────────────────────────────────────────────────
   const handleGuardarInfo = async () => {
