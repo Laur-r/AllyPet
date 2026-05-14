@@ -4,6 +4,7 @@ const path = require('path');
 require('dotenv').config(); // ← aquí
 
 const petRoutes = require('./routes/pet.routes');
+const { iniciarJob } = require('./recordatorioJob');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.get('/health', (req, res) => res.json({ ok: true, service: 'pet-service' }))
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`🐾 pet-service corriendo en puerto ${PORT}`);
+  iniciarJob();
 });
 
 module.exports = app;
