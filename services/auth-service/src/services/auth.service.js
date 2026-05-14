@@ -102,9 +102,35 @@ const registrarVeterinario = async ({ nombre, correo, contrasena, telefono, ciud
   return usuario;
 };
 
+// ── REGISTRO CUIDADOR ────────────────────────────────
+const registrarCuidador = async ({ nombre, correo, contrasena, telefono, ciudad, descripcion, tarifa, disponibilidad }) => {
+  const existe = await pool.query(
+    'SELECT id FROM usuarios WHERE correo = $1',
+    [correo]
+  );
+  if (existe.rows.length > 0) {
+    throw new Error('El correo ya está registrado');
+  }
+  const hash = await bcrypt.hash(contrasena, 10);
+  const resultado = await pool.query(
+    `INSERT INTO usuarios (nombre, correo, contrasena, rol, telefono, ciudad)
+     VALUES ($1, $2, $3, 'cuidador', $4, $5)
+     RETURNING id, nombre, correo, rol`,
+    [nombre, correo, hash, telefono || null, ciudad || null]
+  );
+  const usuario = resultado.rows[0];
+  await pool.query(
+    `INSERT INTO perfil_cuidador (usuario_id, descripcion, tarifa, disponibilidad, ciudad, aprobado)
+     VALUES ($1, $2, $3, $4, $5, false)`,
+    [usuario.id, descripcion || null, tarifa || null, disponibilidad || null, ciudad || null]
+  );
+  return usuario;
+};
+
 module.exports = {
   getUserByEmail,
   registrarDueno,
   registrarPaseador,
   registrarVeterinario,
+  registrarCuidador,
 };

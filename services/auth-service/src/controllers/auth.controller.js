@@ -66,6 +66,8 @@ const login = async (req, res) => {
   }
 };
 
+// Registros de usuarios por rol
+
 const registrarDueno = async (req, res) => {
   try {
     const { nombre, correo, contrasena, telefono, ciudad, direccion } = req.body;
@@ -164,6 +166,38 @@ const registrarVeterinario = async (req, res) => {
   }
 };
 
+const registrarCuidador = async (req, res) => {
+  try {
+    const { nombre, correo, contrasena, telefono, ciudad, descripcion, tarifa, disponibilidad } = req.body;
+
+    if (!nombre || !correo || !contrasena) {
+      return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios' });
+    }
+
+    const usuario = await authService.registrarCuidador({
+      nombre,
+      correo,
+      contrasena,
+      telefono,
+      ciudad,
+      descripcion,
+      tarifa,
+      disponibilidad,
+    });
+
+    return res.status(201).json({
+      mensaje: 'Cuidador registrado exitosamente',
+      usuario,
+    });
+  } catch (error) {
+    if (error.message === 'El correo ya está registrado') {
+      return res.status(409).json({ error: error.message });
+    }
+    console.error('Error en registrarCuidador:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 const googleCallbackHandler = (req, res) => {
   const user = req.user;
   if (!user) {
@@ -200,5 +234,6 @@ module.exports = {
   registrarDueno,
   registrarPaseador,
   registrarVeterinario,
+  registrarCuidador,
   googleCallbackHandler,
 };
