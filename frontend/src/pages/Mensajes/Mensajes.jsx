@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getConversations, getMessages, sendMessage } from '../../services/message.service';
 import './Mensajes.css';
 
-// Formatea timestamp a hora HH:MM
 const formatHora = (ts) =>
   new Date(ts).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 
-// Formatea timestamp a fecha relativa
 const formatFecha = (ts) => {
-  const d = new Date(ts);
+  const d   = new Date(ts);
   const hoy = new Date();
   if (d.toDateString() === hoy.toDateString()) return formatHora(ts);
   return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
@@ -25,23 +24,45 @@ const AvatarPlaceholder = ({ nombre, size = 46 }) => (
 
 export default function Mensajes() {
   const usuarioActual = JSON.parse(localStorage.getItem('user') || '{}');
+  const location      = useLocation();
+  const preset        = location.state; // { destinatario_id, destinatario_nombre, destinatario_foto, solicitud_id }
+  console.log('preset recibido:', preset); 
 
-  const [conversaciones, setConversaciones]   = useState([]);
-  const [chatActivo, setChatActivo]           = useState(null); // objeto conversación
-  const [mensajes, setMensajes]               = useState([]);
-  const [contenido, setContenido]             = useState('');
-  const [loadingConvs, setLoadingConvs]       = useState(true);
-  const [loadingMsgs, setLoadingMsgs]         = useState(false);
-  const [enviando, setEnviando]               = useState(false);
-  const [confirmacion, setConfirmacion]       = useState(false);
+  const [conversaciones, setConversaciones] = useState([]);
+  const [chatActivo,     setChatActivo]     = useState(null);
+  const [mensajes,       setMensajes]       = useState([]);
+  const [contenido,      setContenido]      = useState('');
+  const [loadingConvs,   setLoadingConvs]   = useState(true);
+  const [loadingMsgs,    setLoadingMsgs]    = useState(false);
+  const [enviando,       setEnviando]       = useState(false);
+  const [confirmacion,   setConfirmacion]   = useState(false);
   const bottomRef = useRef(null);
 
-  // Carga conversaciones al montar
+  // Carga conversaciones
   useEffect(() => {
     const fetchConversaciones = async () => {
       try {
         const data = await getConversations();
         setConversaciones(data);
+
+        // Si llegamos desde el historial con un destinatario preset:
+        if (preset?.destinatario_id) {
+          // Busca si ya existe conversación con ese usuario
+          const existente = data.find(c => c.interlocutor_id === preset.destinatario_id);
+          if (existente) {
+            setChatActivo(existente);
+          } else {
+            // No existe aún — crea un objeto temporal para abrir el chat en blanco
+            setChatActivo({
+              interlocutor_id:     preset.destinatario_id,
+              interlocutor_nombre: preset.destinatario_nombre || 'Paseador',
+              interlocutor_foto:   preset.destinatario_foto || null,
+              solicitud_id:        preset.solicitud_id || null,
+              ultimo_mensaje:      '',
+              no_leidos:           0,
+            });
+          }
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -59,10 +80,11 @@ export default function Mensajes() {
       try {
         const data = await getMessages(chatActivo.interlocutor_id);
         setMensajes(data);
-        // Actualiza badge de no leídos en la conversación
-        setConversaciones((prev) =>
-          prev.map((c) =>
-            c.interlocutor_id === chatActivo.interlocutor_id ? { ...c, no_leidos: 0 } : c
+        setConversaciones(prev =>
+          prev.map(c =>
+            c.interlocutor_id === chatActivo.interlocutor_id
+              ? { ...c, no_leidos: 0 }
+              : c
           )
         );
       } catch (err) {
@@ -89,11 +111,36 @@ export default function Mensajes() {
     setEnviando(true);
     try {
       const res = await sendMessage({
+        solicitud_id:    chatActivo.solicitud_id || preset?.solicitud_id || null,
         destinatario_id: chatActivo.interlocutor_id,
-        contenido: contenido.trim(),
+        contenido:       contenido.trim(),
       });
-      // Agrega el mensaje optimistamente
-      setMensajes((prev) => [...prev, res.data]);
+
+      const nuevoMensaje = res.data;
+      setMensajes(prev => [...prev, nuevoMensaje]);
+
+      // Actualiza o agrega la conversación en el sidebar
+      setConversaciones(prev => {
+        const existe = prev.find(c => c.interlocutor_id === chatActivo.interlocutor_id);
+        if (existe) {
+          return prev.map(c =>
+            c.interlocutor_id === chatActivo.interlocutor_id
+              ? { ...c, ultimo_mensaje: contenido.trim(), fecha_envio: nuevoMensaje.fecha_envio, remitente_id: usuarioActual.id }
+              : c
+          );
+        }
+        // Primera vez — agrega la conversación al sidebar
+        return [{
+          interlocutor_id:     chatActivo.interlocutor_id,
+          interlocutor_nombre: chatActivo.interlocutor_nombre,
+          interlocutor_foto:   chatActivo.interlocutor_foto,
+          ultimo_mensaje:      contenido.trim(),
+          fecha_envio:         nuevoMensaje.fecha_envio,
+          remitente_id:        usuarioActual.id,
+          no_leidos:           0,
+        }, ...prev];
+      });
+
       setContenido('');
       setConfirmacion(true);
       setTimeout(() => setConfirmacion(false), 2500);
@@ -114,7 +161,7 @@ export default function Mensajes() {
   return (
     <div className={`mensajes-page${chatActivo ? ' chat-abierto' : ''}`}>
 
-      {/* ---- Sidebar: conversaciones ---- */}
+      {/* ── Sidebar ── */}
       <aside className="mensajes-sidebar">
         <div className="mensajes-sidebar__header">
           <h2>Mensajes</h2>
@@ -124,11 +171,11 @@ export default function Mensajes() {
         <div className="mensajes-sidebar__list">
           {loadingConvs && <p className="mensajes-loading">Cargando conversaciones…</p>}
 
-          {!loadingConvs && conversaciones.length === 0 && (
+          {!loadingConvs && conversaciones.length === 0 && !preset && (
             <p className="mensajes-loading">Aún no tienes conversaciones.</p>
           )}
 
-          {conversaciones.map((conv) => (
+          {conversaciones.map(conv => (
             <div
               key={conv.interlocutor_id}
               className={`conversacion-item${chatActivo?.interlocutor_id === conv.interlocutor_id ? ' activa' : ''}`}
@@ -163,7 +210,7 @@ export default function Mensajes() {
         </div>
       </aside>
 
-      {/* ---- Panel derecho: chat ---- */}
+      {/* ── Panel chat ── */}
       <section className="mensajes-chat">
         {!chatActivo ? (
           <div className="mensajes-chat__empty">
@@ -172,7 +219,6 @@ export default function Mensajes() {
           </div>
         ) : (
           <>
-            {/* Header */}
             <div className="mensajes-chat__header">
               {chatActivo.interlocutor_foto ? (
                 <img
@@ -188,21 +234,19 @@ export default function Mensajes() {
               </span>
             </div>
 
-            {/* Mensajes */}
             <div className="mensajes-chat__body">
               {loadingMsgs && <p className="mensajes-loading">Cargando mensajes…</p>}
 
               {!loadingMsgs && mensajes.length === 0 && (
-                <p className="mensajes-loading">Sé el primero en escribir 👋</p>
+                <p className="mensajes-loading">
+                  Sé el primero en escribir 👋
+                </p>
               )}
 
-              {mensajes.map((msg) => {
+              {mensajes.map(msg => {
                 const esMio = msg.remitente_id === usuarioActual.id;
                 return (
-                  <div
-                    key={msg.id}
-                    className={`mensaje-burbuja ${esMio ? 'enviado' : 'recibido'}`}
-                  >
+                  <div key={msg.id} className={`mensaje-burbuja ${esMio ? 'enviado' : 'recibido'}`}>
                     {msg.contenido}
                     <div className="mensaje-burbuja__hora">{formatHora(msg.fecha_envio)}</div>
                   </div>
@@ -216,13 +260,12 @@ export default function Mensajes() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Input */}
             <div className="mensajes-chat__footer">
               <textarea
                 className="mensajes-chat__input"
                 placeholder="Escribe un mensaje…"
                 value={contenido}
-                onChange={(e) => setContenido(e.target.value)}
+                onChange={e => setContenido(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={1}
               />

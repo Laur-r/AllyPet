@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { obtenerHistorialDueno, cancelarSolicitud } from "../../services/solicitud.service";
 import "./HistorialDueno.css";
 
@@ -27,20 +28,19 @@ function formatFecha(fecha) {
     day: "numeric", month: "long", year: "numeric",
   });
 }
-
 function formatDuracion(minutos) {
   if (minutos < 60) return `${minutos} min`;
   const h = Math.floor(minutos / 60);
   const m = minutos % 60;
   return m > 0 ? `${h}h ${m}min` : `${h} hora${h > 1 ? "s" : ""}`;
 }
-
 function getIniciales(nombre = "") {
   return nombre.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
 export default function HistorialDueno() {
-  const token = localStorage.getItem("token");
+  const token    = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [solicitudes,  setSolicitudes]  = useState([]);
   const [cargando,     setCargando]     = useState(true);
@@ -84,10 +84,21 @@ export default function HistorialDueno() {
     }
   };
 
+  // Navega a /mensajes con el paseador preseleccionado
+  const handleMensaje = (s) => {
+    navigate("/menu/dueno/mensajes", {
+      state: {
+        destinatario_id:     s.paseador_id,
+        destinatario_nombre: s.paseador_nombre,
+        destinatario_foto:   s.paseador_foto || null,
+        solicitud_id:        s.id,
+      },
+    });
+  };
+
   return (
     <div className="hd-page">
 
-      {/* ENCABEZADO */}
       <div className="hd-head">
         <div className="hd-head-titles">
           <h1>Mis solicitudes</h1>
@@ -100,7 +111,6 @@ export default function HistorialDueno() {
         )}
       </div>
 
-      {/* FILTROS */}
       <div className="hd-filtros">
         {ESTADOS.map(e => (
           <button
@@ -113,7 +123,6 @@ export default function HistorialDueno() {
         ))}
       </div>
 
-      {/* LOADING */}
       {cargando && (
         <div className="hd-loading">
           <div className="hd-spinner" />
@@ -121,7 +130,6 @@ export default function HistorialDueno() {
         </div>
       )}
 
-      {/* VACÍO */}
       {!cargando && solicitudes.length === 0 && (
         <div className="hd-empty">
           <div className="hd-empty-icon">📋</div>
@@ -130,10 +138,10 @@ export default function HistorialDueno() {
         </div>
       )}
 
-      {/* LISTA */}
       {!cargando && solicitudes.length > 0 && (
         <div className="hd-lista">
           {solicitudes.map(s => {
+            console.log('campos solicitud:', Object.keys(s)); 
             const est = BADGE_ESTADO[s.estado] || BADGE_ESTADO.pendiente;
             const fotoMascota = s.mascota_foto
               ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
@@ -142,10 +150,11 @@ export default function HistorialDueno() {
               ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto)
               : null;
 
+            const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
+
             return (
               <div key={s.id} className="hd-card">
 
-                {/* ── HERO: foto grande de la mascota ── */}
                 <div className="hd-hero">
                   {fotoMascota ? (
                     <img
@@ -155,17 +164,9 @@ export default function HistorialDueno() {
                       onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
                     />
                   ) : null}
-                  <div
-                    className="hd-hero-emoji"
-                    style={{ display: fotoMascota ? "none" : "flex" }}
-                  >
-                    🐶
-                  </div>
+                  <div className="hd-hero-emoji" style={{ display: fotoMascota ? "none" : "flex" }}>🐶</div>
                   <div className="hd-hero-fade" />
-                  <span
-                    className="hd-badge-float"
-                    style={{ background: est.bg, color: est.color, borderColor: est.border }}
-                  >
+                  <span className="hd-badge-float" style={{ background: est.bg, color: est.color, borderColor: est.border }}>
                     {est.label}
                   </span>
                   <div className="hd-hero-info">
@@ -176,13 +177,9 @@ export default function HistorialDueno() {
                   </div>
                 </div>
 
-                {/* Barra acento */}
                 <div className="hd-accent" style={{ background: est.accent }} />
 
-                {/* BODY */}
                 <div className="hd-body">
-
-                  {/* Paseador */}
                   <div className="hd-paseador">
                     <div className="hd-avatar">
                       {fotoPaseador
@@ -196,7 +193,6 @@ export default function HistorialDueno() {
                     </div>
                   </div>
 
-                  {/* Detalles */}
                   <div className="hd-detalles">
                     <div className="hd-det">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -215,19 +211,16 @@ export default function HistorialDueno() {
                       <span>{s.hora_servicio?.slice(0, 5)} · {formatDuracion(s.duracion_minutos)}</span>
                     </div>
                   </div>
-
                 </div>
 
-                {/* FOOTER: cancelar */}
-                {s.estado === "pendiente" ? (
-                  <div className="hd-foot">
-                    {confirmId === s.id ? (
+                {/* FOOTER */}
+                <div className="hd-foot">
+                  {s.estado === "pendiente" && (
+                    confirmId === s.id ? (
                       <div className="hd-confirm">
                         <p>¿Seguro que deseas cancelar esta solicitud?</p>
                         <div className="hd-confirm-btns">
-                          <button className="hd-btn-no" onClick={() => setConfirmId(null)}>
-                            No, volver
-                          </button>
+                          <button className="hd-btn-no" onClick={() => setConfirmId(null)}>No, volver</button>
                           <button
                             className="hd-btn-si"
                             onClick={() => handleCancelar(s.id)}
@@ -245,11 +238,18 @@ export default function HistorialDueno() {
                         </svg>
                         Cancelar solicitud
                       </button>
-                    )}
-                  </div>
-                ) : (
-                  <div style={{ height: "14px" }} />
-                )}
+                    )
+                  )}
+
+                  {puedeEnviarMensaje && (
+                    <button className="hd-btn-mensaje" onClick={() => handleMensaje(s)}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      Enviar mensaje
+                    </button>
+                  )}
+                </div>
 
               </div>
             );
@@ -257,9 +257,7 @@ export default function HistorialDueno() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className={`hd-toast ${toast.tipo}`}>{toast.msg}</div>}
-
     </div>
   );
 }

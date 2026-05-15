@@ -4,11 +4,13 @@ const pool  = require('../config/db');
 // Valida que exista una solicitud activa entre remitente y destinatario
 const hasSolicitudActiva = async (remitente_id, destinatario_id) => {
   const result = await pool.query(
-    `SELECT id FROM solicitudes
-     WHERE estado NOT IN ('rechazada', 'cancelada')
+    `SELECT s.id 
+     FROM solicitudes s
+     INNER JOIN perfil_paseador pp ON pp.id = s.paseador_id
+     WHERE s.estado NOT IN ('rechazada', 'cancelada')
        AND (
-         (dueno_id = $1 AND paseador_id = $2) OR
-         (dueno_id = $2 AND paseador_id = $1)
+         (s.dueno_id = $1 AND pp.usuario_id = $2) OR
+         (s.dueno_id = $2 AND pp.usuario_id = $1)
        )
      LIMIT 1`,
     [remitente_id, destinatario_id]
