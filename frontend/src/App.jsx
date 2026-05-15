@@ -5,6 +5,7 @@ import Login                   from './pages/Login/Login';
 import MenuRegistro             from './pages/Registro/MenuRegistro/MenuRegistro';
 import RegistroDueno            from './pages/Registro/RegistroDueno/RegistroDueno';
 import RegistroPaseador         from './pages/Registro/RegistroPaseador/RegistroPaseador';
+import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
 import BusquedaPaseadores       from './pages/Busqueda/BusquedaPaseadores/BusquedaPaseadores';
 import PerfilPublicoPaseador    from './pages/PerfilPublicoPaseador/PerfilPublicoPaseador';
 import RegistroVeterinario      from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
@@ -54,6 +55,7 @@ function App() {
         <Route path="/register/dueno"       element={<RegistroDueno />} />
         <Route path="/register/paseador"    element={<RegistroPaseador />} />
         <Route path="/register/veterinario" element={<RegistroVeterinario />} />
+        <Route path="/register/cuidador"    element={<RegistroCuidador />} />
 
         {/* ── Menú Dueño ── */}
         <Route path="/menu/dueno" element={<MenuDueno />}>
