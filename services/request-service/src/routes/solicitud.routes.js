@@ -24,4 +24,13 @@ router.get("/paseador/historial", verificarToken, controller.obtenerHistorialPas
 /* H5.6 — Marcar como completado */
 router.put("/:id/completar", verificarToken, controller.completarServicio);
 
+/* H11.5 — Crear solicitud de cuidado */
+router.post("/cuidado", verificarToken, controller.crearSolicitudCuidado);
+
+/* H11.5 — Solicitudes pendientes del cuidador */
+router.get("/cuidador/pendientes", verificarToken, controller.obtenerSolicitudesPendientesCuidador);
+
+/* H11.5 — Historial de cuidado del dueño */
+router.get("/dueno/historial-cuidado", verificarToken, controller.obtenerHistorialCuidadoDueno);
+
 module.exports = router;

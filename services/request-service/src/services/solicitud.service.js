@@ -84,6 +84,61 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   }
   return solicitud;
 };
+
+/* ── Crear solicitud de cuidado ── */
+const crearSolicitudCuidado = async ({ dueno_id, cuidador_id, mascota_id, fecha_inicio, fecha_fin }) => {
+  if (!cuidador_id || !mascota_id || !fecha_inicio || !fecha_fin) {
+    throw new Error("Todos los campos son requeridos");
+  }
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fechaInicio = new Date(fecha_inicio + 'T00:00:00');
+  const fechaFin    = new Date(fecha_fin    + 'T00:00:00');
+
+  if (fechaInicio < hoy) {
+    throw new Error("La fecha de inicio no puede ser en el pasado");
+  }
+
+  if (fechaFin <= fechaInicio) {
+    throw new Error("La fecha de fin debe ser posterior a la fecha de inicio");
+  }
+
+  const mascota = await model.verificarMascota(mascota_id, dueno_id);
+  if (!mascota) {
+    throw new Error("La mascota no existe o no te pertenece");
+  }
+
+  const cuidador = await model.verificarCuidador(cuidador_id);
+  if (!cuidador) {
+    throw new Error("El cuidador no existe o no está disponible");
+  }
+
+  const solicitud = await model.crearSolicitudCuidado({
+    dueno_id,
+    cuidador_id: cuidador.id, // id real de perfil_cuidador
+    mascota_id,
+    fecha_inicio,
+    fecha_fin,
+  });
+
+  return solicitud;
+};
+
+/* ── Solicitudes pendientes del cuidador ── */
+const obtenerSolicitudesPendientesCuidador = async (cuidador_usuario_id) => {
+  return await model.obtenerSolicitudesPendientesCuidador(cuidador_usuario_id);
+};
+
+/* ── Historial de cuidado del dueño ── */
+const obtenerHistorialCuidadoDueno = async (dueno_id, estado) => {
+  const estadosValidos = ["pendiente", "aceptada", "rechazada", "cancelada", "completada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    throw new Error("Estado inválido");
+  }
+  return await model.obtenerHistorialCuidadoDueno(dueno_id, estado);
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientesPaseador,
@@ -92,4 +147,7 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  crearSolicitudCuidado,              
+  obtenerSolicitudesPendientesCuidador, 
+  obtenerHistorialCuidadoDueno,         
 };

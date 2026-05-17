@@ -149,6 +149,70 @@ const completarServicio = async (req, res) => {
     return res.status(status).json({ error: err.message });
   }
 };
+
+/* ─────────────────────────────────────────
+   POST /api/solicitudes/cuidado
+   Body: { cuidador_id, mascota_id, fecha_inicio, fecha_fin }
+───────────────────────────────────────── */
+const crearSolicitudCuidado = async (req, res) => {
+  try {
+    const dueno_id = req.usuario.id;
+    const { cuidador_id, mascota_id, fecha_inicio, fecha_fin } = req.body;
+
+    const solicitud = await service.crearSolicitudCuidado({
+      dueno_id,
+      cuidador_id,
+      mascota_id,
+      fecha_inicio,
+      fecha_fin,
+    });
+
+    return res.status(201).json({
+      message: "Solicitud de cuidado enviada correctamente",
+      data: solicitud,
+    });
+  } catch (err) {
+    console.error("crearSolicitudCuidado:", err.message);
+    const status = err.message.includes("no existe") || err.message.includes("no te pertenece") ? 400 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* ─────────────────────────────────────────
+   GET /api/solicitudes/cuidador/pendientes
+───────────────────────────────────────── */
+const obtenerSolicitudesPendientesCuidador = async (req, res) => {
+  try {
+    const cuidador_usuario_id = req.usuario.id;
+    const solicitudes = await service.obtenerSolicitudesPendientesCuidador(cuidador_usuario_id);
+    return res.status(200).json({
+      message: "Solicitudes pendientes obtenidas",
+      data: solicitudes,
+    });
+  } catch (err) {
+    console.error("obtenerSolicitudesPendientesCuidador:", err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/* ─────────────────────────────────────────
+   GET /api/solicitudes/dueno/historial-cuidado
+───────────────────────────────────────── */
+const obtenerHistorialCuidadoDueno = async (req, res) => {
+  try {
+    const dueno_id = req.usuario.id;
+    const { estado } = req.query;
+    const solicitudes = await service.obtenerHistorialCuidadoDueno(dueno_id, estado);
+    return res.status(200).json({
+      message: "Historial de cuidado obtenido",
+      data: solicitudes,
+    });
+  } catch (err) {
+    console.error("obtenerHistorialCuidadoDueno:", err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientes,
@@ -157,4 +221,7 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  crearSolicitudCuidado,                
+  obtenerSolicitudesPendientesCuidador, 
+  obtenerHistorialCuidadoDueno,         
 };

@@ -175,6 +175,86 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   return rows[0] || null;
 };
 
+/* ── Verificar que el cuidador existe y está aprobado ── */
+const verificarCuidador = async (usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT id FROM perfil_cuidador WHERE usuario_id = $1 AND aprobado = true`,
+    [usuario_id]
+  );
+  return rows[0] || null;
+};
+
+/* ── Crear solicitud de cuidado ── */
+const crearSolicitudCuidado = async ({ dueno_id, cuidador_id, mascota_id, fecha_inicio, fecha_fin }) => {
+  const { rows } = await pool.query(
+    `INSERT INTO solicitudes 
+      (dueno_id, cuidador_id, mascota_id, fecha_servicio, fecha_fin, estado)
+     VALUES ($1, $2, $3, $4, $5, 'pendiente')
+     RETURNING *`,
+    [dueno_id, cuidador_id, mascota_id, fecha_inicio, fecha_fin]
+  );
+  return rows[0];
+};
+
+/* ── Obtener solicitudes pendientes del cuidador ── */
+const obtenerSolicitudesPendientesCuidador = async (cuidador_usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT
+      s.id,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_inicio,
+      TO_CHAR(s.fecha_fin, 'YYYY-MM-DD')      AS fecha_fin,
+      s.estado,
+      s.fecha_creacion,
+      u.nombre        AS dueno_nombre,
+      u.foto_perfil   AS dueno_foto,
+      u.telefono      AS dueno_telefono,
+      m.nombre        AS mascota_nombre,
+      m.raza          AS mascota_raza,
+      m.especie       AS mascota_especie,
+      m.foto          AS mascota_foto
+    FROM solicitudes s
+    INNER JOIN perfil_cuidador pc ON pc.id = s.cuidador_id
+    INNER JOIN usuarios u ON u.id = s.dueno_id
+    INNER JOIN mascotas m ON m.id = s.mascota_id
+    WHERE pc.usuario_id = $1
+      AND s.estado = 'pendiente'
+    ORDER BY s.fecha_creacion DESC`,
+    [cuidador_usuario_id]
+  );
+  return rows;
+};
+
+/* ── Historial completo del dueño (cuidado) ── */
+const obtenerHistorialCuidadoDueno = async (dueno_id, estado) => {
+  const condicionEstado = estado ? `AND s.estado = '${estado}'` : "";
+  const { rows } = await pool.query(
+    `SELECT
+      s.id,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_inicio,
+      TO_CHAR(s.fecha_fin, 'YYYY-MM-DD')      AS fecha_fin,
+      s.estado,
+      s.fecha_creacion,
+      s.fecha_actualizacion,
+      u.nombre        AS cuidador_nombre,
+      u.foto_perfil   AS cuidador_foto,
+      pc.tarifa       AS cuidador_tarifa,
+      m.nombre        AS mascota_nombre,
+      m.raza          AS mascota_raza,
+      m.especie       AS mascota_especie,
+      m.foto          AS mascota_foto
+    FROM solicitudes s
+    INNER JOIN perfil_cuidador pc ON pc.id = s.cuidador_id
+    INNER JOIN usuarios u ON u.id = pc.usuario_id
+    INNER JOIN mascotas m ON m.id = s.mascota_id
+    WHERE s.dueno_id = $1
+      AND s.cuidador_id IS NOT NULL
+    ${condicionEstado}
+    ORDER BY s.fecha_creacion DESC`,
+    [dueno_id]
+  );
+  return rows;
+};
+
 module.exports = {
   crearSolicitud,
   verificarMascota,
@@ -185,4 +265,9 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  verificarCuidador,           
+  crearSolicitudCuidado,       
+  obtenerSolicitudesPendientesPaseador,
+  obtenerSolicitudesPendientesCuidador,
+  obtenerHistorialCuidadoDueno,         
 };
