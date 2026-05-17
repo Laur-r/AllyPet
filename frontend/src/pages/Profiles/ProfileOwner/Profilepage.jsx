@@ -1,10 +1,17 @@
-// src/pages/Profile/ProfilePage.jsx
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004/api';
+
+const ROL_LABELS = {
+  dueno:       'Dueño de mascotas',
+  paseador:    'Paseador de mascotas',
+  veterinario: 'Veterinario',
+  admin:       'Administrador',
+};
+
+const getRolLabel = (rol) => ROL_LABELS[rol?.toLowerCase()] || 'Usuario';
 
 // ── Componente principal ──────────────────────────────────────
 export default function ProfilePage() {
@@ -17,8 +24,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [form,    setForm]    = useState({});
 
-  // ID del usuario — reemplazar con authContext.user.id cuando se integre JWT
-  const userId = 1;
+ const user = JSON.parse(localStorage.getItem('user') || '{}');
+const userId = user.id;
 
   // ── Cargar datos al montar ──────────────────────────────────
   useEffect(() => {
@@ -59,7 +66,7 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      setProfile(data); // ✅ CORREGIDO: el backend devuelve el objeto directo
+      setProfile(data); 
       setMode('view');
     } catch (err) {
       setError('No se pudo guardar. Intenta de nuevo.');
@@ -85,9 +92,39 @@ export default function ProfilePage() {
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
+
+const handleFotoChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('foto', file);
+
+  try {
+    const res = await fetch(`${API_URL}/users/${userId}/foto`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log('data de foto:', data);
+
+    if (!res.ok) throw new Error(data.error);
+
+    // Actualiza localStorage con la foto nueva
+    const updatedUser = { ...user, foto_perfil: data.foto_perfil };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+
+    await fetchProfile();
+
+  } catch (err) {
+    setError('No se pudo actualizar la foto.');
+  }
+};
+
   // ── Renders ─────────────────────────────────────────────────
   if (loading) return <div className="profile-loading">Cargando perfil...</div>;
-
+  console.log('profile.foto_perfil:', profile?.foto_perfil); 
   return (
     <div className="profile-page">
 
@@ -108,20 +145,47 @@ export default function ProfilePage() {
       <div className="profile-card">
 
         {/* Avatar + nombre */}
-        <div className="profile-avatar-wrap">
-          <div className="profile-avatar">
-            {profile?.foto_perfil
-              ? <img src={profile.foto_perfil} alt="Foto de perfil" />
-              : <span>{profile?.nombre?.[0]?.toUpperCase() || '?'}</span>
-            }
-          </div>
-          {mode === 'view' && (
-            <div className="profile-avatar-info">
-              <h2>{profile?.nombre}</h2>
-              <span className="profile-rol">Dueño de mascotas</span>
-            </div>
+      <div className="profile-avatar-wrap">
+        <div className="profile-avatar" onClick={() =>
+            mode === 'edit' &&
+            document.getElementById('foto-input').click()
+          }
+          style={{ cursor: mode === 'edit' ? 'pointer' : 'default' }}
+        >
+          {profile?.foto_perfil
+            ? (
+               <img
+                src={`http://localhost:3004${profile.foto_perfil}`}
+                alt="Foto de perfil"
+              />
+              )
+            : (
+                <span>{profile?.nombre?.[0]?.toUpperCase() || '?'}</span>
+              )
+          }
+
+          {mode === 'edit' && (
+            <div className="avatar-overlay">📷</div>
           )}
         </div>
+
+        <input
+          id="foto-input"
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFotoChange}
+        />
+
+        {mode === 'view' && (
+          <div className="profile-avatar-info">
+            <h2>{profile?.nombre}</h2>
+            <span className="profile-rol">
+              {getRolLabel(user.rol)}
+            </span>
+          </div>
+        )}
+      </div>
 
         {/* ── MODO VER ── */}
         {mode === 'view' && (

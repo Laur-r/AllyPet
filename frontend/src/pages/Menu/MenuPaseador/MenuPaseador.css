@@ -152,3 +152,81 @@
   .mp-status-pill { display: none; }
   .mp-user-chip span { display: none; }
 }
+
+/* ──────────────────────────────────────────
+   Agrega esto al final de tu MenuDueno.css
+   ────────────────────────────────────────── */
+
+/* Wrapper del label del nav item para alinear texto + badge */
+.md-nav-label-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Badge en el sidebar (número) */
+.md-badge {
+  background: #E0467A;
+  color: #fff;
+  border-radius: 99px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+/* Punto rojo cuando el sidebar está colapsado */
+.md-badge-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E0467A;
+}
+
+/* Botón ícono en el header (campana) */
+.md-icon-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: #3a1a5c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.md-icon-btn:hover {
+  background: #f0e8fd;
+}
+
+/* Badge sobre la campana en el header */
+.md-badge-header {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: #E0467A;
+  color: #fff;
+  border-radius: 99px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Asegura que el md-nav-item tenga position relative para el punto colapsado */
+.md-nav-item {
+  position: relative;
+}
