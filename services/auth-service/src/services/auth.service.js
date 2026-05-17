@@ -15,11 +15,13 @@ const getUserByEmail = async (email) => {
       CASE
         WHEN u.rol = 'paseador'    THEN pp.aprobado
         WHEN u.rol = 'veterinario' THEN pv.aprobado
+        WHEN u.rol = 'cuidador'    THEN pc.aprobado
         ELSE NULL
       END AS aprobado
     FROM usuarios u
     LEFT JOIN perfil_paseador    pp ON pp.usuario_id = u.id AND u.rol = 'paseador'
     LEFT JOIN perfil_veterinario pv ON pv.usuario_id = u.id AND u.rol = 'veterinario'
+    LEFT JOIN perfil_cuidador    pc ON pc.usuario_id = u.id AND u.rol = 'cuidador'
     WHERE LOWER(u.correo) = LOWER($1)
     LIMIT 1
   `;

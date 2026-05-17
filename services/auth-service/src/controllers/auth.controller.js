@@ -32,7 +32,7 @@ const login = async (req, res) => {
     }
 
     // Validación: proveedor aprobado
-    if (user.rol === 'paseador' || user.rol === 'veterinario') {
+    if (user.rol === 'paseador' || user.rol === 'veterinario'|| user.rol === 'cuidador') {
       const isAprobado = user.aprobado === true || user.aprobado === 'true';
       if (!isAprobado) {
         return res.status(403).json({

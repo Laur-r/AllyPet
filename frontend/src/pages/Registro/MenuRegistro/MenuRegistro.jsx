@@ -7,6 +7,7 @@ import Navbar from '../../../components/Navbar/Navbar';
 import imgDueno    from '../../../assets/register/dueno.png';
 import imgVet      from '../../../assets/register/Veterinario.png';
 import imgPaseador from '../../../assets/register/Paseador.png';
+import imgCuidador from '../../../assets/register/cuidador.png';
 
 
 const CARDS = [
@@ -34,6 +35,16 @@ const CARDS = [
     accent: '#38adb9',
     img: imgPaseador,
   },
+
+{
+    rol: 'cuidador',
+    label: 'Cuidador',
+    ruta: '/register/cuidador',
+    color: '#3A7A2A',
+    accent: '#3A7A2A',
+    img: imgCuidador,
+  },
+
 ];
 
 export default function MenuRegistro() {

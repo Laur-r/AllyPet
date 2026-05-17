@@ -110,6 +110,34 @@ const desaprobarVeterinario = async (req, res) => {
   }
 };
 
+const aprobarCuidador = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.aprobarCuidador(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de cuidador no encontrado' });
+    }
+    res.json({ message: 'Cuidador aprobado exitosamente' });
+  } catch (error) {
+    console.error('aprobarCuidador controller error:', error);
+    res.status(500).json({ message: 'Error interno al aprobar cuidador' });
+  }
+};
+
+const desaprobarCuidador = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const success = await adminService.desaprobarCuidador(id);
+    if (!success) {
+      return res.status(404).json({ message: 'Perfil de cuidador no encontrado' });
+    }
+    res.json({ message: 'Cuidador desaprobado exitosamente' });
+  } catch (error) {
+    console.error('desaprobarCuidador controller error:', error);
+    res.status(500).json({ message: 'Error interno al desaprobar cuidador' });
+  }
+};
+
 module.exports = {
   getDashboard,
   getUsers,
@@ -119,4 +147,6 @@ module.exports = {
   desaprobarPaseador,
   aprobarVeterinario,
   desaprobarVeterinario,
+  aprobarCuidador,
+  desaprobarCuidador,
 };

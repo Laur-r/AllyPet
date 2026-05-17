@@ -25,30 +25,31 @@ export default function Login() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
-const handleAuthSuccess = (data) => {
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-  }
-  if (data.user) {
-    localStorage.setItem('user', JSON.stringify({
-      id:          data.user.id,
-      nombre:      data.user.nombre,
-      email:       data.user.email || data.user.correo,
-      correo:      data.user.email || data.user.correo,
-      rol:         data.user.rol   || data.user.role,
-      foto_perfil: data.user.foto_perfil || null,
-    }));
-  }
+  const handleAuthSuccess = (data) => {
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify({
+        id:          data.user.id,
+        nombre:      data.user.nombre,
+        email:       data.user.email || data.user.correo,
+        correo:      data.user.email || data.user.correo,
+        rol:         data.user.rol   || data.user.role,
+        foto_perfil: data.user.foto_perfil || null,
+      }));
+    }
 
-  const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
-  alert(data.message || `Bienvenido ${data.user?.nombre}`);
+    const role = (data.user?.rol || data.user?.role || 'usuario').toLowerCase();
+    alert(data.message || `Bienvenido ${data.user?.nombre}`);
 
-  if (role === 'admin')                                              navigate('/menu/admin');
-  else if (role === 'dueno' || role === 'propietario' || role === 'cliente') navigate('/menu/dueno');
-  else if (role === 'paseador')                                      navigate('/menu/paseador');
-  else if (role === 'veterinario')                                   navigate('/menu/veterinario');
-  else navigate('/');
-};
+    if (role === 'admin')                                                     navigate('/menu/admin');
+    else if (role === 'dueno' || role === 'propietario' || role === 'cliente') navigate('/menu/dueno');
+    else if (role === 'paseador')                                             navigate('/menu/paseador');
+    else if (role === 'veterinario')                                          navigate('/menu/veterinario');
+    else if (role === 'cuidador')                                             navigate('/menu/cuidador');
+    else navigate('/');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,10 +110,11 @@ const handleAuthSuccess = (data) => {
     window.history.replaceState(null, '', window.location.pathname);
 
     const role = roleStr.toLowerCase();
-    if (role === 'admin') navigate('/menu/admin');
+    if (role === 'admin')                                                     navigate('/menu/admin');
     else if (role === 'dueno' || role === 'propietario' || role === 'cliente') navigate('/menu/dueno');
-    else if (role === 'paseador') navigate('/menu/paseador');
-    else if (role === 'veterinario') navigate('/menu/veterinario');
+    else if (role === 'paseador')                                             navigate('/menu/paseador');
+    else if (role === 'veterinario')                                          navigate('/menu/veterinario');
+    else if (role === 'cuidador')                                             navigate('/menu/cuidador');
     else navigate('/');
   }, [navigate]);
 

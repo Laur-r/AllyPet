@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/Navbar/Navbar';
 import { registrarCuidador } from '../../../services/cuidador.service';
-import cuidadorImg from '../../../assets/register/cuidador.png';
+import cuidadorImg from '../../../assets/register/formulario-cuidador.png';
 import './RegistroCuidador.css';
 
 export default function RegistroCuidador() {
