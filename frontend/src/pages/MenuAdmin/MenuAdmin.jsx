@@ -22,7 +22,7 @@ const readStoredUser = () => {
 const getRoleCategory = (roleValue) => {
   const role = String(roleValue || '').toLowerCase();
   if (role === 'admin') return 'admin';
-  if (role === 'paseador' || role === 'veterinario') return 'proveedor';
+  if (role === 'paseador' || role === 'veterinario' || role === 'cuidador') return 'proveedor';
   return 'user';
 };
 
@@ -83,6 +83,10 @@ export default function MenuAdmin() {
     }
   };
 
+  useEffect(() => {
+  loadUsers();
+}, []);
+
   const updateUserLocalState = (userId, patch) => {
     setUsers((prev) => prev.map((item) => (item.id === userId ? { ...item, ...patch } : item)));
   };
@@ -119,51 +123,47 @@ export default function MenuAdmin() {
     }
   };
 
-  const aprobarProveedor = async (userId, rol) => {
-    setActionLoadingId(userId);
-    setErrorMessage('');
-    setSuccessMessage('');
-    try {
-      const ruta = rol === 'paseador'
-        ? `/api/admin/paseador/${userId}/aprobar`
-        : `/api/admin/veterinario/${userId}/aprobar`;
-      const response = await requestAdmin(ruta, { method: 'PATCH' });
-      updateUserLocalState(userId, { aprobado: true });
-      setSuccessMessage(response?.message || 'Proveedor aprobado');
-    } catch (error) {
-      setErrorMessage(error.message || 'No fue posible aprobar al proveedor');
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
+const aprobarProveedor = async (userId, rol) => {
+  setActionLoadingId(userId);
+  setErrorMessage('');
+  setSuccessMessage('');
+  try {
+    const ruta = rol === 'paseador'
+      ? `/api/admin/paseador/${userId}/aprobar`
+      : rol === 'veterinario'
+      ? `/api/admin/veterinario/${userId}/aprobar`
+      : `/api/admin/cuidador/${userId}/aprobar`;
+    const response = await requestAdmin(ruta, { method: 'PATCH' });
+    updateUserLocalState(userId, { aprobado: true });
+    setSuccessMessage(response?.message || 'Proveedor aprobado');
+  } catch (error) {
+    setErrorMessage(error.message || 'No fue posible aprobar al proveedor');
+  } finally {
+    setActionLoadingId(null);
+  }
+};
 
-  const desaprobarProveedor = async (userId, rol) => {
-    const confirmed = window.confirm('¿Deseas desaprobar este proveedor?');
-    if (!confirmed) return;
-    setActionLoadingId(userId);
-    setErrorMessage('');
-    setSuccessMessage('');
-    try {
-      const ruta = rol === 'paseador'
-        ? `/api/admin/paseador/${userId}/desaprobar`
-        : `/api/admin/veterinario/${userId}/desaprobar`;
-      const response = await requestAdmin(ruta, { method: 'PATCH' });
-      updateUserLocalState(userId, { aprobado: false });
-      setSuccessMessage(response?.message || 'Proveedor desaprobado');
-    } catch (error) {
-      setErrorMessage(error.message || 'No fue posible desaprobar al proveedor');
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
-
-  useEffect(() => {
-    if (!token || userRole !== 'admin') {
-      navigate('/login');
-      return;
-    }
-    loadUsers();
-  }, []);
+const desaprobarProveedor = async (userId, rol) => {
+  const confirmed = window.confirm('¿Deseas desaprobar este proveedor?');
+  if (!confirmed) return;
+  setActionLoadingId(userId);
+  setErrorMessage('');
+  setSuccessMessage('');
+  try {
+    const ruta = rol === 'paseador'
+      ? `/api/admin/paseador/${userId}/desaprobar`
+      : rol === 'veterinario'
+      ? `/api/admin/veterinario/${userId}/desaprobar`
+      : `/api/admin/cuidador/${userId}/desaprobar`;
+    const response = await requestAdmin(ruta, { method: 'PATCH' });
+    updateUserLocalState(userId, { aprobado: false });
+    setSuccessMessage(response?.message || 'Proveedor desaprobado');
+  } catch (error) {
+    setErrorMessage(error.message || 'No fue posible desaprobar al proveedor');
+  } finally {
+    setActionLoadingId(null);
+  }
+};
 
   const filteredUsers = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
@@ -179,7 +179,7 @@ export default function MenuAdmin() {
     });
   }, [users, searchValue, roleFilter, statusFilter]);
 
-  const esProveedor = (role) => role === 'paseador' || role === 'veterinario';
+  const esProveedor = (role) => role === 'paseador' || role === 'veterinario' || role === 'cuidador';
 
   return (
     <div className="ma-layout">
@@ -192,7 +192,7 @@ export default function MenuAdmin() {
 
         <div className="ma-profile">
           <div className="ma-avatar-wrap">
-            <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+            <img className="ma-avatar" src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
             <span className="ma-avatar-dot" />
           </div>
           {sidebarOpen && (
@@ -250,8 +250,10 @@ export default function MenuAdmin() {
             </div>
           </div>
           <div className="ma-navbar-right">
-            <div className="ma-user-chip">
-              <img className="ma-avatar" src={avatarDefault} alt="avatar" />
+           <div className="mv-user-chip"
+              onClick={() => navigate("/profile")}
+            >
+              <img className="ma-avatar" src={user?.foto_perfil ? `http://localhost:3004${user.foto_perfil}` : avatarDefault} alt="avatar" />
               <span>{user?.nombre || user?.email || 'Admin'}</span>
             </div>
           </div>

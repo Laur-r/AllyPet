@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.rc-wrapper {
+  font-family: 'Nunito', sans-serif;
+  background: #faf8fc;
+  min-height: 100vh;
+  padding-top: 68px;
+}
+
+/* ── FONDO ── */
+.rc-main {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rc-main::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 110%; height: 320px;
+  background: #d4edda;
+  border-radius: 0 0 50% 50%;
+  z-index: 0;
+}
+
+/* ── CARD ── */
+.rc-card {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 780px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+/* ── IMAGEN SUPERIOR ── */
+.rc-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.rc-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+}
+
+.rc-card__img-overlay {
+  position: absolute;
+  top: 0; right: 0;
+  width: 55%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  background: linear-gradient(to left, rgba(255,255,255,0.75) 40%, transparent);
+}
+
+.rc-card__title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #2d2d2d;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.rc-card__subtitle {
+  font-size: 13px;
+  color: #292828;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ── FORM ── */
+.rc-form {
+  padding: 24px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rc-form__row {
+  display: flex;
+  gap: 16px;
+}
+
+.rc-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rc-form__group--full {
+  flex: 1 1 100%;
+}
+
+.rc-form__group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+
+.rc-form__group input,
+.rc-form__group select,
+.rc-form__group textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #a8d5a2;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  background: #f4fbf4;
+  color: #2d2d2d;
+  outline: none;
+  transition: border 0.2s;
+  resize: vertical;
+}
+
+.rc-form__group input:focus,
+.rc-form__group select:focus,
+.rc-form__group textarea:focus {
+  border-color: #3A7A2A;
+}
+
+.rc-form__group input::placeholder,
+.rc-form__group textarea::placeholder {
+  color: #a8d5a2;
+}
+
+/* ── INPUT CON OJO ── */
+.rc-input-eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rc-input-eye input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.rc-input-eye button {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #3A7A2A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.rc-input-eye button:hover {
+  color: #2d5e20;
+}
+
+/* ── ERROR ── */
+.rc-error {
+  font-size: 13px;
+  color: #e53935;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ── BOTÓN ── */
+.rc-btn {
+  width: 100%;
+  padding: 14px;
+  background: #3A7A2A;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  margin-top: 4px;
+}
+
+.rc-btn:hover:not(:disabled) {
+  background: #2d5e20;
+  transform: scale(1.02);
+}
+
+.rc-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* ── LINK LOGIN ── */
+.rc-login-link {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.rc-login-link span {
+  color: #3A7A2A;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .rc-form { padding: 20px; }
+  .rc-form__row { flex-direction: column; gap: 0; }
+  .rc-card__img-wrap { height: 160px; }
+}

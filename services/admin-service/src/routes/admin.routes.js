@@ -5,7 +5,7 @@ const { requireAdmin } = require('../middlewares/jwt.middleware');
 
 // Ruta de prueba
 router.get('/', (req, res) => {
-  res.json({ message: 'Admin Service rutas funcionando 🔩' });
+  res.json({ message: 'Admin Service rutas funcionando ' });
 });
 
 // Dashboard y listados
@@ -21,6 +21,8 @@ router.patch('/paseador/:id/aprobar',      requireAdmin, adminController.aprobar
 router.patch('/paseador/:id/desaprobar',   requireAdmin, adminController.desaprobarPaseador);
 router.patch('/veterinario/:id/aprobar',   requireAdmin, adminController.aprobarVeterinario);
 router.patch('/veterinario/:id/desaprobar',requireAdmin, adminController.desaprobarVeterinario);
+router.patch('/cuidador/:id/aprobar',      requireAdmin, adminController.aprobarCuidador);
+router.patch('/cuidador/:id/desaprobar',   requireAdmin, adminController.desaprobarCuidador);
 
 module.exports = router;
 

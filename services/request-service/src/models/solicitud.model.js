@@ -90,11 +90,15 @@ const cancelarSolicitud = async (solicitud_id, dueno_id) => {
 };
 
 /* ── Historial completo del dueño ── */
+/* ── Historial completo del dueño ── */
 const obtenerHistorialDueno = async (dueno_id, estado) => {
   const condicionEstado = estado ? `AND s.estado = '${estado}'` : "";
   const { rows } = await pool.query(
     `SELECT
       s.id,
+      s.dueno_id,
+      s.paseador_id                        AS perfil_paseador_id,
+      pp.usuario_id                        AS paseador_id,
       TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
       s.hora_servicio,
       s.duracion_minutos,

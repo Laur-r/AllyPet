@@ -14,5 +14,6 @@ router.post('/login', authController.login);
 router.post('/register/dueno',       authController.registrarDueno);
 router.post('/register/paseador',    authController.registrarPaseador);
 router.post('/register/veterinario', authController.registrarVeterinario);
+router.post('/register/cuidador', authController.registrarCuidador);
 
 module.exports = router;

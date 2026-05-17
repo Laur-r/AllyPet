@@ -458,3 +458,29 @@
   .hd-detalles { grid-template-columns: 1fr; }
   .hd-head { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
+
+.hd-foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  flex-wrap: wrap;
+}
+
+.hd-btn-mensaje {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #8B35C8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.hd-btn-mensaje:hover  { background: #7228b0; }
+.hd-btn-mensaje:active { transform: scale(0.97); }
