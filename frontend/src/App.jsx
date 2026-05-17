@@ -10,10 +10,12 @@ import PerfilPublicoPaseador    from './pages/PerfilPublicoPaseador/PerfilPublic
 import RegistroVeterinario      from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 import BusquedaVeterinarias     from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
 import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
+import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
 import MenuVeterinario from './pages/Menu/MenuVeterinario/MenuVeterinario';
+import MenuCuidador from './pages/Menu/MenuCuidador/MenuCuidador';
 
 import Pacientes from './pages/Pacientes/Pacientes';
 import CarnetVet from './pages/Pacientes/CarnetVet';
@@ -54,6 +56,7 @@ function App() {
         <Route path="/register/dueno"       element={<RegistroDueno />} />
         <Route path="/register/paseador"    element={<RegistroPaseador />} />
         <Route path="/register/veterinario" element={<RegistroVeterinario />} />
+        <Route path="/register/cuidador"    element={<RegistroCuidador />} />
 
         {/* ── Menú Dueño ── */}
         <Route path="/menu/dueno" element={<MenuDueno />}>
@@ -95,6 +98,16 @@ function App() {
           <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"         element={<Mensajes />} />
           <Route path="notificaciones"   element={<Notificaciones />} />
+        </Route>
+
+        {/* ── Menú Cuidador ── */}
+        <Route path="/menu/cuidador" element={<MenuCuidador />}>
+          <Route index element={<h2>Bienvenido cuidador</h2>} />
+          <Route path="perfil"         element={<h2>Mi Perfil Comercial</h2>} />
+          <Route path="solicitudes"    element={<h2>Solicitudes recibidas</h2>} />
+          <Route path="configuracion"  element={<Configuracion />} />
+          <Route path="mensajes"       element={<Mensajes />} />
+          <Route path="notificaciones" element={<Notificaciones />} />
         </Route>
 
         {/* Admin */}

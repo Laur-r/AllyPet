@@ -22,7 +22,25 @@ const getUserRoleById = async (userId) => {
  */
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT id, nombre, correo AS email, rol AS role, estado FROM usuarios ORDER BY id DESC';
+    const query = `
+      SELECT 
+        u.id,
+        u.nombre,
+        u.correo AS email,
+        u.rol AS role,
+        u.estado,
+        CASE
+          WHEN u.rol = 'paseador'    THEN pp.aprobado
+          WHEN u.rol = 'veterinario' THEN pv.aprobado
+          WHEN u.rol = 'cuidador'    THEN pc.aprobado
+          ELSE NULL
+        END AS aprobado
+      FROM usuarios u
+      LEFT JOIN perfil_paseador    pp ON pp.usuario_id = u.id AND u.rol = 'paseador'
+      LEFT JOIN perfil_veterinario pv ON pv.usuario_id = u.id AND u.rol = 'veterinario'
+      LEFT JOIN perfil_cuidador    pc ON pc.usuario_id = u.id AND u.rol = 'cuidador'
+      ORDER BY u.id DESC
+    `;
     const { rows } = await pool.query(query);
     return rows;
   } catch (error) {
@@ -107,6 +125,18 @@ const desaprobarVeterinario = async (usuarioId) => {
   return rows.length > 0;
 };
 
+const aprobarCuidador = async (usuarioId) => {
+  const query = 'UPDATE perfil_cuidador SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+const desaprobarCuidador = async (usuarioId) => {
+  const query = 'UPDATE perfil_cuidador SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
 module.exports = {
   getUserRoleById,
   getAllUsers,
@@ -117,4 +147,6 @@ module.exports = {
   desaprobarPaseador,
   aprobarVeterinario,
   desaprobarVeterinario,
+  aprobarCuidador,
+  desaprobarCuidador,
 };
