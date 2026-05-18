@@ -8,11 +8,9 @@ const service = require("../services/solicitud.service");
 const crearSolicitud = async (req, res) => {
   try {
     const dueno_id = req.usuario.id;
-    console.log("dueno_id:", dueno_id); // ← temporal
     const { paseador_id, mascota_id, fecha_servicio, hora_servicio, duracion_minutos } = req.body;
 
     const solicitud = await service.crearSolicitud({
-      
       dueno_id,
       paseador_id,
       mascota_id,
@@ -30,8 +28,8 @@ const crearSolicitud = async (req, res) => {
     const status = err.message.includes("no existe") || err.message.includes("no te pertenece") ? 400 : 500;
     return res.status(status).json({ error: err.message });
   }
-  
 };
+
 /* ─────────────────────────────────────────
    GET /api/solicitudes/paseador/pendientes
    El paseador_usuario_id sale del token JWT
@@ -78,9 +76,9 @@ const responderSolicitud = async (req, res) => {
 ───────────────────────────────────────── */
 const cancelarSolicitud = async (req, res) => {
   try {
-    const dueno_id    = req.usuario.id;
+    const dueno_id     = req.usuario.id;
     const solicitud_id = Number(req.params.id);
-    const solicitud   = await service.cancelarSolicitud(solicitud_id, dueno_id);
+    const solicitud    = await service.cancelarSolicitud(solicitud_id, dueno_id);
     return res.status(200).json({
       message: "Solicitud cancelada correctamente",
       data: solicitud,
@@ -129,6 +127,7 @@ const obtenerHistorialPaseador = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 /* ─────────────────────────────────────────
    PUT /api/solicitudes/:id/completar
    Solo el paseador, solo aceptadas, solo si la fecha ya pasó o es hoy
@@ -149,6 +148,26 @@ const completarServicio = async (req, res) => {
     return res.status(status).json({ error: err.message });
   }
 };
+
+/* ─────────────────────────────────────────
+   GET /api/solicitudes/paseador/dashboard
+   Devuelve activas (pendiente + aceptada) y completadas en una sola llamada
+   El paseador_usuario_id sale del token JWT
+───────────────────────────────────────── */
+const obtenerDashboardPaseador = async (req, res) => {
+  try {
+    const paseador_usuario_id = req.usuario.id;
+    const datos = await service.obtenerDashboardPaseador(paseador_usuario_id);
+    return res.status(200).json({
+      message: "Dashboard obtenido",
+      data: datos,
+    });
+  } catch (err) {
+    console.error("obtenerDashboardPaseador:", err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientes,
@@ -157,4 +176,5 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  obtenerDashboardPaseador,
 };

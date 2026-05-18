@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 
-/* Obtener perfil por usuario_id (Privado) */
+/* ── Obtener perfil por usuario_id (Privado) ── */
 const getByUsuario = async (usuario_id) => {
   if (!usuario_id) throw new Error('usuario_id es requerido');
 
@@ -22,7 +22,7 @@ const getByUsuario = async (usuario_id) => {
   return rows[0] || null;
 };
 
-/* Crear perfil (si no existe aún) */
+/* ── Crear perfil (si no existe aún) ── */
 const create = async (usuario_id) => {
   await pool.query(
     `INSERT INTO perfil_veterinario (usuario_id)
@@ -31,7 +31,6 @@ const create = async (usuario_id) => {
     [usuario_id]
   );
 
-  // 🔥 SIEMPRE devuelve el perfil después
   const { rows } = await pool.query(
     `SELECT * FROM perfil_veterinario WHERE usuario_id = $1`,
     [usuario_id]
@@ -40,40 +39,38 @@ const create = async (usuario_id) => {
   return rows[0] || null;
 };
 
-/* Actualizar datos editables */
+/* ── Actualizar datos editables ── */
 const update = async (usuario_id, datos) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // 1. Campos de 'usuarios'
     const { nombre } = datos;
     if (nombre !== undefined) {
       await client.query('UPDATE usuarios SET nombre = $1 WHERE id = $2', [nombre, usuario_id]);
     }
 
-    // 2. Campos de 'perfil_veterinario'
     const {
       nombre_establecimiento, direccion, ciudad, estado, especialidad,
       experiencia, descripcion, servicios, horarios, foto_perfil,
       banner, disponible
     } = datos;
 
-    const expSegura = experiencia != null ? Number(experiencia) : null;
-    const dispSeguro = disponible != null ? (disponible === true || disponible === 'true') : null;
+    const expSegura  = experiencia != null ? Number(experiencia) : null;
+    const dispSeguro = disponible  != null ? (disponible === true || disponible === 'true') : null;
 
     const { rows } = await client.query(
       `UPDATE perfil_veterinario
        SET
-         nombre_establecimiento = COALESCE($1, nombre_establecimiento),
-         direccion              = COALESCE($2, direccion),
-         ciudad                 = COALESCE($3, ciudad),
-         estado                 = COALESCE($4, estado),
-         especialidad           = COALESCE($5, especialidad),
-         experiencia            = COALESCE($6, experiencia),
-         descripcion            = COALESCE($7, descripcion),
-         servicios              = COALESCE($8, servicios),
-         horarios               = COALESCE($9, horarios),
+         nombre_establecimiento = COALESCE($1,  nombre_establecimiento),
+         direccion              = COALESCE($2,  direccion),
+         ciudad                 = COALESCE($3,  ciudad),
+         estado                 = COALESCE($4,  estado),
+         especialidad           = COALESCE($5,  especialidad),
+         experiencia            = COALESCE($6,  experiencia),
+         descripcion            = COALESCE($7,  descripcion),
+         servicios              = COALESCE($8,  servicios),
+         horarios               = COALESCE($9,  horarios),
          foto_perfil            = COALESCE($10, foto_perfil),
          banner                 = COALESCE($11, banner),
          disponible             = COALESCE($12, disponible)
@@ -90,9 +87,9 @@ const update = async (usuario_id, datos) => {
         servicios !== undefined ? JSON.stringify(servicios) : null,
         horarios  !== undefined ? JSON.stringify(horarios)  : null,
         foto_perfil || null,
-        banner || null,
+        banner      || null,
         dispSeguro,
-        usuario_id
+        usuario_id,
       ]
     );
 
@@ -107,7 +104,7 @@ const update = async (usuario_id, datos) => {
   }
 };
 
-/* ──  Buscar veterinarias por ciudad ── */
+/* ── Buscar veterinarias por ciudad ── */
 const buscarPorCiudad = async (ciudad) => {
   const { rows } = await pool.query(
     `SELECT
@@ -121,25 +118,26 @@ const buscarPorCiudad = async (ciudad) => {
     FROM perfil_veterinario p
     INNER JOIN usuarios u ON u.id = p.usuario_id
     WHERE LOWER(p.ciudad) = LOWER($1)
-      AND p.aprobado = true
+      AND p.aprobado  = true
       AND p.disponible = true
-      AND u.estado = true
+      AND u.estado    = true
     ORDER BY p.nombre_establecimiento ASC`,
     [ciudad]
   );
   return rows;
 };
 
-/* ── H6.4 — Obtener perfil público veterinaria ── */
+/* ── Perfil público veterinaria ── */
 const obtenerPerfilPublico = async (usuarioId) => {
-  // ── Sincronizar reputación en tiempo real ──
   try {
-     await pool.query(
+    await pool.query(
       `UPDATE perfil_veterinario p
        SET promedio_estrellas = sub.promedio,
-           total_resenas = sub.total
+           total_resenas      = sub.total
        FROM (
-         SELECT proveedor_id, AVG(calificacion)::DECIMAL(2,1) AS promedio, COUNT(*) AS total
+         SELECT proveedor_id,
+                AVG(calificacion)::DECIMAL(2,1) AS promedio,
+                COUNT(*)                        AS total
          FROM resenas
          WHERE proveedor_id = $1
          GROUP BY proveedor_id
@@ -148,28 +146,16 @@ const obtenerPerfilPublico = async (usuarioId) => {
       [usuarioId]
     );
   } catch (err) {
-    console.warn("No se pudo sincronizar reputación vet:", err.message);
+    console.warn('No se pudo sincronizar reputación vet:', err.message);
   }
 
   const { rows } = await pool.query(
     `SELECT
-      u.id,
-      u.nombre,
-      u.correo,
-      u.telefono,
-      u.ciudad,
-      u.foto_perfil,
-      p.nombre_establecimiento,
-      p.direccion,
-      p.promedio_estrellas,
-      p.total_resenas,
-      p.servicios,
-      p.horarios,
-      p.banner,
-      p.descripcion,
-      p.especialidad,
-      p.experiencia,
-      p.disponible
+      u.id, u.nombre, u.correo, u.telefono, u.ciudad, u.foto_perfil,
+      p.nombre_establecimiento, p.direccion,
+      p.promedio_estrellas, p.total_resenas,
+      p.servicios, p.horarios, p.banner, p.descripcion,
+      p.especialidad, p.experiencia, p.disponible
     FROM usuarios u
     LEFT JOIN perfil_veterinario p ON u.id = p.usuario_id
     WHERE u.id = $1`,
@@ -178,15 +164,12 @@ const obtenerPerfilPublico = async (usuarioId) => {
   return rows[0] || null;
 };
 
-/* ── Obtener reseñas de la veterinaria ── */
+/* ── Reseñas de la veterinaria ── */
 const obtenerResenas = async (proveedorId) => {
   const { rows } = await pool.query(
-     `SELECT
-      r.id,
-      r.calificacion,
-      r.comentario,
-      r.fecha,
-      u.nombre AS dueno_nombre,
+    `SELECT
+      r.id, r.calificacion, r.comentario, r.fecha,
+      u.nombre      AS dueno_nombre,
       u.foto_perfil AS dueno_foto
     FROM resenas r
     INNER JOIN usuarios u ON u.id = r.dueno_id
@@ -197,11 +180,105 @@ const obtenerResenas = async (proveedorId) => {
   return rows;
 };
 
-module.exports = { 
-  getByUsuario, 
-  create, 
-  update, 
+/* ─────────────────────────────────────────────────────────────────
+   DASHBOARD — nuevas funciones
+   ─────────────────────────────────────────────────────────────────
+   historial_medico.veterinario es un VARCHAR con el nombre del
+   establecimiento, no un FK. Filtramos por ese nombre.
+   ───────────────────────────────────────────────────────────────── */
+
+/* Citas del veterinario (= entradas de historial_medico que le pertenecen) */
+const getCitasDashboard = async (usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT
+       hm.id,
+       hm.fecha,
+       hm.tipo,
+       hm.descripcion,
+       hm.notas,
+       hm.fecha_registro,
+       m.id        AS mascota_id,
+       m.nombre    AS mascota_nombre,
+       m.especie,
+       m.raza,
+       m.foto      AS mascota_foto,
+       u.id        AS dueno_id,
+       u.nombre    AS dueno
+     FROM historial_medico hm
+     JOIN mascotas m ON m.id = hm.mascota_id
+     JOIN usuarios u ON u.id = m.usuario_id
+     JOIN perfil_veterinario pv ON pv.usuario_id = $1
+     WHERE LOWER(hm.veterinario) = LOWER(
+             COALESCE(NULLIF(pv.nombre_establecimiento, ''),
+                      (SELECT nombre FROM usuarios WHERE id = $1))
+           )
+       AND m.activo IS NOT FALSE
+     ORDER BY hm.fecha DESC, hm.fecha_registro DESC`,
+    [usuario_id]
+  );
+  return rows;
+};
+
+/* Pacientes únicos atendidos por este veterinario */
+const getPacientesDashboard = async (usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT DISTINCT ON (m.id)
+       m.id,
+       m.nombre,
+       m.especie,
+       m.raza,
+       m.foto,
+       m.edad,
+       m.peso,
+       u.nombre AS dueno,
+       u.id     AS dueno_id,
+       hm.fecha AS ultima_visita
+     FROM historial_medico hm
+     JOIN mascotas m ON m.id = hm.mascota_id
+     JOIN usuarios u ON u.id = m.usuario_id
+     JOIN perfil_veterinario pv ON pv.usuario_id = $1
+     WHERE LOWER(hm.veterinario) = LOWER(
+             COALESCE(NULLIF(pv.nombre_establecimiento, ''),
+                      (SELECT nombre FROM usuarios WHERE id = $1))
+           )
+       AND m.activo IS NOT FALSE
+     ORDER BY m.id, hm.fecha DESC`,
+    [usuario_id]
+  );
+  return rows;
+};
+
+/* Estadísticas agrupadas por mes (últimos 12 meses) */
+const getEstadisticasDashboard = async (usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT
+       TO_CHAR(hm.fecha, 'Mon')        AS mes,
+       EXTRACT(MONTH FROM hm.fecha)::int AS mes_num,
+       EXTRACT(YEAR  FROM hm.fecha)::int AS anio,
+       COUNT(*)                        AS citas
+     FROM historial_medico hm
+     JOIN perfil_veterinario pv ON pv.usuario_id = $1
+     WHERE LOWER(hm.veterinario) = LOWER(
+             COALESCE(NULLIF(pv.nombre_establecimiento, ''),
+                      (SELECT nombre FROM usuarios WHERE id = $1))
+           )
+       AND hm.fecha >= CURRENT_DATE - INTERVAL '12 months'
+     GROUP BY mes, mes_num, anio
+     ORDER BY anio, mes_num`,
+    [usuario_id]
+  );
+  return rows;
+};
+
+module.exports = {
+  getByUsuario,
+  create,
+  update,
   buscarPorCiudad,
   obtenerPerfilPublico,
   obtenerResenas,
+  // dashboard
+  getCitasDashboard,
+  getPacientesDashboard,
+  getEstadisticasDashboard,
 };

@@ -7,19 +7,16 @@ const crearSolicitud = async ({ dueno_id, paseador_id, mascota_id, fecha_servici
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-  const fechaSolicitud = new Date(fecha_servicio + 'T00:00:00'); // ✅ única línea cambiada
+  const fechaSolicitud = new Date(fecha_servicio + 'T00:00:00');
   if (fechaSolicitud < hoy) {
     throw new Error("La fecha del servicio no puede ser en el pasado");
   }
-
-  // ... resto del código igual
 
   const mascota = await model.verificarMascota(mascota_id, dueno_id);
   if (!mascota) {
     throw new Error("La mascota no existe o no te pertenece");
   }
 
-  // Devuelve el id real de perfil_paseador
   const paseador = await model.verificarPaseador(paseador_id);
   if (!paseador) {
     throw new Error("El paseador no existe o no está disponible");
@@ -27,7 +24,7 @@ const crearSolicitud = async ({ dueno_id, paseador_id, mascota_id, fecha_servici
 
   const solicitud = await model.crearSolicitud({
     dueno_id,
-    paseador_id: paseador.id, // ← usa el id real de perfil_paseador
+    paseador_id: paseador.id,
     mascota_id,
     fecha_servicio,
     hora_servicio,
@@ -36,6 +33,7 @@ const crearSolicitud = async ({ dueno_id, paseador_id, mascota_id, fecha_servici
 
   return solicitud;
 };
+
 const obtenerSolicitudesPendientesPaseador = async (paseador_usuario_id) => {
   return await model.obtenerSolicitudesPendientesPaseador(paseador_usuario_id);
 };
@@ -52,6 +50,7 @@ const responderSolicitud = async (solicitud_id, paseador_usuario_id, estado) => 
 
   return solicitud;
 };
+
 const cancelarSolicitud = async (solicitud_id, dueno_id) => {
   const solicitud = await model.cancelarSolicitud(solicitud_id, dueno_id);
   if (!solicitud) {
@@ -75,6 +74,7 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
   }
   return await model.obtenerHistorialPaseador(paseador_usuario_id, estado);
 };
+
 const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   const solicitud = await model.completarServicio(solicitud_id, paseador_usuario_id);
   if (!solicitud) {
@@ -84,6 +84,16 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   }
   return solicitud;
 };
+
+/* ── Dashboard paseador ── */
+const obtenerDashboardPaseador = async (paseador_usuario_id) => {
+  const [activas, completadas] = await Promise.all([
+    model.obtenerSolicitudesActivasPaseador(paseador_usuario_id),
+    model.obtenerCompletadasPaseador(paseador_usuario_id),
+  ]);
+  return { activas, completadas };
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientesPaseador,
@@ -92,4 +102,5 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  obtenerDashboardPaseador,
 };

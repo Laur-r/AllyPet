@@ -9,17 +9,21 @@ router.post("/", verificarToken, controller.crearSolicitud);
 /* H5.2 — Solicitudes pendientes del paseador */
 router.get("/paseador/pendientes", verificarToken, controller.obtenerSolicitudesPendientes);
 
+/* H9.7 — Dashboard paseador (activas + completadas) */
+/* ⚠️ Debe ir ANTES de cualquier ruta con /:id para evitar conflictos */
+router.get("/paseador/dashboard", verificarToken, controller.obtenerDashboardPaseador);
+
+/* H5.5 — Historial del paseador */
+router.get("/paseador/historial", verificarToken, controller.obtenerHistorialPaseador);
+
+/* H5.4 — Historial del dueño */
+router.get("/dueno/historial", verificarToken, controller.obtenerHistorialDueno);
+
 /* H5.2 — Aceptar o rechazar */
 router.put("/:id/responder", verificarToken, controller.responderSolicitud);
 
 /* H5.3 — Cancelar solicitud */
 router.put("/:id/cancelar", verificarToken, controller.cancelarSolicitud);
-
-/* H5.4 — Historial del dueño */
-router.get("/dueno/historial", verificarToken, controller.obtenerHistorialDueno);
-
-/* H5.5 — Historial del paseador */
-router.get("/paseador/historial", verificarToken, controller.obtenerHistorialPaseador);
 
 /* H5.6 — Marcar como completado */
 router.put("/:id/completar", verificarToken, controller.completarServicio);

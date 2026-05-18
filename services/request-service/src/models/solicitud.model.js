@@ -90,7 +90,6 @@ const cancelarSolicitud = async (solicitud_id, dueno_id) => {
 };
 
 /* ── Historial completo del dueño ── */
-/* ── Historial completo del dueño ── */
 const obtenerHistorialDueno = async (dueno_id, estado) => {
   const condicionEstado = estado ? `AND s.estado = '${estado}'` : "";
   const { rows } = await pool.query(
@@ -171,8 +170,66 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
      RETURNING s.*`,
     [solicitud_id, paseador_usuario_id, hoy]
   );
-
   return rows[0] || null;
+};
+
+/* ── Dashboard paseador: solicitudes activas (pendiente + aceptada) ── */
+const obtenerSolicitudesActivasPaseador = async (paseador_usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT
+      s.id,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
+      s.hora_servicio,
+      s.duracion_minutos,
+      s.estado,
+      s.fecha_creacion,
+      u.nombre        AS dueno_nombre,
+      u.foto_perfil   AS dueno_foto,
+      u.telefono      AS dueno_telefono,
+      m.nombre        AS mascota_nombre,
+      m.raza          AS mascota_raza,
+      m.especie       AS mascota_especie,
+      m.foto          AS mascota_foto
+    FROM solicitudes s
+    INNER JOIN perfil_paseador pp ON pp.id = s.paseador_id
+    INNER JOIN usuarios u ON u.id = s.dueno_id
+    INNER JOIN mascotas m ON m.id = s.mascota_id
+    WHERE pp.usuario_id = $1
+      AND s.estado IN ('pendiente', 'aceptada')
+    ORDER BY s.fecha_servicio ASC, s.hora_servicio ASC`,
+    [paseador_usuario_id]
+  );
+  return rows;
+};
+
+/* ── Dashboard paseador: completadas con precio calculado ── */
+const obtenerCompletadasPaseador = async (paseador_usuario_id) => {
+  const { rows } = await pool.query(
+    `SELECT
+      s.id,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_servicio,
+      s.hora_servicio,
+      s.duracion_minutos,
+      s.estado,
+      s.fecha_creacion,
+      s.fecha_actualizacion,
+      ROUND((pp.tarifa / 60.0) * s.duracion_minutos) AS precio_total,
+      u.nombre        AS dueno_nombre,
+      u.foto_perfil   AS dueno_foto,
+      m.nombre        AS mascota_nombre,
+      m.raza          AS mascota_raza,
+      m.especie       AS mascota_especie,
+      m.foto          AS mascota_foto
+    FROM solicitudes s
+    INNER JOIN perfil_paseador pp ON pp.id = s.paseador_id
+    INNER JOIN usuarios u ON u.id = s.dueno_id
+    INNER JOIN mascotas m ON m.id = s.mascota_id
+    WHERE pp.usuario_id = $1
+      AND s.estado = 'completada'
+    ORDER BY s.fecha_actualizacion DESC`,
+    [paseador_usuario_id]
+  );
+  return rows;
 };
 
 module.exports = {
@@ -185,4 +242,6 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  obtenerSolicitudesActivasPaseador,
+  obtenerCompletadasPaseador,
 };

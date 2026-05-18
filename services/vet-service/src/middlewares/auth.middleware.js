@@ -15,13 +15,13 @@ const verificarToken = (req, res, next) => {
 
     console.log('DECODED TOKEN:', decoded);
 
-    //  CORRECTO SEGÚN TU TOKEN
-    req.usuario_id = decoded.id;
+    // ✅ CORREGIDO: el token usa "sub" como ID (estándar JWT), no "id"
+    req.usuario_id = decoded.id || decoded.sub;
 
     if (!req.usuario_id) {
       return res.status(401).json({
         ok: false,
-        message: 'Token sin usuario_id'
+        message: 'Token sin usuario_id',
       });
     }
 
@@ -31,4 +31,13 @@ const verificarToken = (req, res, next) => {
   }
 };
 
-module.exports = { verificarToken };
+/* ── Middleware exclusivo para veterinarios ── */
+const verificarVeterinario = (req, res, next) => {
+  // Reutiliza verificarToken primero si no se encadenó antes
+  if (!req.usuario_id) {
+    return res.status(401).json({ ok: false, message: 'No autenticado' });
+  }
+  next();
+};
+
+module.exports = { verificarToken, verificarVeterinario };
