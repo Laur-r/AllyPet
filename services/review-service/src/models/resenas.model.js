@@ -108,6 +108,35 @@ const ResenaModel = {
     return result.rows;
   },
 
+  /* ── Servicios de cuidado calificables por el dueño ── */
+async obtenerServiciosCuidadoCalificables(dueno_id) {
+  const query = `
+    SELECT 
+      s.id AS solicitud_id,
+      s.cuidador_id,
+      TO_CHAR(s.fecha_servicio, 'YYYY-MM-DD') AS fecha_inicio,
+      TO_CHAR(s.fecha_fin, 'YYYY-MM-DD')      AS fecha_fin,
+      s.estado,
+      u.id           AS proveedor_id,
+      u.nombre       AS proveedor_nombre,
+      u.foto_perfil  AS proveedor_foto,
+      'cuidador'     AS tipo_servicio,
+      r.id           AS id_resena,
+      r.calificacion,
+      r.comentario
+    FROM solicitudes s
+    INNER JOIN perfil_cuidador pc ON pc.id = s.cuidador_id
+    INNER JOIN usuarios u ON u.id = pc.usuario_id
+    LEFT JOIN resenas r ON r.solicitud_id = s.id
+    WHERE s.dueno_id = $1
+      AND s.estado = 'completada'
+      AND s.cuidador_id IS NOT NULL
+    ORDER BY s.fecha_servicio DESC;
+  `;
+  const result = await pool.query(query, [dueno_id]);
+  return result.rows;
+},
+
   async obtenerPromedio(proveedor_id) {
     const query = `
       SELECT 
@@ -118,6 +147,7 @@ const ResenaModel = {
     `;
     const result = await pool.query(query, [proveedor_id]);
     return result.rows[0];
+
   }
 };
 

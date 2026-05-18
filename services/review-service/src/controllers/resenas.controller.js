@@ -57,6 +57,22 @@ const historial = await ResenaModel.obtenerHistorial(dueno_id);
     }
   },
 
+  /* ── Servicios de cuidado calificables ── */
+async obtenerServiciosCuidadoCalificables(req, res) {
+  try {
+    const dueno_id = req.user.id;
+    const ResenaModel = require('../models/resenas.model');
+
+    const pendientes = await ResenaModel.obtenerServiciosCuidadoCalificables(dueno_id);
+    const historial  = await ResenaModel.obtenerHistorial(dueno_id);
+
+    res.json({ pendientes, historial });
+  } catch (err) {
+    console.error('Error en obtenerServiciosCuidadoCalificables:', err);
+    res.status(500).json({ error: 'Error al obtener servicios de cuidado calificables' });
+  }
+},
+
   async obtenerPromedio(req, res) {
     try {
       const { id_usuario } = req.params;
