@@ -144,6 +144,23 @@ const obtenerResenas = async (proveedorId) => {
   return rows;
 };
 
+/* ── Obtener todos los cuidadores aprobados ── */
+const obtenerTodos = async () => {
+  const { rows } = await pool.query(
+    `SELECT
+      u.id AS usuario_id, u.nombre,
+      COALESCE(c.foto_perfil, u.foto_perfil) AS foto_perfil,
+      c.tarifa, c.calificacion, c.total_resenas,
+      c.disponible, c.ciudad, c.especialidad
+     FROM perfil_cuidador c
+     INNER JOIN usuarios u ON u.id = c.usuario_id
+     WHERE c.aprobado = true
+       AND u.estado = true
+     ORDER BY c.calificacion DESC`
+  );
+  return rows;
+};
+
 module.exports = {
   obtenerPerfil,
   crearPerfil,
@@ -153,4 +170,5 @@ module.exports = {
   buscarPorCiudad,
   obtenerPerfilPublico,
   obtenerResenas,
+  obtenerTodos,
 };
