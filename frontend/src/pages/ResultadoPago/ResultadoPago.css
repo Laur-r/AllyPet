@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+
+.rp-page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #F7F6FB; font-family: 'Inter', sans-serif;
+  padding: 24px;
+}
+
+.rp-card {
+  background: #fff; border-radius: 20px;
+  padding: 48px 40px; max-width: 440px; width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(123,45,139,.12);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  border-top: 4px solid #EDE8F2;
+}
+.rp-card--ok    { border-top-color: #6CC04A; }
+.rp-card--warn  { border-top-color: #F5A623; }
+.rp-card--error { border-top-color: #EF4444; }
+
+.rp-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.rp-icon--ok    { background: #EBF7E4; color: #3A7A2A; }
+.rp-icon--warn  { background: #FFF3E0; color: #D97706; }
+.rp-icon--error { background: #FEE2E2; color: #EF4444; }
+
+.rp-card h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem; font-weight: 800;
+  color: #1A1A2E; margin: 0;
+}
+.rp-card p {
+  font-size: .9rem; color: #6B7280;
+  line-height: 1.6; max-width: 320px;
+}
+
+/* Spinner */
+.rp-spinner {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 4px solid #F3E8F7; border-top-color: #7B2D8B;
+  animation: rpSpin .7s linear infinite; margin-bottom: 8px;
+}
+@keyframes rpSpin { to { transform: rotate(360deg); } }
+
+/* Detalle del pago */
+.rp-detalle {
+  width: 100%; background: #F7F6FB;
+  border: 1px solid #EDE8F2; border-radius: 12px;
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.rp-detalle-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: .875rem;
+}
+.rp-detalle-row span   { color: #6B7280; }
+.rp-detalle-row strong { color: #1A1A2E; font-weight: 700; }
+.rp-ref { font-size: .75rem; color: #7B2D8B; }
+
+/* Botones */
+.rp-btns { display: flex; gap: 10px; width: 100%; }
+.rp-btn {
+  flex: 1; padding: 13px; border-radius: 12px;
+  font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 700;
+  cursor: pointer; border: none; transition: all .2s;
+}
+.rp-btn--primary {
+  background: #7B2D8B; color: #fff;
+  box-shadow: 0 3px 12px rgba(123,45,139,.3);
+}
+.rp-btn--primary:hover  { background: #9B4DAB; }
+.rp-btn--secondary {
+  background: transparent; color: #6B7280;
+  border: 1.5px solid #EDE8F2;
+}
+.rp-btn--secondary:hover { border-color: #7B2D8B; color: #7B2D8B; }

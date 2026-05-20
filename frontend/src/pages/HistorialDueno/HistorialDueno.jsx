@@ -5,6 +5,9 @@ import "./HistorialDueno.css";
 
 const PAS_API = "http://localhost:3006";
 const PET_API = "http://localhost:3003";
+const PAY_API = "http://localhost:3012"; // ✅ NUEVO
+
+const getToken = () => localStorage.getItem("token");
 
 const ESTADOS = [
   { value: "",            label: "Todas"       },
@@ -37,9 +40,13 @@ function formatDuracion(minutos) {
 function getIniciales(nombre = "") {
   return nombre.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
+const fmt = (n) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency", currency: "COP", minimumFractionDigits: 0,
+  }).format(Number(n) || 0);
 
 export default function HistorialDueno() {
-  const token    = localStorage.getItem("token");
+  const token    = getToken();
   const navigate = useNavigate();
 
   const [solicitudes,  setSolicitudes]  = useState([]);
@@ -47,6 +54,7 @@ export default function HistorialDueno() {
   const [filtroEstado, setFiltroEstado] = useState("");
   const [cancelando,   setCancelando]   = useState(null);
   const [confirmId,    setConfirmId]    = useState(null);
+  const [pagando,      setPagando]      = useState(null); // ✅ NUEVO
   const [toast,        setToast]        = useState(null);
 
   const notify = (msg, tipo = "ok") => {
@@ -84,7 +92,6 @@ export default function HistorialDueno() {
     }
   };
 
-  // Navega a /mensajes con el paseador preseleccionado
   const handleMensaje = (s) => {
     navigate("/menu/dueno/mensajes", {
       state: {
@@ -94,6 +101,29 @@ export default function HistorialDueno() {
         solicitud_id:        s.id,
       },
     });
+  };
+
+  // ✅ NUEVO: iniciar pago con Wompi
+  const handlePagar = async (solicitud) => {
+    setPagando(solicitud.id);
+    try {
+      const res = await fetch(`${PAY_API}/pagos/iniciar`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ solicitud_id: solicitud.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al iniciar pago");
+
+      // Redirigir al checkout de Wompi
+      window.location.href = data.data.wompi_url;
+    } catch (err) {
+      notify(err.message || "No se pudo iniciar el pago", "error");
+      setPagando(null);
+    }
   };
 
   return (
@@ -141,8 +171,8 @@ export default function HistorialDueno() {
       {!cargando && solicitudes.length > 0 && (
         <div className="hd-lista">
           {solicitudes.map(s => {
-            console.log('campos solicitud:', Object.keys(s)); 
             const est = BADGE_ESTADO[s.estado] || BADGE_ESTADO.pendiente;
+
             const fotoMascota = s.mascota_foto
               ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
               : null;
@@ -151,6 +181,11 @@ export default function HistorialDueno() {
               : null;
 
             const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
+
+            // ✅ NUEVO: mostrar botón pagar solo si está aceptada y no pagada
+            const puedesPagar = s.estado === "aceptada" && s.pago_estado !== "aprobado";
+            const yaPagado    = s.pago_estado === "aprobado";
+            const estaPagando = pagando === s.id;
 
             return (
               <div key={s.id} className="hd-card">
@@ -161,12 +196,17 @@ export default function HistorialDueno() {
                       className="hd-hero-img"
                       src={fotoMascota}
                       alt={s.mascota_nombre}
-                      onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+                      onError={e => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "flex";
+                      }}
                     />
                   ) : null}
-                  <div className="hd-hero-emoji" style={{ display: fotoMascota ? "none" : "flex" }}>🐶</div>
+                  <div className="hd-hero-emoji"
+                       style={{ display: fotoMascota ? "none" : "flex" }}>🐶</div>
                   <div className="hd-hero-fade" />
-                  <span className="hd-badge-float" style={{ background: est.bg, color: est.color, borderColor: est.border }}>
+                  <span className="hd-badge-float"
+                        style={{ background: est.bg, color: est.color, borderColor: est.border }}>
                     {est.label}
                   </span>
                   <div className="hd-hero-info">
@@ -191,20 +231,26 @@ export default function HistorialDueno() {
                       <strong>{s.paseador_nombre}</strong>
                       <small>Paseador</small>
                     </div>
+                    {/* ✅ NUEVO: precio acordado junto al paseador */}
+                    {s.precio_acordado && (
+                      <span className="hd-precio-tag">{fmt(s.precio_acordado)}</span>
+                    )}
                   </div>
 
                   <div className="hd-detalles">
                     <div className="hd-det">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2">
                         <rect x="3" y="4" width="18" height="18" rx="2"/>
                         <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
+                        <line x1="8"  y1="2" x2="8"  y2="6"/>
+                        <line x1="3"  y1="10" x2="21" y2="10"/>
                       </svg>
                       <span>{formatFecha(s.fecha_servicio)}</span>
                     </div>
                     <div className="hd-det">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                       </svg>
@@ -215,12 +261,16 @@ export default function HistorialDueno() {
 
                 {/* FOOTER */}
                 <div className="hd-foot">
+
+                  {/* Cancelar (solo pendientes) */}
                   {s.estado === "pendiente" && (
                     confirmId === s.id ? (
                       <div className="hd-confirm">
                         <p>¿Seguro que deseas cancelar esta solicitud?</p>
                         <div className="hd-confirm-btns">
-                          <button className="hd-btn-no" onClick={() => setConfirmId(null)}>No, volver</button>
+                          <button className="hd-btn-no" onClick={() => setConfirmId(null)}>
+                            No, volver
+                          </button>
                           <button
                             className="hd-btn-si"
                             onClick={() => handleCancelar(s.id)}
@@ -233,7 +283,8 @@ export default function HistorialDueno() {
                       </div>
                     ) : (
                       <button className="hd-btn-cancel" onClick={() => setConfirmId(s.id)}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" strokeWidth="2.5">
                           <path d="M18 6L6 18M6 6l12 12"/>
                         </svg>
                         Cancelar solicitud
@@ -241,14 +292,54 @@ export default function HistorialDueno() {
                     )
                   )}
 
+                  {/* ✅ NUEVO: botón pagar */}
+                  {puedesPagar && (
+                    <button
+                      className="hd-btn-pagar"
+                      onClick={() => handlePagar(s)}
+                      disabled={estaPagando}
+                    >
+                      {estaPagando ? (
+                        <>
+                          <div className="hd-spinner-sm" />
+                          Procesando…
+                        </>
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" strokeWidth="2.2">
+                            <rect x="1" y="4" width="22" height="16" rx="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                          </svg>
+                          Pagar {s.precio_acordado ? fmt(s.precio_acordado) : "servicio"}
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {/* ✅ NUEVO: ya pagado */}
+                  {yaPagado && (
+                    <div className="hd-pagado-badge">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Pago confirmado
+                    </div>
+                  )}
+
+                  {/* Mensaje */}
                   {puedeEnviarMensaje && (
                     <button className="hd-btn-mensaje" onClick={() => handleMensaje(s)}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+                           strokeLinejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                       </svg>
                       Enviar mensaje
                     </button>
                   )}
+
                 </div>
 
               </div>

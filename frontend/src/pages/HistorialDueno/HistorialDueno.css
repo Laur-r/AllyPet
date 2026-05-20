@@ -484,3 +484,62 @@
 
 .hd-btn-mensaje:hover  { background: #7228b0; }
 .hd-btn-mensaje:active { transform: scale(0.97); }
+/* ── Agrega esto al FINAL de HistorialDueno.css ── */
+
+/* Precio acordado junto al paseador */
+.hd-precio-tag {
+  font-family: 'Poppins', sans-serif;
+  font-size: .88rem;
+  font-weight: 800;
+  color: var(--p);
+  background: var(--pl);
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* Botón pagar */
+.hd-btn-pagar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 10px;
+  background: var(--p);
+  border: none;
+  border-radius: var(--rs);
+  font-family: 'Inter', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(123,45,139,.28);
+  transition: background var(--tr), transform .15s;
+}
+.hd-btn-pagar:hover:not(:disabled) {
+  background: var(--pm);
+  transform: translateY(-1px);
+}
+.hd-btn-pagar:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Badge pago confirmado */
+.hd-pagado-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px;
+  border-radius: var(--rs);
+  background: var(--gl);
+  border: 1px solid #C6EDBA;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--gd);
+}
