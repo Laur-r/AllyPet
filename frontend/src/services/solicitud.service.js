@@ -76,3 +76,38 @@ export const completarServicio = async (id, token) => {
   if (!res.ok) throw new Error(data.error || "Error al completar el servicio");
   return data;
 };
+
+/* ── H11.5 — Crear solicitud de cuidado ── */
+export const crearSolicitudCuidado = async (datos, token) => {
+  const res = await fetch(`${API}/api/solicitudes/cuidado`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al crear la solicitud de cuidado");
+  return data;
+};
+
+/* ── H11.5 — Solicitudes pendientes del cuidador ── */
+export const obtenerSolicitudesPendientesCuidador = async (token) => {
+  const res = await fetch(`${API}/api/solicitudes/cuidador/pendientes`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener solicitudes del cuidador");
+  return data;
+};
+
+/* ── H11.5 — Historial de cuidado del dueño ── */
+export const obtenerHistorialCuidadoDueno = async (token, estado = "") => {
+  const url = estado
+    ? `${API}/api/solicitudes/dueno/historial-cuidado?estado=${estado}`
+    : `${API}/api/solicitudes/dueno/historial-cuidado`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener historial de cuidado");
+  return data;
+};
