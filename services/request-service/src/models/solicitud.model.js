@@ -175,6 +175,15 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   return rows[0] || null;
 };
 
+/* ── Obtener nombre del dueño ── */
+const obtenerNombreDueno = async (dueno_id) => {
+  const { rows } = await pool.query(
+    `SELECT nombre FROM usuarios WHERE id = $1`,
+    [dueno_id]
+  );
+  return rows[0]?.nombre || 'Un dueño';
+};
+
 module.exports = {
   crearSolicitud,
   verificarMascota,
@@ -185,4 +194,5 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  obtenerNombreDueno,
 };

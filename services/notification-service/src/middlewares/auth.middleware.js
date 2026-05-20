@@ -10,7 +10,8 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    req.user = decoded;
+    // El auth-service guarda el id en `sub`, normalizamos a `id`
+    req.user = { ...decoded, id: decoded.id || decoded.sub };
     next();
   } catch {
     return res.status(403).json({ message: 'Token inválido o expirado' });

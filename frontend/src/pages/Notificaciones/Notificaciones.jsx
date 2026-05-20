@@ -3,6 +3,7 @@ import { getNotifications, markAsRead, markAllAsRead } from '../../services/noti
 import './Notificaciones.css';
 
 const ICONOS = {
+  nueva_solicitud:      '📅',
   mensaje_nuevo:        '💬',
   solicitud_aceptada:   '✅',
   solicitud_rechazada:  '❌',
@@ -10,6 +11,7 @@ const ICONOS = {
 };
 
 const LABELS = {
+  nueva_solicitud:      'Nueva Solicitud',
   mensaje_nuevo:        'Mensaje nuevo',
   solicitud_aceptada:   'Solicitud aceptada',
   solicitud_rechazada:  'Solicitud rechazada',

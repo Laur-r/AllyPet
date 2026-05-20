@@ -4,9 +4,9 @@ import "./MenuPaseador.css";
 import logoNavbar    from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import NotificationDropdown from "../../../components/NotificationDropdown/NotificationDropdown";
 
-import { getUnreadCount as getUnreadMessages }      from "../../../services/message.service";
-import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
+import { getUnreadCount as getUnreadMessages } from "../../../services/message.service";
 
 export default function MenuPaseador() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function MenuPaseador() {
   const { user }                      = useCurrentUser();
 
   const [mensajesSinLeer, setMensajesSinLeer]             = useState(0);
-  const [notificacionesSinLeer, setNotificacionesSinLeer] = useState(0);
+  const [solicitudesPendientes, setSolicitudesPendientes] = useState(0);
 
   // Polling de badges cada 30 segundos
   useEffect(() => {
@@ -26,12 +26,17 @@ export default function MenuPaseador() {
 
     const fetchBadges = async () => {
       try {
-        const [msgs, notifs] = await Promise.all([
-          getUnreadMessages(),
-          getUnreadNotifications(),
-        ]);
+        const msgs = await getUnreadMessages();
         setMensajesSinLeer(msgs);
-        setNotificacionesSinLeer(notifs);
+
+        // Fetch pending requests for badge
+        const res = await fetch(`http://localhost:3007/api/solicitudes/paseador/pendientes`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSolicitudesPendientes(data.data ? data.data.length : 0);
+        }
       } catch { /* silencioso */ }
     };
 
@@ -86,6 +91,7 @@ export default function MenuPaseador() {
 
   const getBadgeCount = (key) => {
     if (key === "mensajes") return mensajesSinLeer;
+    if (key === "solicitudes") return solicitudesPendientes;
     return 0;
   };
 
@@ -190,19 +196,7 @@ export default function MenuPaseador() {
           </div>
 
           <div className="mp-navbar-right">
-            <button
-              className="mp-bell"
-              onClick={() => navigate("/menu/paseador/notificaciones")}
-              title="Notificaciones"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              {notificacionesSinLeer > 0 && (
-                <span className="mp-bell-count">{notificacionesSinLeer}</span>
-              )}
-            </button>
+            <NotificationDropdown bellClassName="mp-bell" />
 
             <div className="mp-user-chip" onClick={() => navigate("/profile")}>
               <img

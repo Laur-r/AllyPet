@@ -84,6 +84,10 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   }
   return solicitud;
 };
+const obtenerNombreDueno = async (dueno_id) => {
+  return await model.obtenerNombreDueno(dueno_id);
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientesPaseador,
@@ -92,4 +96,5 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  obtenerNombreDueno,
 };

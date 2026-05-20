@@ -4,15 +4,14 @@ import "./MenuVeterinario.css";
 import logoNavbar    from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import NotificationDropdown from "../../../components/NotificationDropdown/NotificationDropdown";
 
-import { getUnreadCount as getUnreadMessages }      from "../../../services/message.service";
-import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
+import { getUnreadCount as getUnreadMessages } from "../../../services/message.service";
 
 export default function MenuVeterinario() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [search, setSearch]           = useState("");
-  const [mensajesSinLeer, setMensajesSinLeer]             = useState(0);
-  const [notificacionesSinLeer, setNotificacionesSinLeer] = useState(0);
+  const [mensajesSinLeer, setMensajesSinLeer] = useState(0);
 
    const { user } = useCurrentUser();
 
@@ -28,12 +27,8 @@ export default function MenuVeterinario() {
 
     const fetchBadges = async () => {
       try {
-        const [msgs, notifs] = await Promise.all([
-          getUnreadMessages(),
-          getUnreadNotifications(),
-        ]);
+        const msgs = await getUnreadMessages();
         setMensajesSinLeer(msgs);
-        setNotificacionesSinLeer(notifs);
       } catch { /* silencioso */ }
     };
 
@@ -204,22 +199,8 @@ export default function MenuVeterinario() {
               Consultorio Abierto
             </div>
 
-            {/* Campana — ahora con conteo real */}
-            <button
-              className="mv-bell"
-              onClick={() => navigate("/menu/veterinario/notificaciones")}
-              title="Notificaciones"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              {/* Punto solo si hay notificaciones, reemplaza el punto estático */}
-              {notificacionesSinLeer > 0
-                ? <span className="mv-bell-count">{notificacionesSinLeer}</span>
-                : null
-              }
-            </button>
+            {/* Campana — dropdown de notificaciones */}
+            <NotificationDropdown bellClassName="mv-bell" />
             <div className="mv-user-chip"
               onClick={() => navigate("/profile")}
             >
