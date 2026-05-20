@@ -10,7 +10,10 @@ import PerfilPublicoPaseador    from './pages/PerfilPublicoPaseador/PerfilPublic
 import RegistroVeterinario      from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 import BusquedaVeterinarias     from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
 import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
+import PerfilCuidador from './pages/PerfilCuidador/PerfilCuidador';
+import PerfilPublicoCuidador from './pages/PerfilPublicoCuidador/PerfilPublicoCuidador';
 import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
+import BusquedaCuidadores from './pages/Busqueda/BusquedaCuidadores/BusquedaCuidadores';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -67,8 +70,10 @@ function App() {
           <Route path="historial-solicitudes"       element={<HistorialDueno />} />
           <Route path="buscar/paseadores"           element={<BusquedaPaseadores />} />
           <Route path="buscar/veterinarias"         element={<BusquedaVeterinarias />} />
+          <Route path="buscar/cuidadores"           element={<BusquedaCuidadores />} />
           <Route path="paseador/:usuarioId"         element={<PerfilPublicoPaseador />} />
           <Route path="veterinaria/:usuarioId"      element={<PerfilPublicoVeterinaria />} />
+          <Route path="cuidador/:usuarioId"         element={<PerfilPublicoCuidador />} />
           <Route path="solicitar-paseo/:paseadorId" element={<SolicitarPaseo />} />
           <Route path="calificaciones"              element={<Calificaciones />} />
           <Route path="configuracion"               element={<Configuracion />} />
@@ -78,7 +83,7 @@ function App() {
 
         {/* ── Menú Paseador ── */}
         <Route path="/menu/paseador" element={<MenuPaseador />}>
-          <Route index element={<h2>Bienvenido paseador</h2>} />
+          <Route index                 element={<h2>Bienvenido paseador</h2>} />
           <Route path="perfil"         element={<PerfilPaseador />} />
           <Route path="solicitudes"    element={<SolicitudesPaseador />} />
           <Route path="historial"      element={<HistorialPaseador />} />
@@ -103,7 +108,7 @@ function App() {
         {/* ── Menú Cuidador ── */}
         <Route path="/menu/cuidador" element={<MenuCuidador />}>
           <Route index element={<h2>Bienvenido cuidador</h2>} />
-          <Route path="perfil"         element={<h2>Mi Perfil Comercial</h2>} />
+          <Route path="perfil"         element={<PerfilCuidador />} />
           <Route path="solicitudes"    element={<h2>Solicitudes recibidas</h2>} />
           <Route path="configuracion"  element={<Configuracion />} />
           <Route path="mensajes"       element={<Mensajes />} />
