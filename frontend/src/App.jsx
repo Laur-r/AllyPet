@@ -11,6 +11,7 @@ import RegistroVeterinario      from './pages/Registro/RegistroVeterinario/Regis
 import BusquedaVeterinarias     from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
 import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
 import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
+import PerfilCuidador from './pages/PerfilCuidador/PerfilCuidador';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -103,7 +104,7 @@ function App() {
         {/* ── Menú Cuidador ── */}
         <Route path="/menu/cuidador" element={<MenuCuidador />}>
           <Route index element={<h2>Bienvenido cuidador</h2>} />
-          <Route path="perfil"         element={<h2>Mi Perfil Comercial</h2>} />
+          <Route path="perfil" element={<PerfilCuidador />} />
           <Route path="solicitudes"    element={<h2>Solicitudes recibidas</h2>} />
           <Route path="configuracion"  element={<Configuracion />} />
           <Route path="mensajes"       element={<Mensajes />} />
