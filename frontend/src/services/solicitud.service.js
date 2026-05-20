@@ -111,3 +111,4 @@ export const obtenerHistorialCuidadoDueno = async (token, estado = "") => {
   if (!res.ok) throw new Error(data.error || "Error al obtener historial de cuidado");
   return data;
 };
+
