@@ -1,7 +1,26 @@
 // frontend/src/services/cuidador.service.js
 
+const API_CUI = 'http://localhost:3011';
 const AUTH_URL = 'http://localhost:3001/api/auth';
 const API_CUID = 'http://localhost:3011';
+
+/* ── Buscar cuidadores por ciudad ── */
+export const buscarCuidadores = async (ciudad) => {
+  const res  = await fetch(`${API_CUI}/api/perfil-cuidador/buscar?ciudad=${encodeURIComponent(ciudad)}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al buscar');
+  return data;
+};
+
+/* ── Obtener perfil público del cuidador ── */
+export const getPerfilPublicoCuidador = async (usuarioId) => {
+  const res  = await fetch(`${API_CUI}/api/perfil-cuidador/publico/${usuarioId}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al cargar perfil');
+  return data;
+};
+
+
 
 export const registrarCuidador = async (datos) => {
   const res = await fetch(`${AUTH_URL}/register/cuidador`, {

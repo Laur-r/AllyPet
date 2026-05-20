@@ -19,6 +19,25 @@ const crearSolicitud = async (req, res) => {
       duracion_minutos,
     });
 
+    // Enviar notificación al proveedor
+    try {
+      const nombreDueno = await service.obtenerNombreDueno(dueno_id);
+      const descripcion = `Tienes una nueva solicitud de servicio de ${nombreDueno} para el día ${fecha_servicio}.`;
+      
+      const NOTIFICATION_URL = process.env.NOTIFICATION_URL || 'http://localhost:3010/api/notifications';
+      fetch(NOTIFICATION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: paseador_id,
+          tipo: 'nueva_solicitud',
+          descripcion: descripcion
+        })
+      }).catch(err => console.error("Error enviando notificacion:", err.message));
+    } catch (e) {
+      console.error("Error al obtener nombre del dueño para notificacion:", e.message);
+    }
+
     return res.status(201).json({
       message: "Solicitud enviada correctamente",
       data: solicitud,
@@ -59,6 +78,32 @@ const responderSolicitud = async (req, res) => {
     const { estado } = req.body;
 
     const solicitud = await service.responderSolicitud(solicitud_id, paseador_usuario_id, estado);
+
+    // Enviar notificación al dueño
+    try {
+      // Necesitamos obtener el usuario_id del paseador/veterinario para poner su nombre
+      const { rows } = await require("../config/db").query(`SELECT nombre FROM usuarios WHERE id = $1`, [paseador_usuario_id]);
+      const nombrePaseador = rows[0]?.nombre || 'El proveedor';
+      
+      const tipoNotif = estado === "aceptada" ? "solicitud_aceptada" : "solicitud_rechazada";
+      const descripcion = estado === "aceptada" 
+        ? `Tu solicitud de servicio ha sido aceptada por ${nombrePaseador}.`
+        : `Tu solicitud de servicio ha sido rechazada por ${nombrePaseador}.`;
+
+      const NOTIFICATION_URL = process.env.NOTIFICATION_URL || 'http://localhost:3010/api/notifications';
+      fetch(NOTIFICATION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: solicitud.dueno_id,
+          tipo: tipoNotif,
+          descripcion: descripcion
+        })
+      }).catch(err => console.error("Error enviando notificacion de respuesta:", err.message));
+    } catch (e) {
+      console.error("Error al notificar respuesta al dueño:", e.message);
+    }
+
     return res.status(200).json({
       message: `Solicitud ${estado} correctamente`,
       data: solicitud,

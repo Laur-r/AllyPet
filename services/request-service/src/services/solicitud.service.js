@@ -84,13 +84,17 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
   }
   return solicitud;
 };
-
 const obtenerDashboardPaseador = async (paseador_usuario_id) => {
   const [activas, completadas] = await Promise.all([
     model.obtenerSolicitudesActivasPaseador(paseador_usuario_id),
     model.obtenerCompletadasPaseador(paseador_usuario_id),
   ]);
+
   return { activas, completadas };
+};
+
+const obtenerNombreDueno = async (dueno_id) => {
+  return await model.obtenerNombreDueno(dueno_id);
 };
 
 module.exports = {
@@ -102,5 +106,6 @@ module.exports = {
   obtenerHistorialPaseador,
   completarServicio,
   obtenerDashboardPaseador,
+  obtenerNombreDueno,
   COMISION_PLATAFORMA,
 };

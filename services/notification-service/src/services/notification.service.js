@@ -2,6 +2,7 @@ const model = require('../models/notification.model');
 
 // Tipos válidos de notificación
 const TIPOS_VALIDOS = [
+  'nueva_solicitud',
   'mensaje_nuevo',
   'solicitud_aceptada',
   'solicitud_rechazada',

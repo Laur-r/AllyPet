@@ -6,9 +6,9 @@ import logoNavbar from "../../../assets/menus/logonavbar.png";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import NotificationDropdown from "../../../components/NotificationDropdown/NotificationDropdown";
 
 import { getUnreadCount as getUnreadMessages } from "../../../services/message.service";
-import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
 
 export default function MenuPaseador() {
 
@@ -21,7 +21,7 @@ export default function MenuPaseador() {
   const { user } = useCurrentUser();
 
   const [mensajesSinLeer, setMensajesSinLeer] = useState(0);
-  const [notificacionesSinLeer, setNotificacionesSinLeer] = useState(0);
+  const [solicitudesPendientes, setSolicitudesPendientes] = useState(0);
 
   // ─────────────────────────────────────────────
   // POLLING BADGES
@@ -34,15 +34,30 @@ export default function MenuPaseador() {
     if (!token) return;
 
     const fetchBadges = async () => {
+
       try {
 
-        const [msgs, notifs] = await Promise.all([
-          getUnreadMessages(),
-          getUnreadNotifications(),
-        ]);
-
+        const msgs = await getUnreadMessages();
         setMensajesSinLeer(msgs);
-        setNotificacionesSinLeer(notifs);
+
+        // Solicitudes pendientes
+        const res = await fetch(
+          `http://localhost:3007/api/solicitudes/paseador/pendientes`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        if (res.ok) {
+
+          const data = await res.json();
+
+          setSolicitudesPendientes(
+            data.data ? data.data.length : 0
+          );
+        }
 
       } catch {
         // silencioso
@@ -65,14 +80,14 @@ export default function MenuPaseador() {
 
     const path = location.pathname;
 
-    if (path.includes("/perfil"))         return "perfil";
-    if (path.includes("/solicitudes"))    return "solicitudes";
-    if (path.includes("/historial"))      return "historial";
-    if (path.includes("/reservas"))       return "reservas";
-    if (path.includes("/pagos"))          return "pagos";
-    if (path.includes("/mensajes"))       return "mensajes";
+    if (path.includes("/perfil")) return "perfil";
+    if (path.includes("/solicitudes")) return "solicitudes";
+    if (path.includes("/historial")) return "historial";
+    if (path.includes("/reservas")) return "reservas";
+    if (path.includes("/pagos")) return "pagos";
+    if (path.includes("/mensajes")) return "mensajes";
     if (path.includes("/notificaciones")) return "notificaciones";
-    if (path.includes("/configuracion"))  return "configuracion";
+    if (path.includes("/configuracion")) return "configuracion";
 
     return "inicio";
   };
@@ -159,10 +174,6 @@ export default function MenuPaseador() {
       ),
     },
 
-    // ─────────────────────────────────────────────
-    // PAGOS
-    // ─────────────────────────────────────────────
-
     {
       key: "pagos",
       label: "Pagos",
@@ -209,19 +220,15 @@ export default function MenuPaseador() {
 
   const getBadgeCount = (key) => {
 
-    if (key === "mensajes") {
-      return mensajesSinLeer;
-    }
+    if (key === "mensajes") return mensajesSinLeer;
+
+    if (key === "solicitudes") return solicitudesPendientes;
 
     return 0;
   };
 
   return (
     <div className="mp-layout">
-
-      {/* ───────────────────────────────────────────── */}
-      {/* SIDEBAR */}
-      {/* ───────────────────────────────────────────── */}
 
       <aside className={`mp-sidebar ${sidebarOpen ? "" : "collapsed"}`}>
 
@@ -324,10 +331,6 @@ export default function MenuPaseador() {
 
         </nav>
 
-        {/* ───────────────────────────────────────────── */}
-        {/* FOOTER */}
-        {/* ───────────────────────────────────────────── */}
-
         <div className="mp-sidebar-footer">
 
           <button
@@ -361,10 +364,6 @@ export default function MenuPaseador() {
 
       </aside>
 
-      {/* ───────────────────────────────────────────── */}
-      {/* MAIN */}
-      {/* ───────────────────────────────────────────── */}
-
       <div className="mp-main">
 
         <header className="mp-navbar">
@@ -397,24 +396,7 @@ export default function MenuPaseador() {
 
           <div className="mp-navbar-right">
 
-            <button
-              className="mp-bell"
-              onClick={() => navigate("/menu/paseador/notificaciones")}
-              title="Notificaciones"
-            >
-
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-
-              {notificacionesSinLeer > 0 && (
-                <span className="mp-bell-count">
-                  {notificacionesSinLeer}
-                </span>
-              )}
-
-            </button>
+            <NotificationDropdown bellClassName="mp-bell" />
 
             <div
               className="mp-user-chip"

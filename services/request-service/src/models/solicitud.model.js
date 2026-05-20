@@ -18,10 +18,17 @@ const crearSolicitud = async ({
      VALUES ($1, $2, $3, $4, $5, $6, 'pendiente', $7, $8, 'paseador')
      RETURNING *`,
     [
-      dueno_id, paseador_id, mascota_id, fecha_servicio,
-      hora_servicio, duracion_minutos, precio_acordado, proveedor_usuario_id,
+      dueno_id,
+      paseador_id,
+      mascota_id,
+      fecha_servicio,
+      hora_servicio,
+      duracion_minutos,
+      precio_acordado,
+      proveedor_usuario_id,
     ]
   );
+
   return rows[0];
 };
 
@@ -31,11 +38,11 @@ const verificarMascota = async (mascota_id, dueno_id) => {
     `SELECT id FROM mascotas WHERE id = $1 AND usuario_id = $2`,
     [mascota_id, dueno_id]
   );
+
   return rows[0] || null;
 };
 
 /* ── Verificar que el paseador existe y está aprobado ── */
-/* ✅ Ahora también devuelve tarifa y usuario_id para calcular precio */
 const verificarPaseador = async (usuario_id) => {
   const { rows } = await pool.query(
     `SELECT id, usuario_id, tarifa
@@ -43,11 +50,14 @@ const verificarPaseador = async (usuario_id) => {
      WHERE usuario_id = $1 AND aprobado = true`,
     [usuario_id]
   );
+
   return rows[0] || null;
 };
 
 /* ── Obtener solicitudes pendientes del paseador ── */
-const obtenerSolicitudesPendientesPaseador = async (paseador_usuario_id) => {
+const obtenerSolicitudesPendientesPaseador = async (
+  paseador_usuario_id
+) => {
   const { rows } = await pool.query(
     `SELECT
       s.id,
@@ -73,11 +83,16 @@ const obtenerSolicitudesPendientesPaseador = async (paseador_usuario_id) => {
     ORDER BY s.fecha_creacion DESC`,
     [paseador_usuario_id]
   );
+
   return rows;
 };
 
-/* ── Responder solicitud (aceptar o rechazar) ── */
-const responderSolicitud = async (solicitud_id, paseador_usuario_id, estado) => {
+/* ── Responder solicitud ── */
+const responderSolicitud = async (
+  solicitud_id,
+  paseador_usuario_id,
+  estado
+) => {
   const { rows } = await pool.query(
     `UPDATE solicitudes s
      SET estado = $1, fecha_actualizacion = NOW()
@@ -89,10 +104,11 @@ const responderSolicitud = async (solicitud_id, paseador_usuario_id, estado) => 
      RETURNING s.*`,
     [estado, solicitud_id, paseador_usuario_id]
   );
+
   return rows[0] || null;
 };
 
-/* ── Cancelar solicitud (solo dueño, solo pendientes) ── */
+/* ── Cancelar solicitud ── */
 const cancelarSolicitud = async (solicitud_id, dueno_id) => {
   const { rows } = await pool.query(
     `UPDATE solicitudes
@@ -103,12 +119,14 @@ const cancelarSolicitud = async (solicitud_id, dueno_id) => {
      RETURNING *`,
     [solicitud_id, dueno_id]
   );
+
   return rows[0] || null;
 };
 
-/* ── Historial completo del dueño ── */
+/* ── Historial dueño ── */
 const obtenerHistorialDueno = async (dueno_id, estado) => {
   const condicionEstado = estado ? `AND s.estado = '${estado}'` : "";
+
   const { rows } = await pool.query(
     `SELECT
       s.id,
@@ -129,7 +147,6 @@ const obtenerHistorialDueno = async (dueno_id, estado) => {
       m.raza          AS mascota_raza,
       m.especie       AS mascota_especie,
       m.foto          AS mascota_foto,
-      -- estado del pago si existe
       p.estado        AS pago_estado,
       p.id            AS pago_id
     FROM solicitudes s
@@ -142,12 +159,17 @@ const obtenerHistorialDueno = async (dueno_id, estado) => {
     ORDER BY s.fecha_creacion DESC`,
     [dueno_id]
   );
+
   return rows;
 };
 
-/* ── Historial completo del paseador ── */
-const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
+/* ── Historial paseador ── */
+const obtenerHistorialPaseador = async (
+  paseador_usuario_id,
+  estado
+) => {
   const condicionEstado = estado ? `AND s.estado = '${estado}'` : "";
+
   const { rows } = await pool.query(
     `SELECT
       s.id,
@@ -174,12 +196,17 @@ const obtenerHistorialPaseador = async (paseador_usuario_id, estado) => {
     ORDER BY s.fecha_creacion DESC`,
     [paseador_usuario_id]
   );
+
   return rows;
 };
 
-/* ── Marcar servicio como completado ── */
-const completarServicio = async (solicitud_id, paseador_usuario_id) => {
+/* ── Completar servicio ── */
+const completarServicio = async (
+  solicitud_id,
+  paseador_usuario_id
+) => {
   const hoy = new Date().toISOString().split("T")[0];
+
   const { rows } = await pool.query(
     `UPDATE solicitudes s
      SET estado = 'completada', fecha_actualizacion = NOW()
@@ -192,11 +219,14 @@ const completarServicio = async (solicitud_id, paseador_usuario_id) => {
      RETURNING s.*`,
     [solicitud_id, paseador_usuario_id, hoy]
   );
+
   return rows[0] || null;
 };
 
 /* ── Dashboard paseador: solicitudes activas ── */
-const obtenerSolicitudesActivasPaseador = async (paseador_usuario_id) => {
+const obtenerSolicitudesActivasPaseador = async (
+  paseador_usuario_id
+) => {
   const { rows } = await pool.query(
     `SELECT
       s.id,
@@ -222,11 +252,14 @@ const obtenerSolicitudesActivasPaseador = async (paseador_usuario_id) => {
     ORDER BY s.fecha_servicio ASC, s.hora_servicio ASC`,
     [paseador_usuario_id]
   );
+
   return rows;
 };
 
-/* ── Dashboard paseador: completadas con precio ── */
-const obtenerCompletadasPaseador = async (paseador_usuario_id) => {
+/* ── Dashboard paseador: completadas ── */
+const obtenerCompletadasPaseador = async (
+  paseador_usuario_id
+) => {
   const { rows } = await pool.query(
     `SELECT
       s.id,
@@ -235,8 +268,8 @@ const obtenerCompletadasPaseador = async (paseador_usuario_id) => {
       s.duracion_minutos,
       s.estado,
       s.fecha_actualizacion,
-      -- precio_acordado tiene prioridad; fallback al cálculo con tarifa actual
-      COALESCE(s.precio_acordado,
+      COALESCE(
+        s.precio_acordado,
         ROUND((pp.tarifa / 60.0) * s.duracion_minutos, 0)
       ) AS precio_total,
       u.nombre        AS dueno_nombre,
@@ -254,7 +287,18 @@ const obtenerCompletadasPaseador = async (paseador_usuario_id) => {
     ORDER BY s.fecha_actualizacion DESC`,
     [paseador_usuario_id]
   );
+
   return rows;
+};
+
+/* ── Obtener nombre del dueño ── */
+const obtenerNombreDueno = async (dueno_id) => {
+  const { rows } = await pool.query(
+    `SELECT nombre FROM usuarios WHERE id = $1`,
+    [dueno_id]
+  );
+
+  return rows[0]?.nombre || "Un dueño";
 };
 
 module.exports = {
@@ -269,4 +313,5 @@ module.exports = {
   completarServicio,
   obtenerSolicitudesActivasPaseador,
   obtenerCompletadasPaseador,
+  obtenerNombreDueno,
 };

@@ -482,39 +482,25 @@
   background: #E0467A;
 }
 
-/* Botón ícono en el header (campana) */
+/* Botón campana en el header — mismo estilo que mp-bell / mv-bell */
 .md-icon-btn {
   position: relative;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  color: #3a1a5c;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--ap-border);
+  background: var(--ap-white);
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--ap-text-soft);
+  transition: background var(--tr), color var(--tr), border-color var(--tr);
 }
-
 .md-icon-btn:hover {
-  background: #f0e8fd;
-}
-
-/* Badge sobre la campana en el header */
-.md-badge-header {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  background: #E0467A;
-  color: #fff;
-  border-radius: 99px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 1px 5px;
-  min-width: 16px;
-  text-align: center;
-  line-height: 1.6;
+  background: var(--ap-purple-light);
+  color: var(--ap-purple);
+  border-color: var(--ap-purple-light);
 }
 
 /* Asegura que el md-nav-item tenga position relative para el punto colapsado */
