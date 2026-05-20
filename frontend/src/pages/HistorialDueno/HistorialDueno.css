@@ -1,0 +1,486 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --p:   #7B2D8B;
+  --pm:  #9B4DAB;
+  --pl:  #F3E8F7;
+  --pxl: #FAF5FC;
+  --g:   #6CC04A;
+  --gl:  #EBF7E4;
+  --gd:  #3A7A2A;
+  --w:   #FFFFFF;
+  --bg:  #F7F6FB;
+  --bd:  #EDE8F2;
+  --bds: #F3EFF8;
+  --tx:  #1A1A2E;
+  --ts:  #6B7280;
+  --tx2: #9CA3AF;
+  --r:   18px;
+  --rs:  10px;
+  --tr:  .18s ease;
+  --sh:  0 1px 4px rgba(0,0,0,.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.hd-page {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  min-height: 100%;
+  padding-bottom: 56px;
+}
+
+/* ── ENCABEZADO ── */
+.hd-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hd-head-titles h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--tx);
+  letter-spacing: -.028em;
+  margin-bottom: 4px;
+}
+
+.hd-head-titles p {
+  font-size: .78rem;
+  color: var(--ts);
+}
+
+.hd-head-counter {
+  background: var(--p);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 5px 13px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── FILTROS ── */
+.hd-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.hd-filtro {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--bd);
+  background: var(--w);
+  font-family: 'Inter', sans-serif;
+  font-size: .73rem;
+  font-weight: 600;
+  color: var(--ts);
+  cursor: pointer;
+  transition: all var(--tr);
+}
+
+.hd-filtro:hover { border-color: var(--p); color: var(--p); }
+
+.hd-filtro.activo {
+  background: var(--p);
+  color: #fff;
+  border-color: var(--p);
+  box-shadow: 0 3px 10px rgba(123,45,139,.25);
+}
+
+/* ── LOADING ── */
+.hd-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px;
+  color: var(--ts);
+  font-size: .875rem;
+}
+
+.hd-spinner {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 3px solid var(--pl);
+  border-top-color: var(--p);
+  animation: hdSpin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+.hd-spinner-sm {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  animation: hdSpin .7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes hdSpin { to { transform: rotate(360deg); } }
+
+/* ── VACÍO ── */
+.hd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 24px;
+  gap: 12px;
+  background: var(--w);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+}
+
+.hd-empty-icon {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  background: var(--pl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.hd-empty h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.hd-empty p {
+  font-size: .79rem;
+  color: var(--ts);
+  max-width: 260px;
+  line-height: 1.75;
+}
+
+/* ── LISTA ── */
+.hd-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 14px;
+}
+
+/* ── CARD ── */
+.hd-card {
+  background: var(--w);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--sh);
+  transition: box-shadow .22s, transform .22s;
+}
+
+.hd-card:hover {
+  box-shadow: 0 8px 28px rgba(123,45,139,.12);
+  transform: translateY(-3px);
+}
+
+/* ── HERO: foto grande mascota ── */
+.hd-hero {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.hd-hero-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.hd-hero-emoji {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  background: linear-gradient(145deg, #EBF7E4 0%, #F3E8F7 100%);
+}
+
+/* Gradiente inferior sobre la foto */
+.hd-hero-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 35%,
+    rgba(26,26,46,.58) 100%
+  );
+}
+
+/* Badge flotante sobre la foto */
+.hd-badge-float {
+  position: absolute;
+  top: 12px; right: 12px;
+  font-size: .64rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  letter-spacing: .01em;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Nombre mascota sobre el gradiente */
+.hd-hero-info {
+  position: absolute;
+  bottom: 12px; left: 14px; right: 14px;
+}
+
+.hd-pet-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,.3);
+  line-height: 1.15;
+}
+
+.hd-pet-raza {
+  font-size: .7rem;
+  color: rgba(255,255,255,.82);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* Barra acento */
+.hd-accent {
+  height: 3px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* ── BODY ── */
+.hd-body {
+  padding: 14px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Paseador */
+.hd-paseador {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.hd-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--pl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--p);
+  border: 1.5px solid var(--pl);
+}
+
+.hd-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.hd-paseador-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hd-paseador-info strong {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hd-paseador-info small {
+  font-size: .68rem;
+  color: var(--ts);
+}
+
+/* Detalles */
+.hd-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--pxl);
+  border: 1px solid rgba(123,45,139,.07);
+  border-radius: var(--rs);
+  padding: 9px 11px;
+}
+
+.hd-det {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .73rem;
+  color: var(--ts);
+}
+
+.hd-det svg { color: var(--p); flex-shrink: 0; }
+
+.hd-det span {
+  font-weight: 600;
+  color: var(--tx);
+}
+
+/* ── FOOTER ── */
+.hd-foot {
+  padding: 12px 16px 14px;
+}
+
+.hd-btn-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1.5px solid #FECACA;
+  color: #B91C1C;
+  border-radius: var(--rs);
+  font-family: 'Inter', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+
+.hd-btn-cancel:hover { background: #FEE2E2; border-color: #EF4444; }
+
+/* Confirmación */
+.hd-confirm {
+  background: #FEF9C3;
+  border: 1px solid #FDE68A;
+  border-radius: var(--rs);
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.hd-confirm p {
+  font-size: .78rem;
+  color: #92400E;
+  font-weight: 500;
+  text-align: center;
+}
+
+.hd-confirm-btns { display: flex; gap: 7px; }
+
+.hd-btn-no {
+  flex: 1;
+  padding: 7px;
+  background: var(--w);
+  border: 1.5px solid var(--bd);
+  color: var(--ts);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: .76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+
+.hd-btn-no:hover { border-color: var(--p); color: var(--p); }
+
+.hd-btn-si {
+  flex: 1;
+  padding: 7px;
+  background: #EF4444;
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: .76rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background var(--tr);
+}
+
+.hd-btn-si:hover:not(:disabled) { background: #DC2626; }
+.hd-btn-si:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ── TOAST ── */
+.hd-toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 2000;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(0,0,0,.13);
+  animation: hdToastIn .22s ease;
+}
+
+.hd-toast.ok    { background: var(--g); color: #fff; }
+.hd-toast.error { background: #EF4444; color: #fff; }
+
+@keyframes hdToastIn {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .hd-lista { grid-template-columns: 1fr; }
+  .hd-detalles { grid-template-columns: 1fr; }
+  .hd-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+.hd-foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  flex-wrap: wrap;
+}
+
+.hd-btn-mensaje {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #8B35C8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.hd-btn-mensaje:hover  { background: #7228b0; }
+.hd-btn-mensaje:active { transform: scale(0.97); }

@@ -1,0 +1,172 @@
+/* =============================================
+   Notificaciones.css — H10.4, H10.7
+   Paleta AllyPet: #8B35C8 | #6AB33E | #E0467A
+   ============================================= */
+
+.notificaciones-page {
+  min-height: calc(100vh - 70px);
+  background: #f7f5fc;
+  font-family: 'Poppins', sans-serif;
+  padding: 32px 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.notificaciones-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.notificaciones-page__header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #3a1a5c;
+  margin: 0;
+}
+
+.notificaciones-page__header p {
+  font-size: 0.8rem;
+  color: #9b8db0;
+  margin: 4px 0 0;
+}
+
+/* Botón "Marcar todas como leídas" */
+.btn-marcar-todas {
+  background: transparent;
+  border: 1.5px solid #8B35C8;
+  color: #8B35C8;
+  border-radius: 99px;
+  padding: 7px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-marcar-todas:hover {
+  background: #8B35C8;
+  color: #fff;
+}
+
+.btn-marcar-todas:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Lista */
+.notificaciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ítem individual */
+.notificacion-item {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 1px 4px rgba(139, 53, 200, 0.06);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+  border-left: 4px solid transparent;
+}
+
+.notificacion-item:hover {
+  box-shadow: 0 4px 16px rgba(139, 53, 200, 0.12);
+  transform: translateY(-1px);
+}
+
+/* No leída */
+.notificacion-item.no-leida {
+  border-left-color: #8B35C8;
+  background: #faf7ff;
+}
+
+/* Icono según tipo */
+.notificacion-item__icono {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.notificacion-item__icono.mensaje_nuevo      { background: #ede5ff; }
+.notificacion-item__icono.solicitud_aceptada { background: #e5f7e0; }
+.notificacion-item__icono.solicitud_rechazada{ background: #fde8f0; }
+.notificacion-item__icono.solicitud_completada { background: #e0f0ff; }
+
+.notificacion-item__cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.notificacion-item__tipo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.notificacion-item__tipo.mensaje_nuevo       { color: #8B35C8; }
+.notificacion-item__tipo.solicitud_aceptada  { color: #6AB33E; }
+.notificacion-item__tipo.solicitud_rechazada { color: #E0467A; }
+.notificacion-item__tipo.solicitud_completada{ color: #2980b9; }
+
+.notificacion-item__descripcion {
+  font-size: 0.88rem;
+  color: #2d1a4a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.notificacion-item__fecha {
+  font-size: 0.72rem;
+  color: #b0a0c8;
+  margin-top: 6px;
+}
+
+/* Punto indicador no leído */
+.notificacion-item__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #8B35C8;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* Estados vacíos y loading */
+.notificaciones-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #b0a0c8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.notificaciones-empty__icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.notificaciones-loading {
+  text-align: center;
+  padding: 60px;
+  color: #9b8db0;
+  font-size: 0.88rem;
+}

@@ -1,0 +1,147 @@
+
+.features {
+  padding: 96px 6%;
+  background: #ffffff;
+  width: 100%;
+}
+
+/* ── Header ── */
+.features__header {
+  margin-bottom: 52px;
+}
+
+.features__title {
+  font-size: clamp(1.75rem, 2.6vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #1C1030;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+.features__title-em {
+  font-style: normal;
+  color: #8B35C8;
+  text-align: center;
+}
+
+.features__subtitle {
+  color: #5E4D80;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 400px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* ── Grid ── */
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #EDE5F8;
+  border: 1px solid #EDE5F8;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* ── Item ── */
+.features__item {
+  background: #ffffff;
+  padding: 38px 30px;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.features__item:hover {
+  background: #FAF8FF;
+}
+
+/* borde superior de color al hacer hover */
+.features__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.features__item:hover::before {
+  opacity: 1;
+}
+
+.features__item--purple::before { background: #8B35C8; }
+.features__item--green::before  { background: #6AB33E; }
+.features__item--pink::before   { background: #E0467A; }
+
+/* ── Tag ── */
+.features__tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #8B35C8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.features__tag-line {
+  display: inline-block;
+  width: 18px;
+  height: 1.5px;
+  background: #8B35C8;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Icon ── */
+.features__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.6);
+  transform-origin: center;
+  display: block;
+}
+
+.features__icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Text ── */
+.features__name {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1C1030;
+  margin: 0 0 9px;
+}
+
+.features__desc {
+  font-size: 0.845rem;
+  color: #5E4D80;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .features__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features {
+    padding: 64px 6%;
+  }
+}

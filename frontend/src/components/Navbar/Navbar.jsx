@@ -1,0 +1,84 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Navbar.css';
+
+const NAV_LINKS = [
+  { label: 'Servicios',     href: '#servicios' },
+  { label: 'Paseadores',   href: '#servicios' },
+  { label: 'Veterinarios', href: '#servicios' },
+  { label: 'Comunidad',    href: '#comunidad' },
+];
+
+export default function Navbar({ showActions = true }) {
+  const [scrolled,  setScrolled]  = useState(false);
+  const [menuOpen,  setMenuOpen]  = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLinkClick = () => setMenuOpen(false);
+
+  return (
+    <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+
+      {/* Logo */}
+      <a className="navbar__logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        <img
+          src="/logo.png"
+          alt="AllyPet"
+          className="navbar__logo-img"
+        />
+        <span className="navbar__logo-text">
+          Ally<span>Pet</span>
+        </span>
+      </a>
+
+      {/* Links */}
+      <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
+        {NAV_LINKS.map((link) => (
+          <li key={link.label}>
+            <a href={link.href} onClick={handleLinkClick}>
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      {/* Acciones */}
+      <div className="navbar__actions">
+        {showActions && (
+          <>
+            <button
+              onClick={() => navigate('/login')}
+              className="navbar__login"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="navbar__register"
+            >
+              Comenzar gratis
+            </button>
+          </>
+        )}
+
+        {/* Hamburger mobile */}
+        <button
+          className={`navbar__toggle ${menuOpen ? 'navbar__toggle--open' : ''}`}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Abrir menú"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+
+    </header>
+  );
+}

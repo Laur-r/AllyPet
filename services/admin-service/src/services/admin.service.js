@@ -1,0 +1,152 @@
+const pool = require('../config/db');
+
+/**
+ * Obtiene el rol de un usuario por su ID.
+ * Usado por el middleware de JWT.
+ */
+const getUserRoleById = async (userId) => {
+  try {
+    const query = 'SELECT rol FROM usuarios WHERE id = $1';
+    const { rows } = await pool.query(query, [userId]);
+    if (rows.length === 0) return null;
+    
+    return rows[0].rol;
+  } catch (error) {
+    console.error('Error in getUserRoleById:', error);
+    return null;
+  }
+};
+
+/**
+ * Obtiene todos los usuarios con sus campos relevantes.
+ */
+const getAllUsers = async () => {
+  try {
+    const query = `
+      SELECT 
+        u.id,
+        u.nombre,
+        u.correo AS email,
+        u.rol AS role,
+        u.estado,
+        CASE
+          WHEN u.rol = 'paseador'    THEN pp.aprobado
+          WHEN u.rol = 'veterinario' THEN pv.aprobado
+          WHEN u.rol = 'cuidador'    THEN pc.aprobado
+          ELSE NULL
+        END AS aprobado
+      FROM usuarios u
+      LEFT JOIN perfil_paseador    pp ON pp.usuario_id = u.id AND u.rol = 'paseador'
+      LEFT JOIN perfil_veterinario pv ON pv.usuario_id = u.id AND u.rol = 'veterinario'
+      LEFT JOIN perfil_cuidador    pc ON pc.usuario_id = u.id AND u.rol = 'cuidador'
+      ORDER BY u.id DESC
+    `;
+    const { rows } = await pool.query(query);
+    return rows;
+  } catch (error) {
+    console.error('Error in getAllUsers:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene estadísticas rápidas para el dashboard.
+ */
+const getDashboardStats = async () => {
+  try {
+    const totalUsers = await pool.query('SELECT COUNT(*) FROM usuarios');
+    const adminUsers = await pool.query("SELECT COUNT(*) FROM usuarios WHERE rol = 'admin'");
+    const totalPets = await pool.query('SELECT COUNT(*) FROM mascotas').catch(() => ({ rows: [{ count: 0 }] }));
+
+    return {
+      totalUsers: parseInt(totalUsers.rows[0].count, 10),
+      adminUsers: parseInt(adminUsers.rows[0].count, 10),
+      totalPets: parseInt(totalPets.rows[0].count, 10),
+    };
+  } catch (error) {
+    console.error('Error in getDashboardStats:', error);
+    throw error;
+  }
+};
+
+
+
+/**
+ * Activa la cuenta de un usuario.
+ */
+const activateUser = async (userId) => {
+  const query = 'UPDATE usuarios SET estado = true WHERE id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [userId]);
+  return rows.length > 0;
+};
+
+/**
+ * Desactiva la cuenta de un usuario.
+ */
+const deactivateUser = async (userId) => {
+  const query = 'UPDATE usuarios SET estado = false WHERE id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [userId]);
+  return rows.length > 0;
+};
+
+/**
+ * Aprueba un paseador.
+ */
+const aprobarPaseador = async (usuarioId) => {
+  const query = 'UPDATE perfil_paseador SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Desaprueba un paseador.
+ */
+const desaprobarPaseador = async (usuarioId) => {
+  const query = 'UPDATE perfil_paseador SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Aprueba un veterinario.
+ */
+const aprobarVeterinario = async (usuarioId) => {
+  const query = 'UPDATE perfil_veterinario SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+/**
+ * Desaprueba un veterinario.
+ */
+const desaprobarVeterinario = async (usuarioId) => {
+  const query = 'UPDATE perfil_veterinario SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+const aprobarCuidador = async (usuarioId) => {
+  const query = 'UPDATE perfil_cuidador SET aprobado = true WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+const desaprobarCuidador = async (usuarioId) => {
+  const query = 'UPDATE perfil_cuidador SET aprobado = false WHERE usuario_id = $1 RETURNING id';
+  const { rows } = await pool.query(query, [usuarioId]);
+  return rows.length > 0;
+};
+
+module.exports = {
+  getUserRoleById,
+  getAllUsers,
+  getDashboardStats,
+  activateUser,
+  deactivateUser,
+  aprobarPaseador,
+  desaprobarPaseador,
+  aprobarVeterinario,
+  desaprobarVeterinario,
+  aprobarCuidador,
+  desaprobarCuidador,
+};

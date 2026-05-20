@@ -1,15 +1,16 @@
 {
-  "name": "auth-service",
+  "name": "admin-service",
   "version": "1.0.0",
-  "main": "index.js",
-"scripts": {
-  "start": "node src/app.js",
-  "dev": "nodemon src/app.js"
-},
+  "description": "Microservicio de administración AllyPet",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",

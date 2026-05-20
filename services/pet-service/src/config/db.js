@@ -1,16 +1,16 @@
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
+  user:     process.env.DB_USER,
+  host:     process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  port:     process.env.DB_PORT,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 pool.connect()
-  .then(() => console.log('Pet Service conectado a PostgreSQL correctamente'))
-  .catch((err) => console.error('Error al conectar a PostgreSQL:', err));
+  .then(() => console.log('✅ Pet-service conectado a PostgreSQL'))
+  .catch(err => console.error('❌ Error conexión DB:', err.message));
 
 module.exports = pool;

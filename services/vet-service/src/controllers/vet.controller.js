@@ -1,0 +1,108 @@
+const VetService = require('../services/vet.service');
+
+const getPerfil = async (req, res) => {
+  try {
+    const perfil = await VetService.getPerfil(req.usuario_id);
+    res.json({ ok: true, data: perfil });
+
+  } catch (err) {
+    console.error(" ERROR REAL BACKEND:", err); // ← ESTE ES EL IMPORTANTE
+    res.status(500).json({ ok: false, message: err.message });
+  }
+};
+
+const actualizarPerfil = async (req, res) => {
+  try {
+
+    const foto_perfil = req.files?.foto_perfil?.[0]
+      ? `/uploads/${req.files.foto_perfil[0].filename}`
+      : req.body.foto_perfil || null;
+
+    const banner = req.files?.banner?.[0]
+      ? `/uploads/${req.files.banner[0].filename}`
+      : req.body.banner || null;
+
+    let servicios = [];
+    let horarios  = {};
+
+    try { servicios = req.body.servicios ? JSON.parse(req.body.servicios) : []; } catch {}
+    try { horarios  = req.body.horarios  ? JSON.parse(req.body.horarios)  : {}; } catch {}
+
+    const datos = {
+      ...req.body,
+      experiencia: Number(req.body.experiencia) || 0,
+      disponible: req.body.disponible === 'true' || req.body.disponible === true,
+      foto_perfil,
+      banner,
+      servicios,
+      horarios,
+    };
+
+    const perfil = await VetService.actualizarPerfil(req.usuario_id, datos);
+
+    res.json({ ok: true, data: perfil });
+
+  } catch (err) {
+  console.error('ERROR EN CONTROLLER:', err);
+  res.status(err.status || 500).json({ ok: false, message: err.message });
+}
+};
+
+/* ── Buscar veterinarias por ciudad ── */
+const buscarPorCiudad = async (req, res) => {
+  try {
+    const { ciudad } = req.query;
+
+    if (!ciudad || ciudad.trim() === '') {
+      return res.status(400).json({ error: 'El parámetro ciudad es requerido' });
+    }
+
+    const veterinarias = await VetService.buscarPorCiudad(ciudad);
+
+    if (veterinarias.length === 0) {
+      return res.status(200).json({
+        message: 'No se encontraron veterinarias disponibles en esta ciudad',
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Veterinarias encontradas',
+      data: veterinarias,
+    });
+  } catch (err) {
+    console.error('buscarPorCiudad:', err.message);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+/* —— Ver perfil público veterinaria —— */
+const obtenerPerfilPublico = async (req, res) => {
+  try {
+    const perfil = await VetService.obtenerPerfilPublico(req.params.usuarioId);
+    return res.status(200).json(perfil);
+  } catch (err) {
+    console.error('obtenerPerfilPublico:', err.message);
+    const status = err.message === 'Veterinaria no encontrada o no disponible' ? 404 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* —— Ver reseñas de la veterinaria —— */
+const obtenerResenas = async (req, res) => {
+  try {
+    const resenas = await VetService.obtenerResenas(req.params.usuarioId);
+    return res.status(200).json({ message: 'Reseñas encontradas', data: resenas });
+  } catch (err) {
+    console.error('obtenerResenas:', err.message);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+module.exports = { 
+  getPerfil, 
+  actualizarPerfil, 
+  buscarPorCiudad,
+  obtenerPerfilPublico,
+  obtenerResenas,
+};

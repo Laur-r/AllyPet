@@ -11,13 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// Rutas (CORREGIDO)
 const adminRoutes = require('./routes/admin.routes');
 app.use('/api/admin', adminRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.send('Admin Service funcionando 🛡️');
+  res.send('Admin Service funcionando ⚙️');
 });
 
 const PORT = process.env.PORT || 3002;

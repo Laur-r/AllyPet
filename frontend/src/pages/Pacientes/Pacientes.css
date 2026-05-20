@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --purple: #7B2D8B; --purple-mid: #9B4DAB;
+  --purple-light: #F3E8F7; --purple-pale: #FAF5FC;
+  --green: #6CC04A; --green-light: #EBF7E4;
+  --white: #FFFFFF; --bg: #F7F6FB;
+  --border: #EDE8F2; --text: #1A1A2E;
+  --text-soft: #6B7280; --text-xsoft: #9CA3AF;
+}
+
+.pac-page { font-family: 'Inter', sans-serif; color: var(--text); }
+
+.pac-head { margin-bottom: 24px; }
+.pac-head h1 { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 700; }
+.pac-head p  { font-size: .9rem; color: var(--text-soft); margin-top: 4px; }
+
+/* Buscador */
+.pac-search-wrap { margin-bottom: 32px; }
+.pac-search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 10px 10px 10px 16px;
+  box-shadow: 0 1px 4px rgba(123,45,139,.06);
+  transition: border-color .2s, box-shadow .2s;
+}
+.pac-search-box:focus-within {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(123,45,139,.08);
+}
+.pac-search-box svg { color: var(--text-xsoft); flex-shrink: 0; }
+.pac-search-box input {
+  flex: 1; border: none; background: transparent;
+  font-family: 'Inter', sans-serif; font-size: .9rem;
+  color: var(--text); outline: none;
+}
+.pac-search-box input::placeholder { color: var(--text-xsoft); }
+/* oculta flechitas del input number */
+.pac-search-box input::-webkit-outer-spin-button,
+.pac-search-box input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.pac-search-btn {
+  background: var(--purple); color: white;
+  border: none; border-radius: 10px;
+  padding: 9px 22px; font-family: 'Inter', sans-serif;
+  font-size: .845rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: background .2s;
+}
+.pac-search-btn:hover:not(:disabled) { background: var(--purple-mid); }
+.pac-search-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.pac-error {
+  margin-top: 8px; font-size: .8rem;
+  color: #ef4444; font-weight: 500;
+}
+
+/* Recientes */
+.pac-recientes h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem; font-weight: 700;
+  margin-bottom: 16px; color: var(--text);
+}
+
+.pac-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.pac-card {
+  background: var(--white); border-radius: 14px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 10px rgba(123,45,139,.07);
+  overflow: hidden;
+  transition: box-shadow .2s, transform .2s;
+}
+.pac-card:hover { box-shadow: 0 8px 24px rgba(123,45,139,.13); transform: translateY(-3px); }
+
+.pac-card-img {
+  position: relative; height: 160px;
+  background: var(--purple-pale); overflow: hidden;
+}
+.pac-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.pac-placeholder {
+  height: 100%; display: flex;
+  align-items: center; justify-content: center;
+}
+.pac-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(255,255,255,.95); color: var(--purple);
+  font-size: .65rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1.5px solid var(--purple-light);
+}
+
+.pac-card-body { padding: 14px 16px; }
+.pac-card-top  { margin-bottom: 12px; }
+.pac-card-name { font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 700; }
+.pac-card-sub  { font-size: .75rem; color: var(--text-soft); margin-top: 2px; }
+.pac-card-dueno { font-size: .75rem; color: var(--text-soft); margin-top: 4px; }
+
+.pac-card-btns { display: flex; gap: 8px; }
+.pac-btn-ver {
+  flex: 1; padding: 8px; border-radius: 10px;
+  background: var(--purple); color: white; border: none;
+  font-family: 'Poppins', sans-serif; font-size: .8rem; font-weight: 600;
+  cursor: pointer; transition: background .2s;
+}
+.pac-btn-ver:hover { background: var(--purple-mid); }
+.pac-btn-del {
+  width: 34px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--text-soft); font-size: .8rem;
+  cursor: pointer; transition: all .2s;
+}
+.pac-btn-del:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+
+/* Empty */
+.pac-empty {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+  padding: 60px 20px; text-align: center;
+  color: var(--text-soft); font-size: .9rem; line-height: 1.7;
+}
