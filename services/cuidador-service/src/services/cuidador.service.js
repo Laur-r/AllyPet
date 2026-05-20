@@ -34,7 +34,9 @@ const actualizarImagen = async (usuarioId, campo, filename) => {
 
 /* ── Buscar por ciudad ── */
 const buscarPorCiudad = async (ciudad) => {
-  if (!ciudad || ciudad.trim() === "") throw new Error("La ciudad es requerida");
+  if (!ciudad || ciudad.trim() === "") {
+    return await model.obtenerTodos();
+  }
   return await model.buscarPorCiudad(ciudad.trim());
 };
 

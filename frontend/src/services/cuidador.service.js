@@ -1,3 +1,24 @@
+// frontend/src/services/cuidador.service.js
+
+const AUTH_URL = 'http://localhost:3001/api/auth';
+const API_CUID = 'http://localhost:3011';
+
+export const registrarCuidador = async (datos) => {
+  const res = await fetch(`${AUTH_URL}/register/cuidador`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datos),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || data.message || 'Error al registrar cuidador');
+  }
+
+  return data;
+};
+
 const API = "http://localhost:3007";
 
 export const crearSolicitud = async (datos, token) => {
@@ -112,3 +133,18 @@ export const obtenerHistorialCuidadoDueno = async (token, estado = "") => {
   return data;
 };
 
+/* ── H11.3 — Buscar cuidadores por ciudad ── */
+export const buscarCuidadoresPorCiudad = async (ciudad) => {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_CUID}/api/perfil-cuidador/buscar?ciudad=${encodeURIComponent(ciudad)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Error al buscar cuidadores');
+  }
+
+  return data;
+};
