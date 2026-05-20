@@ -115,7 +115,16 @@ export default function PerfilPublicoVeterinaria() {
           <Estrellas calificacion={perfil.promedio_estrellas} size={17} />
           <span className="ppv-rating-count">{perfil.total_resenas || 0} reseñas</span>
         </div>
+        {perfil.disponible && (
+  <button
+    className="ppv-btn-solicitar"
+    onClick={() =>navigate(`/menu/dueno/solicitar-consulta/${usuarioId}`)}
+  >
+    Solicitar consulta
+  </button>
+)}
       </div>
+      
 
       {/* TABS */}
       <div className="ppv-tabs">

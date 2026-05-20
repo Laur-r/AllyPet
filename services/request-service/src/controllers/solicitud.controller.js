@@ -149,6 +149,63 @@ const completarServicio = async (req, res) => {
     return res.status(status).json({ error: err.message });
   }
 };
+
+/* POST /api/solicitudes/veterinario */
+const crearSolicitudVet = async (req, res) => {
+  try {
+    const dueno_id = req.usuario.id;
+    const { veterinario_id, mascota_id, fecha_servicio, hora_servicio } = req.body;
+    const solicitud = await service.crearSolicitudVet({
+      dueno_id, veterinario_id, mascota_id, fecha_servicio, hora_servicio,
+    });
+    return res.status(201).json({ message: "Solicitud de consulta enviada correctamente", data: solicitud });
+  } catch (err) {
+    console.error("crearSolicitudVet:", err.message);
+    const status = err.message.includes("no existe") || err.message.includes("no te pertenece") ? 400 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* GET /api/solicitudes/veterinario/pendientes */
+const obtenerSolicitudesVetPendientes = async (req, res) => {
+  try {
+    const vet_usuario_id = req.usuario.id;
+    const solicitudes = await service.obtenerSolicitudesPendientesVet(vet_usuario_id);
+    return res.status(200).json({ message: "Solicitudes pendientes obtenidas", data: solicitudes });
+  } catch (err) {
+    console.error("obtenerSolicitudesVetPendientes:", err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/* PUT /api/solicitudes/:id/responder-vet */
+const responderSolicitudVet = async (req, res) => {
+  try {
+    const vet_usuario_id = req.usuario.id;
+    const solicitud_id = Number(req.params.id);
+    const { estado } = req.body;
+    const solicitud = await service.responderSolicitudVet(solicitud_id, vet_usuario_id, estado);
+    return res.status(200).json({ message: `Solicitud ${estado} correctamente`, data: solicitud });
+  } catch (err) {
+    console.error("responderSolicitudVet:", err.message);
+    const status = err.message.includes("no encontrada") || err.message.includes("inválido") ? 400 : 500;
+    return res.status(status).json({ error: err.message });
+  }
+};
+
+/* GET /api/solicitudes/veterinario/historial */
+const obtenerHistorialVetDueno = async (req, res) => {
+  try {
+    const dueno_id = req.usuario.id;
+    const { estado } = req.query;
+    const solicitudes = await service.obtenerHistorialVetDueno(dueno_id, estado);
+    return res.status(200).json({ message: "Historial de consultas obtenido", data: solicitudes });
+  } catch (err) {
+    console.error("obtenerHistorialVetDueno:", err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   crearSolicitud,
   obtenerSolicitudesPendientes,
@@ -157,4 +214,8 @@ module.exports = {
   obtenerHistorialDueno,
   obtenerHistorialPaseador,
   completarServicio,
+  crearSolicitudVet,
+  obtenerSolicitudesVetPendientes,
+  responderSolicitudVet,
+  obtenerHistorialVetDueno,
 };

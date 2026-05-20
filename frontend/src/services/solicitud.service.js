@@ -76,3 +76,24 @@ export const completarServicio = async (id, token) => {
   if (!res.ok) throw new Error(data.error || "Error al completar el servicio");
   return data;
 };
+
+export const crearSolicitudVet = async (datos, token) => {
+  const res = await fetch(`${API}/api/solicitudes/veterinario`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al crear la solicitud");
+  return data;
+};
+
+export const obtenerHistorialVetDueno = async (token, estado = "") => {
+  const url = estado
+    ? `${API}/api/solicitudes/veterinario/historial?estado=${estado}`
+    : `${API}/api/solicitudes/veterinario/historial`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener historial");
+  return data;
+};

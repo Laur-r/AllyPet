@@ -36,6 +36,7 @@ import Configuracion         from './pages/Configuracion/ConfiguracionPerfil';
 import DashboardDueno      from './pages/DashboardDueno/DashboardDueno';
 import Mensajes            from './pages/Mensajes/Mensajes';
 import Notificaciones      from './pages/Notificaciones/Notificaciones';
+import SolicitarConsultaVet from "./pages/SolicitarConsultaVet/SolicitarConsultaVet";
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
           <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"                    element={<Mensajes />} />
           <Route path="notificaciones"              element={<Notificaciones />} />
+          <Route path="solicitar-consulta/:usuarioId" element={<SolicitarConsultaVet />} />
         </Route>
 
         {/* ── Menú Paseador ── */}

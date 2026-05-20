@@ -1,41 +1,30 @@
 const model = require('../models/notification.model');
 
-// Tipos válidos de notificación
-const TIPOS_VALIDOS = [
-  'mensaje_nuevo',
-  'solicitud_aceptada',
-  'solicitud_rechazada',
-  'solicitud_completada',
-];
-
-// Descripción automática según el tipo (H10.4)
-const buildDescription = (tipo, extra = {}) => {
+const generarDescripcion = (tipo, extra = {}) => {
+  const nombre = extra.nombre || "El proveedor";
   switch (tipo) {
-    case 'solicitud_aceptada':
-      return `Tu solicitud de servicio fue aceptada${extra.nombre ? ` por ${extra.nombre}` : ''}.`;
-    case 'solicitud_rechazada':
-      return `Tu solicitud de servicio fue rechazada${extra.nombre ? ` por ${extra.nombre}` : ''}.`;
-    case 'solicitud_completada':
-      return `Tu servicio ha sido marcado como completado${extra.nombre ? ` por ${extra.nombre}` : ''}.`;
-    case 'mensaje_nuevo':
-      return `Tienes un mensaje nuevo${extra.nombre ? ` de ${extra.nombre}` : ''}.`;
+    case "solicitud_aceptada":
+      return `${nombre} aceptó tu solicitud. ¡Ya está confirmado!`;
+    case "solicitud_rechazada":
+      return `${nombre} no pudo aceptar tu solicitud en este momento.`;
+    case "solicitud_completada":
+      return `${nombre} marcó tu servicio como completado. ¡Esperamos que haya sido genial!`;
+    case "mensaje_nuevo":
+      return `${nombre} te envió un mensaje nuevo.`;
     default:
-      return extra.descripcion || 'Tienes una notificación nueva.';
+      return "Tienes una nueva notificación.";
   }
 };
 
-const createNotification = async ({ usuario_id, tipo, descripcion, extra }) => {
-  if (!TIPOS_VALIDOS.includes(tipo)) {
-    throw { status: 400, message: `Tipo de notificación inválido: ${tipo}` };
-  }
-  const desc = descripcion || buildDescription(tipo, extra);
-  return model.createNotification({ usuario_id, tipo, descripcion: desc });
+const createNotification = async ({ usuario_id, tipo, descripcion, extra = {} }) => {
+  const texto = descripcion || generarDescripcion(tipo, extra);
+  return await model.createNotification({ usuario_id, tipo, descripcion: texto });
 };
 
-const getByUser       = (usuario_id) => model.getByUser(usuario_id);
-const markOneAsRead   = (id, usuario_id) => model.markOneAsRead(id, usuario_id);
-const markAllAsRead   = (usuario_id) => model.markAllAsRead(usuario_id);
-const getUnreadCount  = (usuario_id) => model.getUnreadCount(usuario_id);
+const getByUser      = (usuario_id)        => model.getByUser(usuario_id);
+const markOneAsRead  = (id, usuario_id)    => model.markOneAsRead(id, usuario_id);
+const markAllAsRead  = (usuario_id)        => model.markAllAsRead(usuario_id);
+const getUnreadCount = (usuario_id)        => model.getUnreadCount(usuario_id);
 
 module.exports = {
   createNotification,
