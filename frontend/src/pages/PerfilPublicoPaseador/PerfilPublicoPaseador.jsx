@@ -120,6 +120,7 @@ export default function PerfilPublicoPaseador() {
           className="ppp-btn-solicitar"
           onClick={() => navigate(`/menu/dueno/solicitar-paseo/${usuarioId}`)}
         >
+        
            Solicitar paseo
         </button>
       </div>

@@ -1,19 +1,19 @@
 const VetService = require('../services/vet.service');
 
+/* ── Perfil privado ── */
 const getPerfil = async (req, res) => {
   try {
     const perfil = await VetService.getPerfil(req.usuario_id);
     res.json({ ok: true, data: perfil });
-
   } catch (err) {
-    console.error(" ERROR REAL BACKEND:", err); // ← ESTE ES EL IMPORTANTE
+    console.error('ERROR REAL BACKEND:', err);
     res.status(500).json({ ok: false, message: err.message });
   }
 };
 
+/* ── Actualizar perfil ── */
 const actualizarPerfil = async (req, res) => {
   try {
-
     const foto_perfil = req.files?.foto_perfil?.[0]
       ? `/uploads/${req.files.foto_perfil[0].filename}`
       : req.body.foto_perfil || null;
@@ -24,14 +24,13 @@ const actualizarPerfil = async (req, res) => {
 
     let servicios = [];
     let horarios  = {};
-
     try { servicios = req.body.servicios ? JSON.parse(req.body.servicios) : []; } catch {}
     try { horarios  = req.body.horarios  ? JSON.parse(req.body.horarios)  : {}; } catch {}
 
     const datos = {
       ...req.body,
       experiencia: Number(req.body.experiencia) || 0,
-      disponible: req.body.disponible === 'true' || req.body.disponible === true,
+      disponible:  req.body.disponible === 'true' || req.body.disponible === true,
       foto_perfil,
       banner,
       servicios,
@@ -39,20 +38,17 @@ const actualizarPerfil = async (req, res) => {
     };
 
     const perfil = await VetService.actualizarPerfil(req.usuario_id, datos);
-
     res.json({ ok: true, data: perfil });
-
   } catch (err) {
-  console.error('ERROR EN CONTROLLER:', err);
-  res.status(err.status || 500).json({ ok: false, message: err.message });
-}
+    console.error('ERROR EN CONTROLLER:', err);
+    res.status(err.status || 500).json({ ok: false, message: err.message });
+  }
 };
 
-/* ── Buscar veterinarias por ciudad ── */
+/* ── Buscar por ciudad ── */
 const buscarPorCiudad = async (req, res) => {
   try {
     const { ciudad } = req.query;
-
     if (!ciudad || ciudad.trim() === '') {
       return res.status(400).json({ error: 'El parámetro ciudad es requerido' });
     }
@@ -66,17 +62,14 @@ const buscarPorCiudad = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      message: 'Veterinarias encontradas',
-      data: veterinarias,
-    });
+    return res.status(200).json({ message: 'Veterinarias encontradas', data: veterinarias });
   } catch (err) {
     console.error('buscarPorCiudad:', err.message);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-/* —— Ver perfil público veterinaria —— */
+/* ── Perfil público ── */
 const obtenerPerfilPublico = async (req, res) => {
   try {
     const perfil = await VetService.obtenerPerfilPublico(req.params.usuarioId);
@@ -88,7 +81,7 @@ const obtenerPerfilPublico = async (req, res) => {
   }
 };
 
-/* —— Ver reseñas de la veterinaria —— */
+/* ── Reseñas ── */
 const obtenerResenas = async (req, res) => {
   try {
     const resenas = await VetService.obtenerResenas(req.params.usuarioId);
@@ -99,10 +92,51 @@ const obtenerResenas = async (req, res) => {
   }
 };
 
-module.exports = { 
-  getPerfil, 
-  actualizarPerfil, 
+/* ─────────────────────────────────────────────────────────────────
+   DASHBOARD
+   ───────────────────────────────────────────────────────────────── */
+
+/* GET /perfil-vet/veterinario/citas */
+const getCitasDashboard = async (req, res) => {
+  try {
+    const citas = await VetService.getCitasDashboard(req.usuario_id);
+    res.json({ ok: true, data: citas });
+  } catch (err) {
+    console.error('getCitasDashboard:', err);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+};
+
+/* GET /perfil-vet/veterinario/pacientes */
+const getPacientesDashboard = async (req, res) => {
+  try {
+    const pacientes = await VetService.getPacientesDashboard(req.usuario_id);
+    res.json({ ok: true, data: pacientes });
+  } catch (err) {
+    console.error('getPacientesDashboard:', err);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+};
+
+/* GET /perfil-vet/veterinario/dashboard-estadisticas */
+const getEstadisticasDashboard = async (req, res) => {
+  try {
+    const stats = await VetService.getEstadisticasDashboard(req.usuario_id);
+    res.json({ ok: true, ...stats });
+  } catch (err) {
+    console.error('getEstadisticasDashboard:', err);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+};
+
+module.exports = {
+  getPerfil,
+  actualizarPerfil,
   buscarPorCiudad,
   obtenerPerfilPublico,
   obtenerResenas,
+  // dashboard
+  getCitasDashboard,
+  getPacientesDashboard,
+  getEstadisticasDashboard,
 };

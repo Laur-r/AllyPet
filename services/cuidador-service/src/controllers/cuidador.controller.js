@@ -81,9 +81,12 @@ const subirImagen = async (req, res) => {
 const buscarPorCiudad = async (req, res) => {
   try {
     const { ciudad } = req.query;
-    const cuidadores = await service.buscarPorCiudad(ciudad || '');
+    if (!ciudad || ciudad.trim() === "") {
+      return res.status(400).json({ error: "El parámetro ciudad es requerido" });
+    }
+    const cuidadores = await service.buscarPorCiudad(ciudad);
     return res.status(200).json({
-      message: cuidadores.length ? "Cuidadores encontrados" : "No se encontraron cuidadores",
+      message: cuidadores.length ? "Cuidadores encontrados" : "No se encontraron cuidadores en esta ciudad",
       data: cuidadores,
     });
   } catch (err) {

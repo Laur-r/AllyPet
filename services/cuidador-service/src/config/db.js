@@ -10,7 +10,7 @@ const pool = new Pool({
 });
 
 pool.connect()
-  .then(() => console.log(' Cuidador-service conectado a PostgreSQL'))
-  .catch(err => console.error(' Error conexión DB:', err.message));
+  .then(() => console.log('✅ Cuidador-service conectado a PostgreSQL'))
+  .catch(err => console.error('❌ Error conexión DB:', err.message));
 
 module.exports = pool;
