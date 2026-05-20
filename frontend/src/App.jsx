@@ -10,8 +10,9 @@ import PerfilPublicoPaseador    from './pages/PerfilPublicoPaseador/PerfilPublic
 import RegistroVeterinario      from './pages/Registro/RegistroVeterinario/RegistroVeterinario';
 import BusquedaVeterinarias     from './pages/Busqueda/BusquedaVeterinarias/BusquedaVeterinarias';
 import PerfilPublicoVeterinaria from './pages/PerfilPublicoVeterinaria/PerfilPublicoVeterinaria';
-import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
 import PerfilCuidador from './pages/PerfilCuidador/PerfilCuidador';
+import PerfilPublicoCuidador from './pages/PerfilPublicoCuidador/PerfilPublicoCuidador';
+import RegistroCuidador from './pages/Registro/RegistroCuidador/RegistroCuidador';
 
 import MenuDueno       from './pages/Menu/MenuDueno/MenuDueno';
 import MenuPaseador    from './pages/Menu/MenuPaseador/MenuPaseador';
@@ -70,6 +71,7 @@ function App() {
           <Route path="buscar/veterinarias"         element={<BusquedaVeterinarias />} />
           <Route path="paseador/:usuarioId"         element={<PerfilPublicoPaseador />} />
           <Route path="veterinaria/:usuarioId"      element={<PerfilPublicoVeterinaria />} />
+          <Route path="cuidador/:usuarioId"         element={<PerfilPublicoCuidador />} />
           <Route path="solicitar-paseo/:paseadorId" element={<SolicitarPaseo />} />
           <Route path="calificaciones"              element={<Calificaciones />} />
           <Route path="configuracion"               element={<Configuracion />} />
@@ -104,7 +106,7 @@ function App() {
         {/* ── Menú Cuidador ── */}
         <Route path="/menu/cuidador" element={<MenuCuidador />}>
           <Route index element={<h2>Bienvenido cuidador</h2>} />
-          <Route path="perfil" element={<PerfilCuidador />} />
+          <Route path="perfil"         element={<PerfilCuidador />} />
           <Route path="solicitudes"    element={<h2>Solicitudes recibidas</h2>} />
           <Route path="configuracion"  element={<Configuracion />} />
           <Route path="mensajes"       element={<Mensajes />} />
