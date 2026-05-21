@@ -6,8 +6,11 @@ import "./HistorialDueno.css";
 const PAS_API = "http://localhost:3006";
 const PET_API = "http://localhost:3003";
 const PAY_API = "http://localhost:3012"; // ✅ NUEVO
+const VET_API = "http://localhost:3005";
 
 const getToken = () => localStorage.getItem("token");
+
+
 
 const ESTADOS = [
   { value: "",            label: "Todas"       },
@@ -93,15 +96,16 @@ export default function HistorialDueno() {
   };
 
   const handleMensaje = (s) => {
-    navigate("/menu/dueno/mensajes", {
-      state: {
-        destinatario_id:     s.paseador_id,
-        destinatario_nombre: s.paseador_nombre,
-        destinatario_foto:   s.paseador_foto || null,
-        solicitud_id:        s.id,
-      },
-    });
-  };
+  const esVet = s.tipo_servicio === "consulta_vet";
+  navigate("/menu/dueno/mensajes", {
+    state: {
+      destinatario_id:     esVet ? s.vet_usuario_id : s.paseador_usuario_id,
+      destinatario_nombre: esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre,
+      destinatario_foto:   esVet ? s.vet_foto : s.paseador_foto,
+      solicitud_id:        s.id,
+    },
+  });
+};
 
   // ✅ NUEVO: iniciar pago con Wompi
   const handlePagar = async (solicitud) => {
@@ -176,9 +180,13 @@ export default function HistorialDueno() {
             const fotoMascota = s.mascota_foto
               ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
               : null;
-            const fotoPaseador = s.paseador_foto
-              ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto)
-              : null;
+            const esVet = s.tipo_servicio === "consulta_vet";
+            const proveedorNombre = esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre;
+            const proveedorRol    = esVet ? "Veterinario" : "Paseador";
+            const proveedorFoto   = esVet
+              ? (s.vet_foto ? (s.vet_foto.startsWith("/uploads") ? `${VET_API}${s.vet_foto}` : s.vet_foto) : null)
+              : (s.paseador_foto ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto) : null);
+            const proveedorId = esVet ? s.vet_usuario_id : s.paseador_usuario_id;
 
             const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
 
@@ -220,24 +228,20 @@ export default function HistorialDueno() {
                 <div className="hd-accent" style={{ background: est.accent }} />
 
                 <div className="hd-body">
-                  <div className="hd-paseador">
-                    <div className="hd-avatar">
-                      {fotoPaseador
-                        ? <img src={fotoPaseador} alt={s.paseador_nombre} />
-                        : <span>{getIniciales(s.paseador_nombre)}</span>
-                      }
-                    </div>
-                    <div className="hd-paseador-info">
-                      <strong>{s.paseador_nombre}</strong>
-                      <small>Paseador</small>
-                    </div>
-                    {/* ✅ NUEVO: precio acordado junto al paseador */}
-                    {s.precio_acordado && (
-                      <span className="hd-precio-tag">{fmt(s.precio_acordado)}</span>
-                    )}
+                 <div className="hd-paseador">
+                  <div className="hd-avatar">
+                    {proveedorFoto
+                      ? <img src={proveedorFoto} alt={proveedorNombre} />
+                      : <span>{getIniciales(proveedorNombre)}</span>
+                    }
                   </div>
+                  <div className="hd-paseador-info">
+                    <strong>{proveedorNombre}</strong>
+                    <small>{proveedorRol}</small>
+                  </div>
+                </div>
 
-                  <div className="hd-detalles">
+                          <div className="hd-detalles">
                     <div className="hd-det">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                            stroke="currentColor" strokeWidth="2">
@@ -254,7 +258,10 @@ export default function HistorialDueno() {
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                       </svg>
-                      <span>{s.hora_servicio?.slice(0, 5)} · {formatDuracion(s.duracion_minutos)}</span>
+                      <span>
+                        {s.hora_servicio?.slice(0, 5)}
+                        {s.duracion_minutos ? ` · ${formatDuracion(s.duracion_minutos)}` : ""}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -47,6 +47,8 @@ import Notificaciones      from './pages/Notificaciones/Notificaciones';
 import DashboardVeterinario from './pages/DashboardVeterinario/DashboardVeterinario';
 import DashboardPaseador from './pages/DashboardPaseador/DashboardPaseador';
 import PagosPaseador from './pages/PagosPaseador/PagosPaseador';
+import SolicitarConsultaVet from "./pages/SolicitarConsultaVet/SolicitarConsultaVet";
+
 
 function App() {
   return (
@@ -86,6 +88,7 @@ function App() {
           <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"                    element={<Mensajes />} />
           <Route path="notificaciones"              element={<Notificaciones />} />
+          <Route path="solicitar-consulta/:usuarioId" element={<SolicitarConsultaVet />} />
         </Route>
 
         {/* ── Menú Paseador ── */}
