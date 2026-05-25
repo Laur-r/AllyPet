@@ -5,12 +5,10 @@ import "./HistorialDueno.css";
 
 const PAS_API = "http://localhost:3006";
 const PET_API = "http://localhost:3003";
-const PAY_API = "http://localhost:3012"; // ✅ NUEVO
+const PAY_API = "http://localhost:3012";
 const VET_API = "http://localhost:3005";
 
 const getToken = () => localStorage.getItem("token");
-
-
 
 const ESTADOS = [
   { value: "",            label: "Todas"       },
@@ -41,6 +39,7 @@ function formatDuracion(minutos) {
   return m > 0 ? `${h}h ${m}min` : `${h} hora${h > 1 ? "s" : ""}`;
 }
 function getIniciales(nombre = "") {
+  if (!nombre) return "?";
   return nombre.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 const fmt = (n) =>
@@ -57,7 +56,7 @@ export default function HistorialDueno() {
   const [filtroEstado, setFiltroEstado] = useState("");
   const [cancelando,   setCancelando]   = useState(null);
   const [confirmId,    setConfirmId]    = useState(null);
-  const [pagando,      setPagando]      = useState(null); // ✅ NUEVO
+  const [pagando,      setPagando]      = useState(null);
   const [toast,        setToast]        = useState(null);
 
   const notify = (msg, tipo = "ok") => {
@@ -96,18 +95,17 @@ export default function HistorialDueno() {
   };
 
   const handleMensaje = (s) => {
-  const esVet = s.tipo_servicio === "consulta_vet";
-  navigate("/menu/dueno/mensajes", {
-    state: {
-      destinatario_id:     esVet ? s.vet_usuario_id : s.paseador_usuario_id,
-      destinatario_nombre: esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre,
-      destinatario_foto:   esVet ? s.vet_foto : s.paseador_foto,
-      solicitud_id:        s.id,
-    },
-  });
-};
+    const esVet = s.tipo_servicio === "consulta_vet";
+    navigate("/menu/dueno/mensajes", {
+      state: {
+        destinatario_id:     esVet ? s.vet_usuario_id : s.paseador_usuario_id,
+        destinatario_nombre: esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre,
+        destinatario_foto:   esVet ? s.vet_foto : s.paseador_foto,
+        solicitud_id:        s.id,
+      },
+    });
+  };
 
-  // ✅ NUEVO: iniciar pago con Wompi
   const handlePagar = async (solicitud) => {
     setPagando(solicitud.id);
     try {
@@ -121,8 +119,6 @@ export default function HistorialDueno() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error al iniciar pago");
-
-      // Redirigir al checkout de Wompi
       window.location.href = data.data.wompi_url;
     } catch (err) {
       notify(err.message || "No se pudo iniciar el pago", "error");
@@ -180,8 +176,11 @@ export default function HistorialDueno() {
             const fotoMascota = s.mascota_foto
               ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
               : null;
+
             const esVet = s.tipo_servicio === "consulta_vet";
-            const proveedorNombre = esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre;
+            const proveedorNombre = esVet
+              ? (s.vet_establecimiento || s.vet_nombre || "")
+              : (s.paseador_nombre || "");
             const proveedorRol    = esVet ? "Veterinario" : "Paseador";
             const proveedorFoto   = esVet
               ? (s.vet_foto ? (s.vet_foto.startsWith("/uploads") ? `${VET_API}${s.vet_foto}` : s.vet_foto) : null)
@@ -189,8 +188,6 @@ export default function HistorialDueno() {
             const proveedorId = esVet ? s.vet_usuario_id : s.paseador_usuario_id;
 
             const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
-
-            // ✅ NUEVO: mostrar botón pagar solo si está aceptada y no pagada
             const puedesPagar = s.estado === "aceptada" && s.pago_estado !== "aprobado";
             const yaPagado    = s.pago_estado === "aprobado";
             const estaPagando = pagando === s.id;
@@ -228,20 +225,20 @@ export default function HistorialDueno() {
                 <div className="hd-accent" style={{ background: est.accent }} />
 
                 <div className="hd-body">
-                 <div className="hd-paseador">
-                  <div className="hd-avatar">
-                    {proveedorFoto
-                      ? <img src={proveedorFoto} alt={proveedorNombre} />
-                      : <span>{getIniciales(proveedorNombre)}</span>
-                    }
+                  <div className="hd-paseador">
+                    <div className="hd-avatar">
+                      {proveedorFoto
+                        ? <img src={proveedorFoto} alt={proveedorNombre} />
+                        : <span>{getIniciales(proveedorNombre)}</span>
+                      }
+                    </div>
+                    <div className="hd-paseador-info">
+                      <strong>{proveedorNombre}</strong>
+                      <small>{proveedorRol}</small>
+                    </div>
                   </div>
-                  <div className="hd-paseador-info">
-                    <strong>{proveedorNombre}</strong>
-                    <small>{proveedorRol}</small>
-                  </div>
-                </div>
 
-                          <div className="hd-detalles">
+                  <div className="hd-detalles">
                     <div className="hd-det">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                            stroke="currentColor" strokeWidth="2">
@@ -266,10 +263,8 @@ export default function HistorialDueno() {
                   </div>
                 </div>
 
-                {/* FOOTER */}
                 <div className="hd-foot">
 
-                  {/* Cancelar (solo pendientes) */}
                   {s.estado === "pendiente" && (
                     confirmId === s.id ? (
                       <div className="hd-confirm">
@@ -299,7 +294,6 @@ export default function HistorialDueno() {
                     )
                   )}
 
-                  {/* ✅ NUEVO: botón pagar */}
                   {puedesPagar && (
                     <button
                       className="hd-btn-pagar"
@@ -324,7 +318,6 @@ export default function HistorialDueno() {
                     </button>
                   )}
 
-                  {/* ✅ NUEVO: ya pagado */}
                   {yaPagado && (
                     <div className="hd-pagado-badge">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
@@ -335,7 +328,6 @@ export default function HistorialDueno() {
                     </div>
                   )}
 
-                  {/* Mensaje */}
                   {puedeEnviarMensaje && (
                     <button className="hd-btn-mensaje" onClick={() => handleMensaje(s)}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
