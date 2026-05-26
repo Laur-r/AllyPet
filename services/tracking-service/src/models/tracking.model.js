@@ -78,6 +78,19 @@ const finalizarPaseo = async (solicitudId) => {
   return rows[0] || null;
 };
 
+/* ── Iniciar paseos automáticamente por hora programada ── */
+const iniciarPaseosAutomaticos = async () => {
+  const { rows } = await pool.query(
+    `UPDATE solicitudes
+     SET estado = 'en_curso', fecha_actualizacion = NOW()
+     WHERE estado = 'aceptada'
+       AND tipo_servicio = 'paseo'
+       AND (fecha_servicio + hora_servicio) <= NOW()
+     RETURNING id`
+  );
+  return rows;
+};
+
 module.exports = {
   verificarSolicitud,
   iniciarPaseo,
@@ -85,4 +98,5 @@ module.exports = {
   obtenerUltimaUbicacion,
   verificarSolicitudDueno,
   finalizarPaseo,
+  iniciarPaseosAutomaticos,
 };
