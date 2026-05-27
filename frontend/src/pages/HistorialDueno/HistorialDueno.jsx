@@ -14,6 +14,7 @@ const ESTADOS = [
   { value: "",            label: "Todas"       },
   { value: "pendiente",   label: "Pendientes"  },
   { value: "aceptada",    label: "Aceptadas"   },
+  { value: "en_curso",    label: "En curso"    },
   { value: "completada",  label: "Completadas" },
   { value: "cancelada",   label: "Canceladas"  },
   { value: "rechazada",   label: "Rechazadas"  },
@@ -22,9 +23,11 @@ const ESTADOS = [
 const BADGE_ESTADO = {
   pendiente:  { bg: "rgba(254,249,195,.92)", color: "#92400E", border: "#FDE68A", label: "Pendiente",  accent: "#F59E0B" },
   aceptada:   { bg: "rgba(235,247,228,.92)", color: "#3A7A2A", border: "#C6EDBA", label: "Aceptada",   accent: "#6CC04A" },
+  "en_curso": { bg: "rgba(219,234,254,.92)", color: "#1E40AF", border: "#93C5FD", label: "En curso",   accent: "#3B82F6" },
   completada: { bg: "rgba(239,246,255,.92)", color: "#1E40AF", border: "#BFDBFE", label: "Completada", accent: "#3B82F6" },
   cancelada:  { bg: "rgba(243,244,246,.92)", color: "#6B7280", border: "#E5E7EB", label: "Cancelada",  accent: "#9CA3AF" },
   rechazada:  { bg: "rgba(254,226,226,.92)", color: "#B91C1C", border: "#FECACA", label: "Rechazada",  accent: "#EF4444" },
+  finalizado: { bg: "rgba(243,244,246,.92)", color: "#6B7280", border: "#E5E7EB", label: "Finalizado", accent: "#9CA3AF" },
 };
 
 function formatFecha(fecha) {
@@ -185,12 +188,13 @@ export default function HistorialDueno() {
             const proveedorFoto   = esVet
               ? (s.vet_foto ? (s.vet_foto.startsWith("/uploads") ? `${VET_API}${s.vet_foto}` : s.vet_foto) : null)
               : (s.paseador_foto ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto) : null);
-            const proveedorId = esVet ? s.vet_usuario_id : s.paseador_usuario_id;
 
-            const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
-            const puedesPagar = s.estado === "aceptada" && s.pago_estado !== "aprobado";
+            const puedeEnviarMensaje = ["pendiente", "aceptada", "en_curso", "completada"].includes(s.estado);
+            const puedesPagar = ["aceptada", "en_curso"].includes(s.estado) && s.pago_estado !== "aprobado";
             const yaPagado    = s.pago_estado === "aprobado";
             const estaPagando = pagando === s.id;
+            // Mostrar botón de rastreo si el paseo está activo
+            const puedeRastrear = s.estado === "en_curso" && s.tipo_servicio !== "consulta_vet";
 
             return (
               <div key={s.id} className="hd-card">
@@ -326,6 +330,23 @@ export default function HistorialDueno() {
                       </svg>
                       Pago confirmado
                     </div>
+                  )}
+
+                  {/* ── Botón rastrear mascota ── */}
+                  {puedeRastrear && (
+                    <button
+                      className="hd-btn-rastrear"
+                      onClick={() => navigate(`/rastreo/${s.id}`)}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+                           strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                        <path d="M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12"/>
+                      </svg>
+                      Rastrear mi mascota
+                    </button>
                   )}
 
                   {puedeEnviarMensaje && (
