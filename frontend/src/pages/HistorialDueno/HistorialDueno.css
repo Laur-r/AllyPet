@@ -543,3 +543,24 @@
   font-weight: 700;
   color: var(--gd);
 }
+
+.hd-btn-rastrear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+ 
+.hd-btn-rastrear:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+ 

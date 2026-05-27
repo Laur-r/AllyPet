@@ -205,3 +205,211 @@
   .sp2-lista { grid-template-columns: 1fr; }
   .sp2-detalles { grid-template-columns: 1fr; }
 }
+
+/* Badge aceptada (variante del badge pendiente existente) */
+.sp2-badge-aceptada {
+  background: rgba(235, 247, 228, 0.92) !important;
+  color: #3A7A2A !important;
+  border-color: #C6EDBA !important;
+}
+
+/* Sección de tracking dentro de la tarjeta */
+.sp2-tracking {
+  padding: 0.75rem 1rem 0.25rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* ── Reemplaza desde .sp2-paseo-activo hasta el final del CSS ── */
+
+.sp2-paseo-activo {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.sp2-paseo-activo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.sp2-paseo-activo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.sp2-gps-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: sp2-pulso 1.4s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes sp2-pulso {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+.sp2-paseo-activo-id {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* Body: mascota | dueño | hora — en fila compacta */
+.sp2-paseo-activo-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0;
+  border-top: 1px solid #bbf7d0;
+  border-bottom: 1px solid #bbf7d0;
+  margin-bottom: 0.75rem;
+}
+
+.sp2-paseo-mascota {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sp2-paseo-mascota-foto {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.sp2-paseo-mascota-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sp2-paseo-mascota strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.sp2-paseo-mascota span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Separador vertical entre mascota y dueño */
+.sp2-paseo-sep {
+  width: 1px;
+  height: 28px;
+  background: #bbf7d0;
+  flex-shrink: 0;
+}
+
+.sp2-paseo-dueno {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sp2-paseo-dueno-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-right: 2px;
+}
+
+.sp2-paseo-dueno span:last-child {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sp2-avatar-sm {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 0.65rem !important;
+}
+
+.sp2-paseo-detalles {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+/* Acciones: todos en una fila */
+.sp2-paseo-activo-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Forzar controles-paseo en fila dentro del banner */
+.sp2-paseo-activo-acciones .controles-paseo {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sp2-btn-mensaje-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.sp2-btn-mensaje-activo:hover {
+  background: #dbeafe;
+}
+
+.sp2-pago-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-left: auto;
+}
+.sp2-pago-badge.pagado {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.sp2-pago-badge.pendiente {
+  background: #fef9c3;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}

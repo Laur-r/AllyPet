@@ -1,5 +1,11 @@
-import { useState, useEffect } from "react";
-import { obtenerSolicitudesPendientes, responderSolicitud } from "../../services/solicitud.service";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  obtenerSolicitudesPendientes,
+  responderSolicitud,
+  obtenerHistorialPaseador,
+} from "../../services/solicitud.service";
+import ControlesPaseo from "./ControlesPaseo";
 import "./SolicitudesPaseador.css";
 
 const PAS_API = "http://localhost:3006";
@@ -10,7 +16,6 @@ function formatFecha(fecha) {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 }
-
 function formatDuracion(minutos) {
   if (minutos < 60) return `${minutos} min`;
   const h = Math.floor(minutos / 60);
@@ -19,52 +24,75 @@ function formatDuracion(minutos) {
 }
 
 export default function SolicitudesPaseador() {
-  const token = localStorage.getItem("token");
+  const token    = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  const [solicitudes, setSolicitudes] = useState([]);
-  const [cargando,    setCargando]    = useState(true);
-  const [error,       setError]       = useState(null);
-  const [procesando,  setProcesando]  = useState(null); // id de solicitud en proceso
-  const [toast,       setToast]       = useState(null);
+  const [solicitudes,  setSolicitudes]  = useState([]);
+  const [paseoActivo,  setPaseoActivo]  = useState(null);
+  const [cargando,     setCargando]     = useState(true);
+  const [error,        setError]        = useState(null);
+  const [procesando,   setProcesando]   = useState(null);
+  const [toast,        setToast]        = useState(null);
 
   const notify = (msg, tipo = "ok") => {
     setToast({ msg, tipo });
     setTimeout(() => setToast(null), 3000);
   };
 
-  useEffect(() => {
-    cargarSolicitudes();
-  }, []);
-
-  const cargarSolicitudes = async () => {
+  const cargarSolicitudes = useCallback(async () => {
     setCargando(true);
     setError(null);
     try {
-      const data = await obtenerSolicitudesPendientes(token);
-      setSolicitudes(data.data || []);
+      // Traemos pendientes/aceptadas Y las en_curso en paralelo
+      const [pendientesData, enCursoData] = await Promise.all([
+        obtenerSolicitudesPendientes(token),
+        obtenerHistorialPaseador(token, ""),
+      ]);
+
+      const pendientes = pendientesData.data || [];
+      const enCurso = (enCursoData.data || []).filter(s => s.estado === "en_curso");
+
+      // El paseo activo es el primero en_curso (solo puede haber uno)
+      setPaseoActivo(enCurso[0] ?? null);
+      setSolicitudes(pendientes);
     } catch (err) {
       setError("No se pudieron cargar las solicitudes.");
     } finally {
       setCargando(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => { cargarSolicitudes(); }, [cargarSolicitudes]);
 
   const handleResponder = async (id, estado) => {
     setProcesando(id);
     try {
       await responderSolicitud(id, estado, token);
-      setSolicitudes(prev => prev.filter(s => s.id !== id));
-      notify(
-        estado === "aceptada"
-          ? " Solicitud aceptada correctamente"
-          : " Solicitud rechazada",
-        estado === "aceptada" ? "ok" : "error"
-      );
+      if (estado === "aceptada") {
+        setSolicitudes(prev =>
+          prev.map(s => s.id === id ? { ...s, estado: "aceptada" } : s)
+        );
+        notify("✓ Solicitud aceptada correctamente");
+      } else {
+        setSolicitudes(prev => prev.filter(s => s.id !== id));
+        notify("Solicitud rechazada", "error");
+      }
     } catch (err) {
       notify(err.message, "error");
     } finally {
       setProcesando(null);
     }
+  };
+
+  const handleIrMensajes = (s) => {
+    navigate("/menu/paseador/mensajes", {
+      state: {
+        destinatario_id:     s.dueno_usuario_id ?? s.dueno_id,
+        destinatario_nombre: s.dueno_nombre,
+        destinatario_foto:   s.dueno_foto,
+        solicitud_id:        s.id,
+      },
+    });
   };
 
   if (cargando) return (
@@ -77,7 +105,82 @@ export default function SolicitudesPaseador() {
   return (
     <div className="sp2-page">
 
-      {/* ENCABEZADO */}
+      {/* ── PASEO ACTIVO ── */}
+      {paseoActivo && (
+        <div className="sp2-paseo-activo">
+          <div className="sp2-paseo-activo-header">
+            <div className="sp2-paseo-activo-badge">
+              <span className="sp2-gps-dot" />
+              Paseo en curso
+            </div>
+            <span className="sp2-paseo-activo-id">#{paseoActivo.id}</span>
+          </div>
+
+          <div className="sp2-paseo-activo-body">
+            {/* Mascota */}
+            <div className="sp2-paseo-mascota">
+              <div className="sp2-paseo-mascota-foto">
+                {paseoActivo.mascota_foto
+                  ? <img src={paseoActivo.mascota_foto.startsWith("/uploads") ? `${PET_API}${paseoActivo.mascota_foto}` : paseoActivo.mascota_foto} alt={paseoActivo.mascota_nombre} />
+                  : <span>🐾</span>
+                }
+              </div>
+              <div>
+                <strong>{paseoActivo.mascota_nombre}</strong>
+                <span>{paseoActivo.mascota_raza || paseoActivo.mascota_especie}</span>
+              </div>
+            </div>
+
+            {/* Dueño */}
+            <div className="sp2-paseo-dueno">
+              <div className="sp2-avatar sp2-avatar-sm">
+                {paseoActivo.dueno_foto
+                  ? <img src={paseoActivo.dueno_foto.startsWith("/uploads") ? `${PAS_API}${paseoActivo.dueno_foto}` : paseoActivo.dueno_foto} alt={paseoActivo.dueno_nombre} />
+                  : <span>{paseoActivo.dueno_nombre?.[0]?.toUpperCase()}</span>
+                }
+              </div>
+              <span>{paseoActivo.dueno_nombre}</span>
+            </div>
+
+            {/* Detalles */}
+            <div className="sp2-paseo-detalles">
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {paseoActivo.hora_servicio?.slice(0, 5)}
+                {paseoActivo.duracion_minutos ? ` · ${formatDuracion(paseoActivo.duracion_minutos)}` : ""}
+              </span>
+            </div>
+              {paseoActivo.pago_estado === "aprobado" ? (
+                <span className="sp2-pago-badge pagado">✓ Pago recibido</span>
+              ) : (
+                <span className="sp2-pago-badge pendiente">⏳ Pago pendiente</span>
+              )}
+          </div>
+
+          {/* Acciones */}
+          <div className="sp2-paseo-activo-acciones">
+            <ControlesPaseo
+              solicitudId={paseoActivo.id}
+              estadoSolicitud="en_curso"
+              onPaseoFinalizado={() => {
+                setPaseoActivo(null);
+                notify("✓ Paseo finalizado correctamente");
+              }}
+            />
+            <button
+              className="sp2-btn-mensaje-activo"
+              onClick={() => handleIrMensajes(paseoActivo)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Contactar dueño
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── ENCABEZADO ── */}
       <div className="sp2-head">
         <div>
           <h1>Solicitudes pendientes</h1>
@@ -103,11 +206,17 @@ export default function SolicitudesPaseador() {
       )}
 
       {/* VACÍO */}
-      {!error && solicitudes.length === 0 && (
+      {!error && solicitudes.length === 0 && !paseoActivo && (
         <div className="sp2-empty">
-          <div className="sp2-empty-icon"></div>
+          <div className="sp2-empty-icon">🐾</div>
           <h3>Sin solicitudes pendientes</h3>
           <p>Cuando un dueño te envíe una solicitud de paseo, aparecerá aquí.</p>
+        </div>
+      )}
+
+      {!error && solicitudes.length === 0 && paseoActivo && (
+        <div className="sp2-empty">
+          <h3>No hay otras solicitudes pendientes</h3>
         </div>
       )}
 
@@ -116,10 +225,10 @@ export default function SolicitudesPaseador() {
         {solicitudes.map(s => (
           <div key={s.id} className="sp2-card">
 
-            {/* Badge estado */}
-            <span className="sp2-badge-pendiente">Pendiente</span>
+            <span className={`sp2-badge-pendiente ${s.estado !== "pendiente" ? "sp2-badge-aceptada" : ""}`}>
+              {s.estado === "aceptada" ? "Aceptada" : "Pendiente"}
+            </span>
 
-            {/* Info dueño */}
             <div className="sp2-dueno">
               <div className="sp2-avatar">
                 {s.dueno_foto
@@ -142,12 +251,11 @@ export default function SolicitudesPaseador() {
 
             <div className="sp2-divider" />
 
-            {/* Info mascota */}
             <div className="sp2-mascota">
               <div className="sp2-mascota-foto">
                 {s.mascota_foto
                   ? <img src={s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto} alt={s.mascota_nombre} />
-                  : <span></span>
+                  : <span>🐾</span>
                 }
               </div>
               <div className="sp2-mascota-info">
@@ -158,7 +266,6 @@ export default function SolicitudesPaseador() {
 
             <div className="sp2-divider" />
 
-            {/* Detalles del servicio */}
             <div className="sp2-detalles">
               <div className="sp2-detalle">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -187,49 +294,46 @@ export default function SolicitudesPaseador() {
               </div>
             </div>
 
-            {/* Botones */}
-            <div className="sp2-acciones">
-              <button
-                className="sp2-btn-rechazar"
-                onClick={() => handleResponder(s.id, "rechazada")}
-                disabled={procesando === s.id}
-              >
-                {procesando === s.id ? (
-                  <div className="sp2-btn-spinner" />
-                ) : (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                  </svg>
-                )}
-                Rechazar
-              </button>
-              <button
-                className="sp2-btn-aceptar"
-                onClick={() => handleResponder(s.id, "aceptada")}
-                disabled={procesando === s.id}
-              >
-                {procesando === s.id ? (
-                  <div className="sp2-btn-spinner" />
-                ) : (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                )}
-                Aceptar
-              </button>
-            </div>
+            {s.estado === "pendiente" && (
+              <div className="sp2-acciones">
+                <button className="sp2-btn-rechazar" onClick={() => handleResponder(s.id, "rechazada")} disabled={procesando === s.id}>
+                  {procesando === s.id ? <div className="sp2-btn-spinner" /> : (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  )}
+                  Rechazar
+                </button>
+                <button className="sp2-btn-aceptar" onClick={() => handleResponder(s.id, "aceptada")} disabled={procesando === s.id}>
+                  {procesando === s.id ? <div className="sp2-btn-spinner" /> : (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  )}
+                  Aceptar
+                </button>
+              </div>
+            )}
+
+            {s.estado === "aceptada" && (
+              <div className="sp2-tracking">
+                <ControlesPaseo
+                  solicitudId={s.id}
+                  estadoSolicitud={s.estado}
+                  onPaseoIniciado={() => {
+                    const iniciada = solicitudes.find(x => x.id === s.id);
+                    setPaseoActivo({ ...iniciada, estado: "en_curso" });
+                    setSolicitudes(prev => prev.filter(x => x.id !== s.id));
+                    notify("✓ Paseo iniciado");
+                  }}
+                  onPaseoFinalizado={() => {
+                    setSolicitudes(prev => prev.filter(x => x.id !== s.id));
+                  }}
+                />
+              </div>
+            )}
 
           </div>
         ))}
       </div>
 
-      {/* TOAST */}
-      {toast && (
-        <div className={`sp2-toast ${toast.tipo}`}>
-          {toast.msg}
-        </div>
-      )}
-
+      {toast && <div className={`sp2-toast ${toast.tipo}`}>{toast.msg}</div>}
     </div>
   );
 }

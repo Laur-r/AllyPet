@@ -48,7 +48,7 @@ import DashboardVeterinario from './pages/DashboardVeterinario/DashboardVeterina
 import DashboardPaseador from './pages/DashboardPaseador/DashboardPaseador';
 import PagosPaseador from './pages/PagosPaseador/PagosPaseador';
 import SolicitarConsultaVet from "./pages/SolicitarConsultaVet/SolicitarConsultaVet";
-
+import RastreoMascota from "./pages/RastreoMascota/RastreoMascota";
 
 function App() {
   return (
@@ -90,6 +90,11 @@ function App() {
           <Route path="notificaciones"              element={<Notificaciones />} />
           <Route path="solicitar-consulta/:usuarioId" element={<SolicitarConsultaVet />} />
         </Route>
+         <Route path="/rastreo/:solicitudId" element={
+          <ProtectedRoute>
+            <RastreoMascota />
+          </ProtectedRoute>
+        } />
 
         {/* ── Menú Paseador ── */}
         <Route path="/menu/paseador" element={<MenuPaseador />}>
