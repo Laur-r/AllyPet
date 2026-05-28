@@ -131,3 +131,23 @@ export const obtenerHistorialCuidadoDueno = async (token, estado = "") => {
   return data;
 };
 
+export const obtenerSolicitudesVetPendientes = async (token) => {
+  const res = await fetch(`${API}/api/solicitudes/veterinario/pendientes`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener solicitudes");
+  return data;
+};
+
+export const responderSolicitudVet = async (id, estado, token) => {
+  const res = await fetch(`${API}/api/solicitudes/${id}/responder-vet`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ estado }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al responder la solicitud");
+  return data;
+};
+
