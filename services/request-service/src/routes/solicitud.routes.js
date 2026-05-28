@@ -28,4 +28,16 @@ router.put("/:id/cancelar", verificarToken, controller.cancelarSolicitud);
 /* H5.6 — Marcar como completado */
 router.put("/:id/completar", verificarToken, controller.completarServicio);
 
+/* Veterinario — Crear solicitud de consulta */
+router.post("/veterinario", verificarToken, controller.crearSolicitudVet);
+
+/* Veterinario — Ver pendientes */
+router.get("/veterinario/pendientes", verificarToken, controller.obtenerSolicitudesVetPendientes);
+
+/* Veterinario — Aceptar o rechazar */
+router.put("/:id/responder-vet", verificarToken, controller.responderSolicitudVet);
+
+/* Dueño — Historial de consultas vet */
+router.get("/veterinario/historial", verificarToken, controller.obtenerHistorialVetDueno);
+
 module.exports = router;

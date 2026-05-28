@@ -10,7 +10,6 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    // El auth-service guarda el id en `sub`, normalizamos a `id`
     req.user = { ...decoded, id: decoded.id || decoded.sub };
     next();
   } catch {

@@ -41,6 +41,7 @@ export const cancelarSolicitud = async (id, token) => {
   return data;
 };
 
+/* ── Historial dueño ── */
 export const obtenerHistorialDueno = async (token, estado = "") => {
   const url = estado
     ? `${API}/api/solicitudes/dueno/historial?estado=${estado}`
@@ -53,6 +54,7 @@ export const obtenerHistorialDueno = async (token, estado = "") => {
   return data;
 };
 
+
 export const obtenerHistorialPaseador = async (token, estado = "") => {
   const url = estado
     ? `${API}/api/solicitudes/paseador/historial?estado=${estado}`
@@ -64,6 +66,7 @@ export const obtenerHistorialPaseador = async (token, estado = "") => {
   if (!res.ok) throw new Error(data.error || "Error al obtener historial");
   return data;
 };
+
 export const completarServicio = async (id, token) => {
   const res = await fetch(`${API}/api/solicitudes/${id}/completar`, {
     method: "PUT",
@@ -77,7 +80,27 @@ export const completarServicio = async (id, token) => {
   return data;
 };
 
-/* ── H11.5 — Crear solicitud de cuidado ── */
+export const crearSolicitudVet = async (datos, token) => {
+  const res = await fetch(`${API}/api/solicitudes/veterinario`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al crear la solicitud");
+  return data;
+};
+
+export const obtenerHistorialVetDueno = async (token, estado = "") => {
+  const url = estado
+    ? `${API}/api/solicitudes/veterinario/historial?estado=${estado}`
+    : `${API}/api/solicitudes/veterinario/historial`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener historial");
+  return data;
+};
+
 export const crearSolicitudCuidado = async (datos, token) => {
   const res = await fetch(`${API}/api/solicitudes/cuidado`, {
     method: "POST",
@@ -89,7 +112,6 @@ export const crearSolicitudCuidado = async (datos, token) => {
   return data;
 };
 
-/* ── H11.5 — Solicitudes pendientes del cuidador ── */
 export const obtenerSolicitudesPendientesCuidador = async (token) => {
   const res = await fetch(`${API}/api/solicitudes/cuidador/pendientes`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -99,16 +121,33 @@ export const obtenerSolicitudesPendientesCuidador = async (token) => {
   return data;
 };
 
-/* ── H11.5 — Historial de cuidado del dueño ── */
 export const obtenerHistorialCuidadoDueno = async (token, estado = "") => {
   const url = estado
     ? `${API}/api/solicitudes/dueno/historial-cuidado?estado=${estado}`
     : `${API}/api/solicitudes/dueno/historial-cuidado`;
-  const res = await fetch(url, {
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al obtener historial de cuidado");
+  return data;
+};
+
+export const obtenerSolicitudesVetPendientes = async (token) => {
+  const res = await fetch(`${API}/api/solicitudes/veterinario/pendientes`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Error al obtener historial de cuidado");
+  if (!res.ok) throw new Error(data.error || "Error al obtener solicitudes");
+  return data;
+};
+
+export const responderSolicitudVet = async (id, estado, token) => {
+  const res = await fetch(`${API}/api/solicitudes/${id}/responder-vet`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ estado }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error al responder la solicitud");
   return data;
 };
 

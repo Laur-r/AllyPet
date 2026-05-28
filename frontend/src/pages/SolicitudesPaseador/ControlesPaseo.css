@@ -1,0 +1,114 @@
+/* ── ControlesPaseo.css ── */
+
+.controles-paseo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.controles-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+}
+
+.controles-btn:active {
+  transform: scale(0.97);
+}
+
+.controles-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.controles-btn.iniciar {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.controles-btn.iniciar:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.controles-btn.finalizar {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.controles-btn.finalizar:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.controles-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: controles-girar 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes controles-girar {
+  to { transform: rotate(360deg); }
+}
+
+.controles-gps-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.gps-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: gps-pulso 1.4s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes gps-pulso {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+.controles-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.controles-badge.finalizado {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.controles-error {
+  font-size: 0.8rem;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin: 0;
+}

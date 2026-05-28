@@ -47,6 +47,9 @@ import Notificaciones      from './pages/Notificaciones/Notificaciones';
 import DashboardVeterinario from './pages/DashboardVeterinario/DashboardVeterinario';
 import DashboardPaseador from './pages/DashboardPaseador/DashboardPaseador';
 import PagosPaseador from './pages/PagosPaseador/PagosPaseador';
+import SolicitarConsultaVet from "./pages/SolicitarConsultaVet/SolicitarConsultaVet";
+import RastreoMascota from "./pages/RastreoMascota/RastreoMascota";
+import CitasVeretinario from "./pages/CitasVeterinario/CitasVeterinario";
 
 function App() {
   return (
@@ -86,7 +89,13 @@ function App() {
           <Route path="configuracion"               element={<Configuracion />} />
           <Route path="mensajes"                    element={<Mensajes />} />
           <Route path="notificaciones"              element={<Notificaciones />} />
+          <Route path="solicitar-consulta/:usuarioId" element={<SolicitarConsultaVet />} />
         </Route>
+         <Route path="/rastreo/:solicitudId" element={
+          <ProtectedRoute>
+            <RastreoMascota />
+          </ProtectedRoute>
+        } />
 
         {/* ── Menú Paseador ── */}
         <Route path="/menu/paseador" element={<MenuPaseador />}>
@@ -107,7 +116,7 @@ function App() {
           <Route path="perfil"           element={<PerfilVeterinario />} />
           <Route path="pacientes"        element={<Pacientes />} />
           <Route path="pacientes/:petId" element={<CarnetVet />} />
-          <Route path="citas"            element={<h2>Citas</h2>} />
+          <Route path="citas"            element={<CitasVeretinario />} />
           <Route path="configuracion"    element={<Configuracion />} />
           <Route path="mensajes"         element={<Mensajes />} />
           <Route path="notificaciones"   element={<Notificaciones />} />

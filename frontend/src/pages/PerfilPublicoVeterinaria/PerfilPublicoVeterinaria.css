@@ -256,3 +256,19 @@
   animation: ppvSpin .7s linear infinite;
 }
 @keyframes ppvSpin { to { transform: rotate(360deg); } }
+
+.ppv-btn-solicitar {
+  background: var(--p);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease;
+  box-shadow: 0 2px 10px rgba(123, 45, 139, .25);
+  white-space: nowrap;
+}
+.ppv-btn-solicitar:hover { background: #5a1f6b; }

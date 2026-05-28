@@ -5,7 +5,8 @@ import "./HistorialDueno.css";
 
 const PAS_API = "http://localhost:3006";
 const PET_API = "http://localhost:3003";
-const PAY_API = "http://localhost:3012"; // ✅ NUEVO
+const PAY_API = "http://localhost:3012";
+const VET_API = "http://localhost:3005";
 
 const getToken = () => localStorage.getItem("token");
 
@@ -13,6 +14,7 @@ const ESTADOS = [
   { value: "",            label: "Todas"       },
   { value: "pendiente",   label: "Pendientes"  },
   { value: "aceptada",    label: "Aceptadas"   },
+  { value: "en_curso",    label: "En curso"    },
   { value: "completada",  label: "Completadas" },
   { value: "cancelada",   label: "Canceladas"  },
   { value: "rechazada",   label: "Rechazadas"  },
@@ -21,9 +23,11 @@ const ESTADOS = [
 const BADGE_ESTADO = {
   pendiente:  { bg: "rgba(254,249,195,.92)", color: "#92400E", border: "#FDE68A", label: "Pendiente",  accent: "#F59E0B" },
   aceptada:   { bg: "rgba(235,247,228,.92)", color: "#3A7A2A", border: "#C6EDBA", label: "Aceptada",   accent: "#6CC04A" },
+  "en_curso": { bg: "rgba(219,234,254,.92)", color: "#1E40AF", border: "#93C5FD", label: "En curso",   accent: "#3B82F6" },
   completada: { bg: "rgba(239,246,255,.92)", color: "#1E40AF", border: "#BFDBFE", label: "Completada", accent: "#3B82F6" },
   cancelada:  { bg: "rgba(243,244,246,.92)", color: "#6B7280", border: "#E5E7EB", label: "Cancelada",  accent: "#9CA3AF" },
   rechazada:  { bg: "rgba(254,226,226,.92)", color: "#B91C1C", border: "#FECACA", label: "Rechazada",  accent: "#EF4444" },
+  finalizado: { bg: "rgba(243,244,246,.92)", color: "#6B7280", border: "#E5E7EB", label: "Finalizado", accent: "#9CA3AF" },
 };
 
 function formatFecha(fecha) {
@@ -38,6 +42,7 @@ function formatDuracion(minutos) {
   return m > 0 ? `${h}h ${m}min` : `${h} hora${h > 1 ? "s" : ""}`;
 }
 function getIniciales(nombre = "") {
+  if (!nombre) return "?";
   return nombre.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 const fmt = (n) =>
@@ -54,7 +59,7 @@ export default function HistorialDueno() {
   const [filtroEstado, setFiltroEstado] = useState("");
   const [cancelando,   setCancelando]   = useState(null);
   const [confirmId,    setConfirmId]    = useState(null);
-  const [pagando,      setPagando]      = useState(null); // ✅ NUEVO
+  const [pagando,      setPagando]      = useState(null);
   const [toast,        setToast]        = useState(null);
 
   const notify = (msg, tipo = "ok") => {
@@ -93,17 +98,17 @@ export default function HistorialDueno() {
   };
 
   const handleMensaje = (s) => {
+    const esVet = s.tipo_servicio === "consulta_vet";
     navigate("/menu/dueno/mensajes", {
       state: {
-        destinatario_id:     s.paseador_id,
-        destinatario_nombre: s.paseador_nombre,
-        destinatario_foto:   s.paseador_foto || null,
+        destinatario_id:     esVet ? s.vet_usuario_id : s.paseador_usuario_id,
+        destinatario_nombre: esVet ? (s.vet_establecimiento || s.vet_nombre) : s.paseador_nombre,
+        destinatario_foto:   esVet ? s.vet_foto : s.paseador_foto,
         solicitud_id:        s.id,
       },
     });
   };
 
-  // ✅ NUEVO: iniciar pago con Wompi
   const handlePagar = async (solicitud) => {
     setPagando(solicitud.id);
     try {
@@ -117,8 +122,6 @@ export default function HistorialDueno() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error al iniciar pago");
-
-      // Redirigir al checkout de Wompi
       window.location.href = data.data.wompi_url;
     } catch (err) {
       notify(err.message || "No se pudo iniciar el pago", "error");
@@ -176,16 +179,22 @@ export default function HistorialDueno() {
             const fotoMascota = s.mascota_foto
               ? (s.mascota_foto.startsWith("/uploads") ? `${PET_API}${s.mascota_foto}` : s.mascota_foto)
               : null;
-            const fotoPaseador = s.paseador_foto
-              ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto)
-              : null;
 
-            const puedeEnviarMensaje = ["pendiente", "aceptada", "completada"].includes(s.estado);
+            const esVet = s.tipo_servicio === "consulta_vet";
+            const proveedorNombre = esVet
+              ? (s.vet_establecimiento || s.vet_nombre || "")
+              : (s.paseador_nombre || "");
+            const proveedorRol    = esVet ? "Veterinario" : "Paseador";
+            const proveedorFoto   = esVet
+              ? (s.vet_foto ? (s.vet_foto.startsWith("/uploads") ? `${VET_API}${s.vet_foto}` : s.vet_foto) : null)
+              : (s.paseador_foto ? (s.paseador_foto.startsWith("/uploads") ? `${PAS_API}${s.paseador_foto}` : s.paseador_foto) : null);
 
-            // ✅ NUEVO: mostrar botón pagar solo si está aceptada y no pagada
-            const puedesPagar = s.estado === "aceptada" && s.pago_estado !== "aprobado";
+            const puedeEnviarMensaje = ["pendiente", "aceptada", "en_curso", "completada"].includes(s.estado);
+            const puedesPagar = ["aceptada", "en_curso"].includes(s.estado) && s.pago_estado !== "aprobado";
             const yaPagado    = s.pago_estado === "aprobado";
             const estaPagando = pagando === s.id;
+            // Mostrar botón de rastreo si el paseo está activo
+            const puedeRastrear = s.estado === "en_curso" && s.tipo_servicio !== "consulta_vet";
 
             return (
               <div key={s.id} className="hd-card">
@@ -222,19 +231,15 @@ export default function HistorialDueno() {
                 <div className="hd-body">
                   <div className="hd-paseador">
                     <div className="hd-avatar">
-                      {fotoPaseador
-                        ? <img src={fotoPaseador} alt={s.paseador_nombre} />
-                        : <span>{getIniciales(s.paseador_nombre)}</span>
+                      {proveedorFoto
+                        ? <img src={proveedorFoto} alt={proveedorNombre} />
+                        : <span>{getIniciales(proveedorNombre)}</span>
                       }
                     </div>
                     <div className="hd-paseador-info">
-                      <strong>{s.paseador_nombre}</strong>
-                      <small>Paseador</small>
+                      <strong>{proveedorNombre}</strong>
+                      <small>{proveedorRol}</small>
                     </div>
-                    {/* ✅ NUEVO: precio acordado junto al paseador */}
-                    {s.precio_acordado && (
-                      <span className="hd-precio-tag">{fmt(s.precio_acordado)}</span>
-                    )}
                   </div>
 
                   <div className="hd-detalles">
@@ -254,15 +259,16 @@ export default function HistorialDueno() {
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                       </svg>
-                      <span>{s.hora_servicio?.slice(0, 5)} · {formatDuracion(s.duracion_minutos)}</span>
+                      <span>
+                        {s.hora_servicio?.slice(0, 5)}
+                        {s.duracion_minutos ? ` · ${formatDuracion(s.duracion_minutos)}` : ""}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* FOOTER */}
                 <div className="hd-foot">
 
-                  {/* Cancelar (solo pendientes) */}
                   {s.estado === "pendiente" && (
                     confirmId === s.id ? (
                       <div className="hd-confirm">
@@ -292,7 +298,6 @@ export default function HistorialDueno() {
                     )
                   )}
 
-                  {/* ✅ NUEVO: botón pagar */}
                   {puedesPagar && (
                     <button
                       className="hd-btn-pagar"
@@ -317,7 +322,6 @@ export default function HistorialDueno() {
                     </button>
                   )}
 
-                  {/* ✅ NUEVO: ya pagado */}
                   {yaPagado && (
                     <div className="hd-pagado-badge">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
@@ -328,7 +332,23 @@ export default function HistorialDueno() {
                     </div>
                   )}
 
-                  {/* Mensaje */}
+                  {/* ── Botón rastrear mascota ── */}
+                  {puedeRastrear && (
+                    <button
+                      className="hd-btn-rastrear"
+                      onClick={() => navigate(`/rastreo/${s.id}`)}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+                           strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                        <path d="M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12"/>
+                      </svg>
+                      Rastrear mi mascota
+                    </button>
+                  )}
+
                   {puedeEnviarMensaje && (
                     <button className="hd-btn-mensaje" onClick={() => handleMensaje(s)}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
