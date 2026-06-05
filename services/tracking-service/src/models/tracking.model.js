@@ -57,12 +57,16 @@ const obtenerUltimaUbicacion = async (solicitudId) => {
 };
 
 /* ── Verificar que la solicitud pertenece al dueño ── */
-const verificarSolicitudDueno = async (solicitudId, duenoId) => {
+const verificarSolicitudDueno = async (solicitudId, usuarioId) => {
   const { rows } = await pool.query(
-    `SELECT id, estado FROM solicitudes
-     WHERE id = $1 AND dueno_id = $2`,
-    [solicitudId, duenoId]
+    `SELECT s.id, s.estado
+     FROM solicitudes s
+     INNER JOIN perfil_dueno pd ON pd.id = s.dueno_id
+     WHERE s.id = $1
+       AND pd.usuario_id = $2`,
+    [solicitudId, usuarioId]
   );
+
   return rows[0] || null;
 };
 
