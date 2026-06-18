@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas (CORREGIDO)
+// Rutas
 const adminRoutes = require('./routes/admin.routes');
 app.use('/api/admin', adminRoutes);
 
@@ -17,8 +17,4 @@ app.get('/', (req, res) => {
   res.send('Admin Service funcionando ⚙️');
 });
 
-const PORT = process.env.PORT || 3002;
-
-app.listen(PORT, () => {
-  console.log(`Admin Service corriendo en http://localhost:${PORT}`);
-});
+module.exports = app; 
