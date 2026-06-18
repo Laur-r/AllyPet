@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: allypet-auth
+    env_file: ./services/auth-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  admin-service:
+    build: ./services/admin-service
+    container_name: allypet-admin
+    env_file: ./services/admin-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+
+  pet-service:
+    build: ./services/pet-service
+    container_name: allypet-pet
+    env_file: ./services/pet-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3003:3003"
+    restart: unless-stopped
+
+  user-service:
+    build: ./services/user-service
+    container_name: allypet-user
+    env_file: ./services/user-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3004:3004"
+    restart: unless-stopped
+
+  vet-service:
+    build: ./services/vet-service
+    container_name: allypet-vet
+    env_file: ./services/vet-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3005:3005"
+    restart: unless-stopped
+
+  pas-service:
+    build: ./services/pas-service
+    container_name: allypet-pas
+    env_file: ./services/pas-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3006:3006"
+    restart: unless-stopped
+
+  request-service:
+    build: ./services/request-service
+    container_name: allypet-request
+    env_file: ./services/request-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3007:3007"
+    restart: unless-stopped
+
+  review-service:
+    build: ./services/review-service
+    container_name: allypet-review
+    env_file: ./services/review-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3008:3008"
+    restart: unless-stopped
+
+  message-service:
+    build: ./services/message-service
+    container_name: allypet-message
+    env_file: ./services/message-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3009:3009"
+    restart: unless-stopped
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: allypet-notification
+    env_file: ./services/notification-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3010:3010"
+    restart: unless-stopped
+
+  cuidador-service:
+    build: ./services/cuidador-service
+    container_name: allypet-cuidador
+    env_file: ./services/cuidador-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3011:3011"
+    restart: unless-stopped
+
+  payment-service:
+    build: ./services/payment-service
+    container_name: allypet-payment
+    env_file: ./services/payment-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3012:3012"
+    restart: unless-stopped
+
+  tracking-service:
+    build: ./services/tracking-service
+    container_name: allypet-tracking
+    env_file: ./services/tracking-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3013:3013"
+    restart: unless-stopped
+
+  chatbot-service:
+    build: ./services/chatbot-service
+    container_name: allypet-chatbot
+    env_file: ./services/chatbot-service/.env
+    environment:
+      DB_HOST: host.docker.internal
+    ports:
+      - "3014:3014"
+    restart: unless-stopped
