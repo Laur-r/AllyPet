@@ -67,7 +67,7 @@ const obtenerUbicacion = async (solicitudId, duenoId) => {
 
   const ubicacion = await model.obtenerUltimaUbicacion(solicitudId);
 
-  // 👇 AQUÍ ESTÁ EL ARREGLO
+ 
   if (!ubicacion) {
     return {
       latitud: null,

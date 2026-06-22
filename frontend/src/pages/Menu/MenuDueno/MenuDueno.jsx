@@ -4,7 +4,7 @@ import logoNavbar from "../../../assets/menus/logonavbar.png";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import avatarDefault from "../../../assets/menus/menudefault.png";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
-
+import ChatbotWidget from "../../../components/chatbot/ChatbotWidget";
 import { getUnreadCount as getUnreadMessages }      from "../../../services/message.service";
 import { getUnreadCount as getUnreadNotifications } from "../../../services/notification.service";
 
@@ -287,7 +287,9 @@ export default function MenuDueno() {
         <main className="md-content">
           <Outlet />
         </main>
+        {user?.rol === "dueno" && <ChatbotWidget />}
       </div>
+      
     </div>
   );
 }
