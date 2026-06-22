@@ -1,12 +1,4 @@
-/**
- * Pruebas automatizadas - admin-service
- * AllyPet | Desarrollo de Software 3
- *
- * Estrategia: mockear la capa de servicios y el middleware JWT
- * para que las pruebas no dependan de base de datos ni tokens reales.
- */
 
-// ─── Mocks ANTES de cualquier require ────────────────────────────────────────
 
 // Mock del middleware JWT: simula que el token es válido y el usuario es admin
 jest.mock('../middlewares/jwt.middleware', () => ({
